@@ -1,0 +1,13 @@
+{
+  
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "outDir": "./src/ts-out/",
+    "resolveJsonModule": true,
+    "sourceMap": true
+  },
+  "include": ["*.ts", "src/ts/app.ts", "src/ts/command.ts"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}
