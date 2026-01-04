@@ -1,0 +1,23 @@
+{
+  "name": "daniel-chauve-js",
+  "description": "DanielChauve mais en js",
+  "version": "0.0.1",
+  "maintainers": [
+    {
+      "name": "vintar21",
+      "email": "contact@vintar.fr",
+      "web": "vintar.fr"
+    }
+  ],
+  "username": "Your Twitch username",
+  "password": "Your OAuth token",
+  "channel": "The channel to join",
+  "dependencies": {
+    "tmi.js": "^1.9.0-pre.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,7 +1,7 @@
 const optionJson = require("../../package.json");
 const username = optionJson.username;
 const password = optionJson.password;
-const channels = optionJson.channels;
+const channel = optionJson.channel;
 
 var tmi = require("tmi.js");
 
@@ -19,16 +19,16 @@ var options = {
     username,
     password,
   },
-  channels,
+  channel,
 };
 
 // TODO make a client utils or something + a reply function to reply directly to message
 export function send(message: string) {
-  client.say(channels[0], message);
+  client.say(channel, message);
 }
 
 export function reply(message: string, msgId: string) {
-  client.reply(channels[0], message, msgId);
+  client.reply(channel, message, msgId);
 }
 
 var commands = new Set<Command>();
