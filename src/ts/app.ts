@@ -4,7 +4,6 @@ const password = optionJson.password;
 const channels = optionJson.channels;
 
 var tmi = require("tmi.js");
-const { say } = require("tmi.js/lib/commands");
 
 import { commandPrefix } from "./command";
 import Command from "./command";
@@ -28,8 +27,16 @@ export function send(message: string) {
   client.say(channels[0], message);
 }
 
+export function reply(message: string, msgId: string) {
+  client.reply(channels[0], message, msgId);
+}
+
 var commands = new Set<Command>();
 var salutCommand = new Command(["salut", "bonjour"], "Salut !");
+//salutCommand.setGlobalCooldown(2);
+//salutCommand.setUserCooldown(60);
+salutCommand.setMaxUsePerUser(2);
+
 commands.add(salutCommand);
 
 var client = new tmi.client(options);
@@ -37,13 +44,10 @@ client.connect();
 
 client.on(
   "chat",
-  function (channel: any, userstate: any, message: string, self: any) {
-    // console.log(userstate)
-
-    // if (message.contains("vintarLove") || message.contains("vintarLoveB")
-    // || message.contains("vintarLoveC") || message.contains("vintarGg")) {
-    //     addBonus(userstate.username, 1)
-    // }
+  function (channel: any, userstate: any, message: any, self: any) {
+    const username: string = userstate.username;
+    const userId: number = userstate["user-id"];
+    const msgId: string = userstate.id;
 
     // Works for simple commands
     // TODO: stop at first match (priority)
@@ -52,7 +56,7 @@ client.on(
       var parts = message.toLowerCase().split(" ");
       commands.forEach((command) => {
         if (command.isTriggeredBy(parts[0].substring(1))) {
-          command.answer();
+          command.answer(userId, msgId);
         }
       });
     }
