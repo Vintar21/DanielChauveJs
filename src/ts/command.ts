@@ -10,8 +10,8 @@ export default class Command {
   private globalCooldown: number; // In miliseconds
   private userCooldown: number; // In miliseconds
 
-  private maxUseGlobal: number; // 0 = unlimited
-  private maxUsePerUser: number; // 0 = unlimited
+  private maxUseGlobal: number; // -1 = unlimited
+  private maxUsePerUser: number; // -1 = unlimited
 
   private userCooldowns: Map<number, number> = new Map();
   private lastUsed: number;
