@@ -4,10 +4,10 @@
     "target": "es6",
     "module": "commonjs",
     "esModuleInterop": true,
-    "outDir": "./src/ts-out/",
+    "outDir": "./dist/",
     "resolveJsonModule": true,
     "sourceMap": true
   },
-  "include": ["*.ts", "src/ts/app.ts", "src/ts/command.ts"],
+  "include": ["*.ts", "src/app.ts", "src/commands/Command.ts"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

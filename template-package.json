@@ -10,13 +10,9 @@
     }
   ],
 
-  "username": "Your Twitch username",
+  "username": "Your Bot Twitch username",
   "password": "Your OAuth token",
-  "channel": "The channel to join",
-
-  "scripts": {
-    "start": "npx tsc | node ./src/ts-out/app.js"
-  },
+  "channels": ["The channel to join"],
 
   "dependencies": {
     "tmi.js": "^1.9.0-pre.1"

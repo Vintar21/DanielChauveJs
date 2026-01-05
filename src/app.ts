@@ -1,12 +1,13 @@
-const optionJson = require("../../package.json");
+const optionJson = require("../package.json");
 const username = optionJson.username;
 const password = optionJson.password;
-const channel = optionJson.channel;
+const channels = optionJson.channels;
+const channel = channels[0];
 
 var tmi = require("tmi.js");
 
-import { commandPrefix } from "./command";
-import Command from "./command";
+import Command from "./commands/Command";
+import CommandBuilder from "./commands/CommandBuilder";
 
 var options = {
   options: {
@@ -19,7 +20,7 @@ var options = {
     username,
     password,
   },
-  channel,
+  channels,
 };
 
 // TODO make a client utils or something + a reply function to reply directly to message
@@ -32,15 +33,18 @@ export function reply(message: string, msgId: string) {
 }
 
 var commands = new Set<Command>();
-var salutCommand = new Command(["salut", "bonjour"], "Salut !");
-//salutCommand.setGlobalCooldown(2);
-//salutCommand.setUserCooldown(60);
-salutCommand.setMaxUsePerUser(2);
-
-commands.add(salutCommand);
+const commandBuilder: CommandBuilder = new CommandBuilder();
+const helloCommand: Command = commandBuilder
+  .addTriggers(["salut", "BoNjoUr", "yo", "wesh", "slt", "bjr"])
+  .setResponse("Salut BG!")
+  .canReplyToUser()
+  .setMaxUsePerUser(1)
+  .build();
+commands.add(helloCommand);
 
 var client = new tmi.client(options);
 client.connect();
+//send("Le bot est en ligne !");
 
 client.on(
   "chat",
@@ -52,14 +56,13 @@ client.on(
     // Works for simple commands
     // TODO: stop at first match (priority)
     // TODO: more complex commands
-    if (message.charAt(0) == commandPrefix) {
-      var parts = message.toLowerCase().split(" ");
-      commands.forEach((command) => {
-        if (command.isTriggeredBy(parts[0].substring(1))) {
-          command.answer(userId, msgId);
-        }
-      });
-    }
+    var parts = message.toLowerCase().split(" ");
+    commands.forEach((command) => {
+      if (command.isTriggeredBy(userId, parts[0])) {
+        console.log(`Command triggered by ${username} (${userId}): ${message}`);
+        command.answer(userId, msgId);
+      }
+    });
   }
 );
 
