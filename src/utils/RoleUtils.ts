@@ -35,13 +35,13 @@ export async function isFollower(
 
 export function getGreaterRole(userstate: any): Promise<symbol> {
   var role: symbol;
-  if (isBroadcaster(userstate) && false) {
+  if (isBroadcaster(userstate)) {
     role = Roles.BROADCASTER;
-  } else if (isMod(userstate) && false) {
+  } else if (isMod(userstate)) {
     role = Roles.MOD;
-  } else if (isVip(userstate) && false) {
+  } else if (isVip(userstate)) {
     role = Roles.VIP;
-  } else if (isSubscriber(userstate) && false) {
+  } else if (isSubscriber(userstate)) {
     role = Roles.SUB;
   } else {
     return isFollower(userstate["room-id"], userstate["user-id"]).then(
