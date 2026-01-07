@@ -1,8 +1,9 @@
 import { reply, send } from "../app";
+import { Roles } from "../utils/RoleUtils";
 
 // TODO: Make an interface, in the future we want each command to have her own class ?
 export default class Command {
-  private prefix: string;
+  public prefix: string;
 
   private triggers: Set<string>;
   private response: string;
@@ -20,6 +21,10 @@ export default class Command {
   private usersUseCount: Map<number, number> = new Map();
   private globalUseCount: number = 0;
 
+  // -1 = not allowed, 0 = allowed, 1 = bypass
+  private rolesPermissions: Map<symbol, number>;
+  private usersPermissions: Map<number, number> = new Map();
+
   constructor(
     triggers: Set<string>,
     response: string,
@@ -28,6 +33,8 @@ export default class Command {
     userCooldown: number,
     maxUseGlobal: number,
     maxUsePerUser: number,
+    rolesPermissions: Map<symbol, number>,
+    usersPermissions: Map<number, number>,
     prefix: string
   ) {
     this.triggers = triggers;
@@ -37,17 +44,59 @@ export default class Command {
     this.userCooldown = userCooldown;
     this.maxUseGlobal = maxUseGlobal;
     this.maxUsePerUser = maxUsePerUser;
+    this.rolesPermissions = rolesPermissions;
     this.prefix = prefix;
   }
 
-  public answer(userId: number = undefined, msgId: string = undefined): void {
+  public execute(
+    userId: number = undefined,
+    msgId: string = undefined,
+    ignoreCooldowns: boolean = false
+  ): void {
     if (this.canReplyToUser(msgId)) {
       reply(this.response, msgId);
     } else {
       send(this.response);
     }
 
-    // Update cooldowns
+    if (!ignoreCooldowns) {
+      this.updateCooldowns(userId);
+    }
+  }
+
+  // TODO: use regex
+  public match(input: string): boolean {
+    return this.triggers.has(input.toLowerCase());
+  }
+
+  public async canExecute(
+    userId: number,
+    promisedRole: Promise<symbol>
+  ): Promise<boolean> {
+    const role = await promisedRole;
+    // Specific user permissions
+    if (this.usersPermissions.get(userId) === -1) {
+      return false;
+    } else if (this.usersPermissions.get(userId) === 1) {
+      return true;
+    }
+
+    // Role permissions
+    if (this.rolesPermissions.get(role) === -1) {
+      return false;
+    } else if (this.rolesPermissions.get(role) === 1) {
+      return true;
+    }
+
+    return (
+      this.canUseGlobal() &&
+      this.canUseForUser(userId) &&
+      this.isGlobalCooldownFinished() &&
+      this.isUserCooldownFinished(userId)
+    );
+  }
+
+  private updateCooldowns(userId: number): void {
     this.globalUseCount += 1;
     this.lastUsed = Date.now();
     if (userId !== undefined) {
@@ -55,16 +104,6 @@ export default class Command {
       this.usersUseCount.set(userId, userUseCount + 1);
       this.userCooldowns.set(userId, this.lastUsed);
     }
-  }
-
-  public isTriggeredBy(userId: number, input: string): boolean {
-    return (
-      this.triggers.has(input.toLowerCase()) &&
-      this.canUseGlobal() &&
-      this.canUseForUser(userId) &&
-      this.isGlobalCooldownFinished() &&
-      this.isUserCooldownFinished(userId)
-    );
   }
 
   // Return true if the global cooldown has finished

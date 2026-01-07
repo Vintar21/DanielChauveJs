@@ -8,6 +8,7 @@ var tmi = require("tmi.js");
 
 import Command from "./commands/Command";
 import CommandBuilder from "./commands/CommandBuilder";
+import { getGreaterRole, isFollower, Roles } from "./utils/RoleUtils";
 
 var options = {
   options: {
@@ -23,7 +24,6 @@ var options = {
   channels,
 };
 
-// TODO make a client utils or something + a reply function to reply directly to message
 export function send(message: string) {
   client.say(channel, message);
 }
@@ -32,37 +32,42 @@ export function reply(message: string, msgId: string) {
   client.reply(channel, message, msgId);
 }
 
-var commands = new Set<Command>();
+var commands = new Array<Command>();
 const commandBuilder: CommandBuilder = new CommandBuilder();
 const helloCommand: Command = commandBuilder
   .addTriggers(["salut", "BoNjoUr", "yo", "wesh", "slt", "bjr"])
   .setResponse("Salut BG!")
   .canReplyToUser()
   .setMaxUsePerUser(1)
+  .setUnallowedRole(Roles.NO_ROLE)
   .build();
-commands.add(helloCommand);
+// Order matters !!
+commands.push(helloCommand);
 
 var client = new tmi.client(options);
 client.connect();
-//send("Le bot est en ligne !");
 
 client.on(
   "chat",
   function (channel: any, userstate: any, message: any, self: any) {
-    const username: string = userstate.username;
-    const userId: number = userstate["user-id"];
+    var username: string = userstate.username;
+    var userId: number = userstate["user-id"];
     const msgId: string = userstate.id;
+    const channelId: number = userstate["room-id"];
 
-    // Works for simple commands
-    // TODO: stop at first match (priority)
+    //username = "Moobot";
+    //userId = 1564983;
+
     // TODO: more complex commands
     var parts = message.toLowerCase().split(" ");
-    commands.forEach((command) => {
-      if (command.isTriggeredBy(userId, parts[0])) {
-        console.log(`Command triggered by ${username} (${userId}): ${message}`);
-        command.answer(userId, msgId);
-      }
-    });
+    var triggeredCommand = commands.find((command) => command.match(parts[0]));
+    triggeredCommand
+      ?.canExecute(userId, getGreaterRole(userstate))
+      .then((canExecute) => {
+        if (canExecute) {
+          triggeredCommand.execute(userId, msgId);
+        }
+      });
   }
 );
 

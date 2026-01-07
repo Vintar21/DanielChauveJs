@@ -1,5 +1,6 @@
 import Command from "./Command";
 import { commandPrefix } from "./CommandsConstants";
+import { Roles } from "../utils/RoleUtils";
 
 // Builder for simple commands giving a single response
 export default class CommandBuilder {
@@ -15,6 +16,20 @@ export default class CommandBuilder {
 
   private prefix: string = commandPrefix;
 
+  // -1 = not allowed, 0 = allowed, 1 = bypass
+  private rolesPermissions: Map<symbol, number> = new Map([
+    [Roles.BROADCASTER, 1],
+    [Roles.MOD, 0],
+    [Roles.VIP, 0],
+    [Roles.SUB, 0],
+    [Roles.FOLLOWER, 0],
+    [Roles.NO_ROLE, 0],
+  ]);
+
+  // Permissions for specific users
+  // -1 = not allowed, 0 = allowed, 1 = bypass
+  private usersPermissions: Map<number, number> = new Map();
+
   constructor() {}
 
   public build(): Command {
@@ -29,6 +44,8 @@ export default class CommandBuilder {
       this.userCooldown,
       this.maxUseGlobal,
       this.maxUsePerUser,
+      this.rolesPermissions,
+      this.usersPermissions,
       this.prefix
     );
   }
@@ -81,6 +98,45 @@ export default class CommandBuilder {
 
   public setCustomPrefix(prefix: string): CommandBuilder {
     this.prefix = prefix;
+    return this;
+  }
+
+  public setByPassRole(role: symbol): CommandBuilder {
+    if (!Object.values(Roles).includes(role)) {
+      throw new Error("Role not recognized");
+    }
+    this.rolesPermissions.set(role, 1);
+    return this;
+  }
+
+  public setAllowedRole(role: symbol): CommandBuilder {
+    if (!Object.values(Roles).includes(role)) {
+      throw new Error("Role not recognized");
+    }
+    this.rolesPermissions.set(role, 0);
+    return this;
+  }
+
+  public setUnallowedRole(role: symbol): CommandBuilder {
+    if (!Object.values(Roles).includes(role)) {
+      throw new Error("Role not recognized");
+    }
+    this.rolesPermissions.set(role, -1);
+    return this;
+  }
+
+  public setByPassUser(userId: number): CommandBuilder {
+    this.usersPermissions.set(userId, 1);
+    return this;
+  }
+
+  public setAllowedUser(userId: number): CommandBuilder {
+    this.usersPermissions.set(userId, 0);
+    return this;
+  }
+
+  public setUnallowedUser(userId: number): CommandBuilder {
+    this.usersPermissions.set(userId, -1);
     return this;
   }
 }
