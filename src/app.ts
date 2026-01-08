@@ -1,7 +1,6 @@
 import SimpleCommand from "./commands/SimpleCommand";
 import RollCommand from "./commands/RollCommand";
 import ICommand from "./commands/ICommand";
-import SimpleCommandBuilder from "./commands/builders/SimpleCommandBuilder";
 import { getGreaterRole, Roles } from "./utils/RoleUtils";
 import { SPACE } from "./utils/StringConstants";
 import User from "./user/User";
@@ -12,6 +11,7 @@ import {
   username,
   password,
 } from "./utils/ImportConstants";
+import CommandOptions from "./commands/CommandOptions";
 
 export function send(message: string) {
   client.say(channel, message);
@@ -22,21 +22,26 @@ export function reply(message: string, msgId: string) {
 }
 
 var commands = new Array<ICommand>();
-const simpleCommandBuilder: SimpleCommandBuilder = new SimpleCommandBuilder();
-const helloCommand: SimpleCommand = simpleCommandBuilder
-  .addTriggers([/s+a*l+u*t+/i, /bo*n*jo*u*r+/i, /yo+/i, /we*sh/i])
-  .setResponse("Salut BG!")
-  .canReplyToUser()
+const helloOptions: CommandOptions = new CommandOptions()
+  .addTriggers([
+    /s+a*l+u*t+/i,
+    /bo*n*jo*u*r+/i,
+    /yo+/i,
+    /we*sh/i,
+    /co*u*co*u*/i,
+    /he+l{2,}o+/,
+  ])
   .setMaxUsePerUser(1)
   .setByPassRole(Roles.BROADCASTER)
-  .setUnallowedRole(Roles.NO_ROLE)
-  .build();
-
-const rollCommand: RollCommand = new RollCommand();
+  .setUnallowedRole(Roles.NO_ROLE);
+const helloCommand: SimpleCommand = new SimpleCommand(
+  helloOptions,
+  "Salut le sang de la veine de l'artère aorte !"
+);
 
 // Order matters !!
 commands.push(helloCommand);
-commands.push(rollCommand);
+commands.push(RollCommand.getInstance());
 
 var client = new tmi.client(options);
 client.connect();

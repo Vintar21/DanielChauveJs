@@ -1,19 +1,10 @@
 import User from "../user/User";
 import { _ } from "../utils/ImportConstants";
 import ICommand from "./ICommand";
+import CommandOptions from "./CommandOptions";
 
 export default abstract class ACommand implements ICommand {
-  // TODO: Create a commandOptions object
-  protected prefix: string;
-
-  protected triggers: Array<RegExp>;
-  protected replyToUser: boolean;
-
-  protected globalCooldown: number; // In miliseconds
-  protected userCooldown: number; // In miliseconds
-
-  protected maxUseGlobal: number; // -1 = unlimited
-  protected maxUsePerUser: number; // -1 = unlimited
+  protected options: CommandOptions;
 
   protected userCooldowns: Map<number, number> = new Map();
   protected lastUsed: number = 0;
@@ -25,26 +16,8 @@ export default abstract class ACommand implements ICommand {
   protected rolesPermissions: Map<symbol, number>;
   protected usersPermissions: Map<number, number> = new Map();
 
-  constructor(
-    triggers: Set<RegExp>,
-    replyToUser: boolean,
-    globalCooldown: number,
-    userCooldown: number,
-    maxUseGlobal: number,
-    maxUsePerUser: number,
-    rolesPermissions: Map<symbol, number>,
-    usersPermissions: Map<number, number>,
-    prefix: string
-  ) {
-    this.triggers = Array.from(triggers);
-    this.replyToUser = replyToUser;
-    this.globalCooldown = globalCooldown;
-    this.userCooldown = userCooldown;
-    this.maxUseGlobal = maxUseGlobal;
-    this.maxUsePerUser = maxUsePerUser;
-    this.rolesPermissions = rolesPermissions;
-    this.usersPermissions = usersPermissions;
-    this.prefix = prefix;
+  constructor(options: CommandOptions) {
+    this.options = options;
   }
 
   public abstract execute(
@@ -55,8 +28,9 @@ export default abstract class ACommand implements ICommand {
 
   public match(input: string): boolean {
     return (
-      _.find(this.triggers, (trigger: RegExp) => trigger.test(input)) !==
-      undefined
+      _.find(this.options.triggers, (trigger: RegExp) =>
+        trigger.test(input)
+      ) !== undefined
     );
   }
 
@@ -66,16 +40,16 @@ export default abstract class ACommand implements ICommand {
   ): Promise<boolean> {
     const role = await promisedRole;
     // Specific user permissions
-    if (this.usersPermissions.get(user.userId) === -1) {
+    if (this.options.usersPermissions.get(user.userId) === -1) {
       return false;
-    } else if (this.usersPermissions.get(user.userId) === 1) {
+    } else if (this.options.usersPermissions.get(user.userId) === 1) {
       return true;
     }
 
     // Role permissions
-    if (this.rolesPermissions.get(role) === -1) {
+    if (this.options.rolesPermissions.get(role) === -1) {
       return false;
-    } else if (this.rolesPermissions.get(role) === 1) {
+    } else if (this.options.rolesPermissions.get(role) === 1) {
       return true;
     }
 
@@ -100,35 +74,41 @@ export default abstract class ACommand implements ICommand {
   // Return true if the global cooldown has finished
   private isGlobalCooldownFinished(): boolean {
     return (
-      this.globalCooldown === 0 ||
+      this.options.globalCooldown === 0 ||
       this.lastUsed === undefined ||
-      Date.now() - this.lastUsed > this.globalCooldown
+      Date.now() - this.lastUsed > this.options.globalCooldown
     );
   }
 
   // Return true if the user cooldown has finished
   private isUserCooldownFinished(userId: number): boolean {
     const lastUsed = this.userCooldowns.get(userId);
-    if (this.userCooldown === 0 || lastUsed === undefined) {
+    if (this.options.userCooldown === 0 || lastUsed === undefined) {
       return true;
     }
-    return Date.now() - lastUsed > this.userCooldown;
+    return Date.now() - lastUsed > this.options.userCooldown;
   }
 
   private canUseGlobal(): boolean {
-    return this.maxUseGlobal === -1 || this.globalUseCount < this.maxUseGlobal;
+    return (
+      this.options.maxUseGlobal === -1 ||
+      this.globalUseCount < this.options.maxUseGlobal
+    );
   }
 
   private canUseForUser(userId: number): boolean {
     const userUseCount = this.usersUseCount.get(userId) || 0;
-    return this.maxUsePerUser === -1 || userUseCount < this.maxUsePerUser;
+    return (
+      this.options.maxUsePerUser === -1 ||
+      userUseCount < this.options.maxUsePerUser
+    );
   }
 
   public canReplyToUser(msgId: string): boolean {
-    return this.replyToUser && msgId !== undefined;
+    return this.options.replyToUser && msgId !== undefined;
   }
 
   public getPrefix(): string {
-    return this.prefix;
+    return this.options.prefix;
   }
 }

@@ -2,33 +2,15 @@ import { reply, send } from "../app";
 import User from "../user/User";
 import { _ } from "../utils/ImportConstants";
 import ACommand from "./ACommand";
+import CommandOptions from "./CommandOptions";
+import { addPrefixToTriggers } from "../utils/CommandsUtils";
 
 export default class SimpleCommand extends ACommand {
   private response: string;
 
-  constructor(
-    triggers: Set<RegExp>,
-    response: string,
-    replyToUser: boolean,
-    globalCooldown: number,
-    userCooldown: number,
-    maxUseGlobal: number,
-    maxUsePerUser: number,
-    rolesPermissions: Map<symbol, number>,
-    usersPermissions: Map<number, number>,
-    prefix: string
-  ) {
-    super(
-      triggers,
-      replyToUser,
-      globalCooldown,
-      userCooldown,
-      maxUseGlobal,
-      maxUsePerUser,
-      rolesPermissions,
-      usersPermissions,
-      prefix
-    );
+  constructor(options: CommandOptions, response: string) {
+    options.triggers = addPrefixToTriggers(options.triggers, options.prefix);
+    super(options);
     this.response = response;
   }
 
@@ -40,7 +22,7 @@ export default class SimpleCommand extends ACommand {
     if (super.canReplyToUser(msgId)) {
       reply(this.response, msgId);
     } else {
-      send(this.response);
+      send(`@${user.username} ${this.response}`);
     }
 
     if (!ignoreCooldowns) {

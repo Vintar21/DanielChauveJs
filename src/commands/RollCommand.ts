@@ -1,32 +1,24 @@
 import { reply, send } from "../app";
 import { _ } from "../utils/ImportConstants";
 import ACommand from "./ACommand";
-import { DefaultCommand, addPrefixToTriggers } from "../utils/CommandsUtils";
+import { addPrefixToTriggers } from "../utils/CommandsUtils";
 import User from "../user/User";
-
-const maxUsePerUser: number = 1;
+import CommandOptions from "./CommandOptions";
 
 // The famous
 export default class RollCommand extends ACommand {
   private static RANGE_MAX: number = 1000;
 
-  constructor() {
-    const triggers: Set<RegExp> = addPrefixToTriggers(
-      new Set<RegExp>([/roll/i]),
-      DefaultCommand.prefix
-    );
+  private static instance: RollCommand = new RollCommand();
 
-    super(
-      triggers,
-      DefaultCommand.replyToUser,
-      DefaultCommand.globalCooldown,
-      DefaultCommand.userCooldown,
-      DefaultCommand.maxUseGlobal,
-      maxUsePerUser,
-      DefaultCommand.rolesPermissions,
-      DefaultCommand.usersPermissions,
-      DefaultCommand.prefix
-    );
+  constructor() {
+    const options: CommandOptions = new CommandOptions().setMaxUsePerUser(1);
+    options.triggers = addPrefixToTriggers([/roll/i], options.prefix);
+    super(options);
+  }
+
+  public static getInstance(): RollCommand {
+    return RollCommand.instance;
   }
 
   private roll(): number {
