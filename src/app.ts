@@ -1,7 +1,10 @@
-import Command from "./commands/SimpleCommand";
-import CommandBuilder from "./commands/builders/SimpleCommandBuilder";
+import SimpleCommand from "./commands/SimpleCommand";
+import RollCommand from "./commands/RollCommand";
+import ICommand from "./commands/ICommand";
+import SimpleCommandBuilder from "./commands/builders/SimpleCommandBuilder";
 import { getGreaterRole, Roles } from "./utils/RoleUtils";
 import { SPACE } from "./utils/StringConstants";
+import User from "./user/User";
 import {
   tmi,
   channel,
@@ -18,9 +21,9 @@ export function reply(message: string, msgId: string) {
   client.reply(channel, message, msgId);
 }
 
-var commands = new Array<Command>();
-const commandBuilder: CommandBuilder = new CommandBuilder();
-const helloCommand: Command = commandBuilder
+var commands = new Array<ICommand>();
+const simpleCommandBuilder: SimpleCommandBuilder = new SimpleCommandBuilder();
+const helloCommand: SimpleCommand = simpleCommandBuilder
   .addTriggers([/s+a*l+u*t+/i, /bo*n*jo*u*r+/i, /yo+/i, /we*sh/i])
   .setResponse("Salut BG!")
   .canReplyToUser()
@@ -28,8 +31,12 @@ const helloCommand: Command = commandBuilder
   .setByPassRole(Roles.BROADCASTER)
   .setUnallowedRole(Roles.NO_ROLE)
   .build();
+
+const rollCommand: RollCommand = new RollCommand();
+
 // Order matters !!
 commands.push(helloCommand);
+commands.push(rollCommand);
 
 var client = new tmi.client(options);
 client.connect();
@@ -42,6 +49,8 @@ client.on(
     const msgId: string = userstate.id;
     const channelId: number = userstate["room-id"];
 
+    const user = new User(username, userId);
+
     //username = "Moobot";
     //userId = 1564983;
 
@@ -51,10 +60,10 @@ client.on(
       return command.match(parts[0]);
     });
     triggeredCommand
-      ?.canExecute(userId, getGreaterRole(userstate))
+      ?.canExecute(user, getGreaterRole(userstate))
       .then((canExecute) => {
         if (canExecute) {
-          triggeredCommand.execute(userId, msgId);
+          triggeredCommand.execute(user, msgId);
         }
       });
   }

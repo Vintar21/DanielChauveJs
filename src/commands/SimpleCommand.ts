@@ -1,7 +1,9 @@
 import { reply, send } from "../app";
+import User from "../user/User";
 import { _ } from "../utils/ImportConstants";
 import ACommand from "./ACommand";
-export default class Command extends ACommand {
+
+export default class SimpleCommand extends ACommand {
   private response: string;
 
   constructor(
@@ -31,7 +33,7 @@ export default class Command extends ACommand {
   }
 
   public execute(
-    userId: number = undefined,
+    user: User = undefined,
     msgId: string = undefined,
     ignoreCooldowns: boolean = false
   ): void {
@@ -42,7 +44,7 @@ export default class Command extends ACommand {
     }
 
     if (!ignoreCooldowns) {
-      super.updateCooldowns(userId);
+      super.updateCooldowns(user.userId);
     }
   }
 }

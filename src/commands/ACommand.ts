@@ -1,7 +1,9 @@
+import User from "../user/User";
 import { _ } from "../utils/ImportConstants";
 import ICommand from "./ICommand";
 
 export default abstract class ACommand implements ICommand {
+  // TODO: Create a commandOptions object
   protected prefix: string;
 
   protected triggers: Array<RegExp>;
@@ -46,7 +48,7 @@ export default abstract class ACommand implements ICommand {
   }
 
   public abstract execute(
-    userId: number,
+    user: User,
     msgId: string,
     ignoreCooldowns: boolean
   ): void;
@@ -59,14 +61,14 @@ export default abstract class ACommand implements ICommand {
   }
 
   public async canExecute(
-    userId: number,
+    user: User,
     promisedRole: Promise<symbol>
   ): Promise<boolean> {
     const role = await promisedRole;
     // Specific user permissions
-    if (this.usersPermissions.get(userId) === -1) {
+    if (this.usersPermissions.get(user.userId) === -1) {
       return false;
-    } else if (this.usersPermissions.get(userId) === 1) {
+    } else if (this.usersPermissions.get(user.userId) === 1) {
       return true;
     }
 
@@ -79,9 +81,9 @@ export default abstract class ACommand implements ICommand {
 
     return (
       this.canUseGlobal() &&
-      this.canUseForUser(userId) &&
+      this.canUseForUser(user.userId) &&
       this.isGlobalCooldownFinished() &&
-      this.isUserCooldownFinished(userId)
+      this.isUserCooldownFinished(user.userId)
     );
   }
 
