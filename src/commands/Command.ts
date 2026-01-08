@@ -1,11 +1,11 @@
 import { reply, send } from "../app";
-import { Roles } from "../utils/RoleUtils";
+import { _ } from "../utils/ImportConstants";
 
 // TODO: Make an interface, in the future we want each command to have her own class ?
 export default class Command {
   public prefix: string;
 
-  private triggers: Set<string>;
+  private triggers: Array<RegExp>;
   private response: string;
   private replyToUser: boolean;
 
@@ -26,7 +26,7 @@ export default class Command {
   private usersPermissions: Map<number, number> = new Map();
 
   constructor(
-    triggers: Set<string>,
+    triggers: Set<RegExp>,
     response: string,
     replyToUser: boolean,
     globalCooldown: number,
@@ -37,7 +37,7 @@ export default class Command {
     usersPermissions: Map<number, number>,
     prefix: string
   ) {
-    this.triggers = triggers;
+    this.triggers = Array.from(triggers);
     this.response = response;
     this.replyToUser = replyToUser;
     this.globalCooldown = globalCooldown;
@@ -45,6 +45,7 @@ export default class Command {
     this.maxUseGlobal = maxUseGlobal;
     this.maxUsePerUser = maxUsePerUser;
     this.rolesPermissions = rolesPermissions;
+    this.usersPermissions = usersPermissions;
     this.prefix = prefix;
   }
 
@@ -64,9 +65,11 @@ export default class Command {
     }
   }
 
-  // TODO: use regex
   public match(input: string): boolean {
-    return this.triggers.has(input.toLowerCase());
+    return (
+      _.find(this.triggers, (trigger: RegExp) => trigger.test(input)) !==
+      undefined
+    );
   }
 
   public async canExecute(

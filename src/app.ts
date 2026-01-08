@@ -1,28 +1,14 @@
-const optionJson = require("../package.json");
-const username = optionJson.username;
-const password = optionJson.password;
-const channels = optionJson.channels;
-const channel = channels[0];
-
-var tmi = require("tmi.js");
-
 import Command from "./commands/Command";
 import CommandBuilder from "./commands/CommandBuilder";
-import { getGreaterRole, isFollower, Roles } from "./utils/RoleUtils";
-
-var options = {
-  options: {
-    debug: true,
-  },
-  connection: {
-    reconnect: true,
-  },
-  identity: {
-    username,
-    password,
-  },
-  channels,
-};
+import { getGreaterRole, Roles } from "./utils/RoleUtils";
+import { SPACE } from "./utils/Constants";
+import {
+  tmi,
+  channel,
+  options,
+  username,
+  password,
+} from "./utils/ImportConstants";
 
 export function send(message: string) {
   client.say(channel, message);
@@ -35,10 +21,11 @@ export function reply(message: string, msgId: string) {
 var commands = new Array<Command>();
 const commandBuilder: CommandBuilder = new CommandBuilder();
 const helloCommand: Command = commandBuilder
-  .addTriggers(["salut", "BoNjoUr", "yo", "wesh", "slt", "bjr"])
+  .addTriggers([/s+a*l+u*t+/i, /bo*n*jo*u*r+/i, /yo+/i, /we*sh/i])
   .setResponse("Salut BG!")
   .canReplyToUser()
   .setMaxUsePerUser(1)
+  .setByPassRole(Roles.BROADCASTER)
   .setUnallowedRole(Roles.NO_ROLE)
   .build();
 // Order matters !!
@@ -59,8 +46,10 @@ client.on(
     //userId = 1564983;
 
     // TODO: more complex commands
-    var parts = message.toLowerCase().split(" ");
-    var triggeredCommand = commands.find((command) => command.match(parts[0]));
+    var parts = message.toLowerCase().split(SPACE);
+    var triggeredCommand = commands.find((command) => {
+      return command.match(parts[0]);
+    });
     triggeredCommand
       ?.canExecute(userId, getGreaterRole(userstate))
       .then((canExecute) => {

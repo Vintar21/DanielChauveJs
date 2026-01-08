@@ -1,10 +1,11 @@
 import Command from "./Command";
 import { commandPrefix } from "./CommandsConstants";
 import { Roles } from "../utils/RoleUtils";
+import { _ } from "../utils/ImportConstants";
 
 // Builder for simple commands giving a single response
 export default class CommandBuilder {
-  private triggers: Set<string> = new Set();
+  private triggers: Set<RegExp> = new Set();
   private response: string = "";
   private replyToUser: boolean = true;
 
@@ -33,11 +34,13 @@ export default class CommandBuilder {
   constructor() {}
 
   public build(): Command {
-    const triggersWithPrefix: Set<string> = new Set(
-      [...this.triggers].map((t) => this.prefix + t)
-    );
+    const res: Set<RegExp> = new Set();
+    this.triggers.forEach((trigger) => {
+      res.add(new RegExp(this.prefix + trigger.source, trigger.flags));
+    });
+
     return new Command(
-      triggersWithPrefix,
+      res,
       this.response,
       this.replyToUser,
       this.globalCooldown,
@@ -51,12 +54,12 @@ export default class CommandBuilder {
   }
 
   // Getters and setters
-  public addTrigger(trigger: string): CommandBuilder {
-    this.triggers.add(trigger.toLowerCase());
+  public addTrigger(trigger: RegExp): CommandBuilder {
+    this.triggers.add(trigger);
     return this;
   }
 
-  public addTriggers(triggers: string[]): CommandBuilder {
+  public addTriggers(triggers: RegExp[]): CommandBuilder {
     triggers.forEach((trigger) => this.addTrigger(trigger));
     return this;
   }

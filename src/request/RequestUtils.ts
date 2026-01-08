@@ -1,4 +1,3 @@
-const https = require("https");
 const optionJson = require("../../package.json");
 const token = optionJson.password.split(":")[1];
 const clientId = optionJson["client-id"];
