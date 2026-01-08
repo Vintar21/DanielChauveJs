@@ -8,6 +8,6 @@
     "resolveJsonModule": true,
     "sourceMap": true
   },
-  "include": ["*.ts", "src/app.ts", "src/commands/Command.ts"],
+  "include": ["*.ts", "src/app.ts"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

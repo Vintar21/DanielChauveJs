@@ -1,33 +1,30 @@
-import { reply, send } from "../app";
 import { _ } from "../utils/ImportConstants";
+import ICommand from "./ICommand";
 
-// TODO: Make an interface, in the future we want each command to have her own class ?
-export default class Command {
-  public prefix: string;
+export default abstract class ACommand implements ICommand {
+  protected prefix: string;
 
-  private triggers: Array<RegExp>;
-  private response: string;
-  private replyToUser: boolean;
+  protected triggers: Array<RegExp>;
+  protected replyToUser: boolean;
 
-  private globalCooldown: number; // In miliseconds
-  private userCooldown: number; // In miliseconds
+  protected globalCooldown: number; // In miliseconds
+  protected userCooldown: number; // In miliseconds
 
-  private maxUseGlobal: number; // -1 = unlimited
-  private maxUsePerUser: number; // -1 = unlimited
+  protected maxUseGlobal: number; // -1 = unlimited
+  protected maxUsePerUser: number; // -1 = unlimited
 
-  private userCooldowns: Map<number, number> = new Map();
-  private lastUsed: number = undefined;
+  protected userCooldowns: Map<number, number> = new Map();
+  protected lastUsed: number = 0;
 
-  private usersUseCount: Map<number, number> = new Map();
-  private globalUseCount: number = 0;
+  protected usersUseCount: Map<number, number> = new Map();
+  protected globalUseCount: number = 0;
 
   // -1 = not allowed, 0 = allowed, 1 = bypass
-  private rolesPermissions: Map<symbol, number>;
-  private usersPermissions: Map<number, number> = new Map();
+  protected rolesPermissions: Map<symbol, number>;
+  protected usersPermissions: Map<number, number> = new Map();
 
   constructor(
     triggers: Set<RegExp>,
-    response: string,
     replyToUser: boolean,
     globalCooldown: number,
     userCooldown: number,
@@ -38,7 +35,6 @@ export default class Command {
     prefix: string
   ) {
     this.triggers = Array.from(triggers);
-    this.response = response;
     this.replyToUser = replyToUser;
     this.globalCooldown = globalCooldown;
     this.userCooldown = userCooldown;
@@ -49,21 +45,11 @@ export default class Command {
     this.prefix = prefix;
   }
 
-  public execute(
-    userId: number = undefined,
-    msgId: string = undefined,
-    ignoreCooldowns: boolean = false
-  ): void {
-    if (this.canReplyToUser(msgId)) {
-      reply(this.response, msgId);
-    } else {
-      send(this.response);
-    }
-
-    if (!ignoreCooldowns) {
-      this.updateCooldowns(userId);
-    }
-  }
+  public abstract execute(
+    userId: number,
+    msgId: string,
+    ignoreCooldowns: boolean
+  ): void;
 
   public match(input: string): boolean {
     return (
@@ -99,7 +85,7 @@ export default class Command {
     );
   }
 
-  private updateCooldowns(userId: number): void {
+  protected updateCooldowns(userId: number): void {
     this.globalUseCount += 1;
     this.lastUsed = Date.now();
     if (userId !== undefined) {
@@ -138,5 +124,9 @@ export default class Command {
 
   public canReplyToUser(msgId: string): boolean {
     return this.replyToUser && msgId !== undefined;
+  }
+
+  public getPrefix(): string {
+    return this.prefix;
   }
 }

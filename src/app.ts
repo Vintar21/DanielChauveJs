@@ -1,7 +1,7 @@
-import Command from "./commands/Command";
-import CommandBuilder from "./commands/CommandBuilder";
+import Command from "./commands/SimpleCommand";
+import CommandBuilder from "./commands/builders/SimpleCommandBuilder";
 import { getGreaterRole, Roles } from "./utils/RoleUtils";
-import { SPACE } from "./utils/Constants";
+import { SPACE } from "./utils/StringConstants";
 import {
   tmi,
   channel,

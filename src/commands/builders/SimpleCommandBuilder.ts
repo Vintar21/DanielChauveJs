@@ -1,7 +1,7 @@
-import Command from "./Command";
-import { commandPrefix } from "./CommandsConstants";
-import { Roles } from "../utils/RoleUtils";
-import { _ } from "../utils/ImportConstants";
+import Command from "../SimpleCommand";
+import { commandPrefix } from "../../utils/CommandsConstants";
+import { Roles } from "../../utils/RoleUtils";
+import { _ } from "../../utils/ImportConstants";
 
 // Builder for simple commands giving a single response
 export default class CommandBuilder {
