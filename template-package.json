@@ -14,10 +14,13 @@
   "client-id": "Your Twitch Client ID",
   "password": "Your OAuth token",
   "channels": ["The channel to join"],
-
+  "obs-websocket-address": "XXX.XXX.XXX.XXX",
+  "obs-websocket-port": 1234,
+  "obs-websocket-password": "Your websocket password",
   "dependencies": {
     "es6-promise": "^4.2.8",
     "lodash": "^4.17.21",
+    "obs-websocket-js": "^5.0.7",
     "tmi.js": "^1.9.0-pre.1"
   },
   "devDependencies": {
