@@ -7,6 +7,7 @@ import {
 } from "../utils/ImportConstants";
 import ACommand from "./ACommand";
 import { addPrefixToTriggers } from "../utils/CommandsUtils";
+import { EMPTY, SPACE } from "../utils/StringConstants";
 import User from "../user/User";
 import CommandOptions from "./CommandOptions";
 import OBSWebSocket from "obs-websocket-js";
@@ -88,19 +89,48 @@ export default class RollCommand extends ACommand {
       queryAgregator = await promises.query(
         `INSERT INTO rolls (userId, score, dateRoll) VALUES (${userId}, ${value}, GETDATE());`
       );
-      console.log("Roll added: " + _.toString(queryAgregator["rowsAffected"]));
-      await con.promises.close();
+      console.log("Roll added: " + queryAgregator["counts"]);
     } catch (err) {
       console.log("SQL ERROR: " + err.message);
     }
   }
 
+  private async getCustomMessage(value: number): Promise<String> {
+    try {
+      console.log("Connection custom message opened");
+      const con = await this.connection;
+      const promises: ConnectionPromises = con.promises;
+      var queryAgregator;
+      queryAgregator = await promises.query(
+        `SELECT roll_message, proba FROM rolls_messages WHERE result=${value}`
+      );
+      const res = queryAgregator["first"];
+      if (res.length === 0 || res === null || res === undefined) {
+        return EMPTY;
+      }
+
+      var availableMessages: String[] = [];
+      // TODO create interface for sql datas
+      res.forEach((row: any) => {
+        for (let i = 0; i < row.proba; i++) {
+          availableMessages.push(row.roll_message);
+        }
+      });
+      console.log(availableMessages);
+      const ind: number = Math.floor(Math.random() * availableMessages.length);
+      return SPACE + availableMessages[ind];
+    } catch (err) {
+      console.log("SQL ERROR: " + err.message);
+      return EMPTY;
+    }
+  }
+
   // TODO: MessaageUtils avec les parties de message
-  public execute(
+  public async execute(
     user: User,
     msgId: string,
     ignoreCooldowns: boolean = false
-  ): void {
+  ): Promise<void> {
     var value: number = this.roll();
     var response: string = `${user.username} lance son dé et fait... ${value} !`;
     this.insertValue(user.userId.toString(), user.username, value);
@@ -124,8 +154,12 @@ export default class RollCommand extends ACommand {
         // MVP is another user
         response += ` Et iel vole le MVP en égalisant @${this.currentMVP.user.username}!!!`;
       }
+      //TODO: nombre de follower
       this.updateMvp(user, value);
     }
+
+    const customMessage = await this.getCustomMessage(value);
+    response += customMessage;
 
     if (super.canReplyToUser(msgId)) {
       reply(response, msgId);
