@@ -1,41 +1,27 @@
 import { reply, send } from "../app";
-import {
-  _,
-  obsWebSocketUrl,
-  obsWebSocketPassword,
-  sqlConnectionString,
-} from "../utils/ImportConstants";
+import { _ } from "../utils/ImportConstants";
 import ACommand from "./ACommand";
 import { addPrefixToTriggers } from "../utils/CommandsUtils";
 import { EMPTY, SPACE } from "../utils/StringConstants";
 import User from "../user/User";
 import CommandOptions from "./CommandOptions";
-import OBSWebSocket from "obs-websocket-js";
-
-import sql from "msnodesqlv8";
-import Connection = MsNodeSqlV8.Connection;
-import ConnectionPromises = MsNodeSqlV8.ConnectionPromises;
+import ObsManager from "../obs/ObsManager";
+import SqlManager from "../database/SqlManager";
 
 // The famous
 export default class RollCommand extends ACommand {
   private static RANGE_MAX: number = 1000;
 
-  private connection: Promise<Connection> =
-    sql.promises.open(sqlConnectionString);
-
-  private static instance: RollCommand = new RollCommand();
-
   private currentMVP = { user: undefined, score: 0 };
 
-  //TODO: probablement à déplacer autre part
-  private obs: OBSWebSocket = new OBSWebSocket();
+  private static instance: RollCommand = new RollCommand();
 
   constructor() {
     const options: CommandOptions = new CommandOptions().setMaxUsePerUser(1);
     options.triggers = addPrefixToTriggers([/roll/i], options.prefix);
     super(options);
     // TODO: create another command to reset MVP + reset when stream starts
-    this.updateObsMvpSource("!roll pour devenir MVP");
+    ObsManager.resetObsMvpSource();
   }
 
   public static getInstance(): RollCommand {
@@ -46,25 +32,9 @@ export default class RollCommand extends ACommand {
     return Math.floor(Math.random() * (RollCommand.RANGE_MAX - 1)) + 1;
   }
 
-  private updateObsMvpSource(text: string): void {
-    try {
-      this.obs.connect(obsWebSocketUrl, obsWebSocketPassword).then(() =>
-        this.obs.call("SetInputSettings", {
-          inputName: "MVP",
-          inputSettings: {
-            text,
-          },
-        })
-      );
-    } catch (e) {
-      console.log("MVP OBS source couldn't be updated");
-      console.log(e);
-    }
-  }
-
   private updateMvp(user: User, value: number): void {
     // On OBS
-    this.updateObsMvpSource(`MVP : ${user.username} - ${value}`);
+    ObsManager.updateObsMvpSource(user.username, value);
 
     // Update currentMVP
     this.currentMVP = { user: user, score: value };
@@ -74,67 +44,28 @@ export default class RollCommand extends ACommand {
     userId: string,
     username: string,
     value: number
-  ): Promise<any> {
-    try {
-      console.log("Connection opened");
-      const con = await this.connection;
-      const promises: ConnectionPromises = con.promises;
-      var queryAgregator;
-      queryAgregator = await promises.query(
-        `SELECT id FROM users WHERE id=${userId}`
-      );
-      const isKnownUser = queryAgregator["first"].length > 0;
-      // If it's a new user, register it
-      if (!isKnownUser) {
-        console.log("New user detected: " + username);
-        const insertUserQuery = `INSERT INTO users (id, username) VALUES (${userId}, '${username}');`;
-        queryAgregator = await promises.query(insertUserQuery);
-      }
-
-      queryAgregator = await promises.query(
-        `INSERT INTO rolls (userId, score, dateRoll) VALUES (${userId}, ${value}, GETDATE());`
-      );
-      console.log("Roll added: " + queryAgregator["counts"]);
-    } catch (err) {
-      console.log("SQL ERROR: " + err.message);
-    }
+  ): Promise<void> {
+    // Check if it's a new user
+    const isInserted = await SqlManager.insertNewUserQuery(userId, username);
+    // Insert roll value
+    await SqlManager.insertRollValueQuery(userId, value);
   }
 
   private async getCustomMessage(value: number): Promise<String> {
-    try {
-      console.log("Connection custom message opened");
-      const con = await this.connection;
-      const promises: ConnectionPromises = con.promises;
-      var queryAgregator;
-      queryAgregator = await promises.query(
-        `SELECT roll_message, proba FROM rolls_messages WHERE result=${value}`
-      );
-      const res = queryAgregator["first"];
-      if (
-        res === undefined ||
-        res.length === 0 ||
-        res[0].roll_message === null
-      ) {
-        return EMPTY;
-      }
+    const availableMessages: String[] = await SqlManager.getCustomMessagesQuery(
+      value
+    );
 
-      var availableMessages: String[] = [];
-      // TODO create interface for sql datas
-      res.forEach((row: any) => {
-        for (let i = 0; i < row.proba; i++) {
-          availableMessages.push(row.roll_message);
-        }
-      });
-      console.log(availableMessages);
-      const ind: number = Math.floor(Math.random() * availableMessages.length);
-      return SPACE + availableMessages[ind];
-    } catch (err) {
-      console.log("SQL ERROR: " + err.message);
+    if (availableMessages.length === 0) {
+      console.log(`No custom message for ${value}`);
       return EMPTY;
     }
+    console.log("Available messages: " + availableMessages);
+    const ind: number = Math.floor(Math.random() * availableMessages.length);
+    return SPACE + availableMessages[ind];
   }
 
-  // TODO: MessaageUtils avec les parties de message
+  // TODO: MesssageUtils avec les parties de message
   public async execute(
     user: User,
     msgId: string,
