@@ -34,6 +34,7 @@ export default class RollCommand extends ACommand {
     const options: CommandOptions = new CommandOptions().setMaxUsePerUser(1);
     options.triggers = addPrefixToTriggers([/roll/i], options.prefix);
     super(options);
+    this.updateObsMvpSource("!roll pour devenir MVP");
   }
 
   public static getInstance(): RollCommand {
@@ -44,22 +45,26 @@ export default class RollCommand extends ACommand {
     return Math.floor(Math.random() * (RollCommand.RANGE_MAX - 1)) + 1;
   }
 
-  // TODO "!roll pour devenir MVP" on init
-  private updateMvp(user: User, value: number): void {
-    // On OBS
+  private updateObsMvpSource(text: string): void {
     try {
       this.obs.connect(obsWebSocketUrl, obsWebSocketPassword).then(() =>
         this.obs.call("SetInputSettings", {
           inputName: "MVP",
           inputSettings: {
-            text: `MVP : ${user.username} - ${value}`,
+            text,
           },
         })
       );
     } catch (e) {
-      console.log("MVP obs source couldn't be updated");
+      console.log("MVP OBS source couldn't be updated");
       console.log(e);
     }
+  }
+
+  // TODO "!roll pour devenir MVP" on init
+  private updateMvp(user: User, value: number): void {
+    // On OBS
+    this.updateObsMvpSource(`MVP : ${user.username} - ${value}`);
 
     // Update currentMVP
     this.currentMVP = { user: user, score: value };
@@ -105,7 +110,11 @@ export default class RollCommand extends ACommand {
         `SELECT roll_message, proba FROM rolls_messages WHERE result=${value}`
       );
       const res = queryAgregator["first"];
-      if (res.length === 0 || res === null || res === undefined) {
+      if (
+        res === undefined ||
+        res.length === 0 ||
+        res[0].roll_message === null
+      ) {
         return EMPTY;
       }
 
