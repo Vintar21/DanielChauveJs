@@ -7,10 +7,11 @@ export const username = optionJson.username;
 export const password = optionJson.password;
 const channels = optionJson.channels;
 export const channel = channels[0];
-const obsWebSocketAddress = optionJson["obs-websocket-address"];
-const obsWebSocketPort = optionJson["obs-websocket-port"];
-export const obsWebSocketUrl = `ws://${obsWebSocketAddress}:${obsWebSocketPort}`;
-export const obsWebSocketPassword = optionJson["obs-websocket-password"];
+const obsWebSocket = optionJson["obs-websocket"];
+export const obsWebSocketUrl = `ws://${obsWebSocket.address}:${obsWebSocket.port}`;
+export const obsWebSocketPassword = obsWebSocket.password;
+const sqlServer = optionJson["sql-server"];
+export const sqlConnectionString = `Driver={ODBC Driver 18 for SQL Server}; Server=${sqlServer.server}; Database=${sqlServer.database};Trusted_Connection=yes;TrustServerCertificate=yes;`;
 
 export const options = {
   options: {

@@ -3,6 +3,7 @@ import {
   _,
   obsWebSocketUrl,
   obsWebSocketPassword,
+  sqlConnectionString,
 } from "../utils/ImportConstants";
 import ACommand from "./ACommand";
 import { addPrefixToTriggers } from "../utils/CommandsUtils";
@@ -10,9 +11,16 @@ import User from "../user/User";
 import CommandOptions from "./CommandOptions";
 import OBSWebSocket from "obs-websocket-js";
 
+import sql from "msnodesqlv8";
+import Connection = MsNodeSqlV8.Connection;
+import ConnectionPromises = MsNodeSqlV8.ConnectionPromises;
+
 // The famous
 export default class RollCommand extends ACommand {
   private static RANGE_MAX: number = 1000;
+
+  private connection: Promise<Connection> =
+    sql.promises.open(sqlConnectionString);
 
   private static instance: RollCommand = new RollCommand();
 
@@ -56,6 +64,38 @@ export default class RollCommand extends ACommand {
     this.currentMVP = { user: user, score: value };
   }
 
+  private async insertValue(
+    userId: string,
+    username: string,
+    value: number
+  ): Promise<any> {
+    try {
+      console.log("Connection opened");
+      const con = await this.connection;
+      const promises: ConnectionPromises = con.promises;
+      var queryAgregator;
+      queryAgregator = await promises.query(
+        `SELECT id FROM users WHERE id=${userId}`
+      );
+      const isKnownUser = queryAgregator["first"].length > 0;
+      // If it's a new user, register it
+      if (!isKnownUser) {
+        console.log("New user detected: " + username);
+        const insertUserQuery = `INSERT INTO users (id, username) VALUES (${userId}, '${username}');`;
+        queryAgregator = await promises.query(insertUserQuery);
+      }
+
+      queryAgregator = await promises.query(
+        `INSERT INTO rolls (userId, score, dateRoll) VALUES (${userId}, ${value}, GETDATE());`
+      );
+      console.log("Roll added: " + _.toString(queryAgregator["rowsAffected"]));
+      await con.promises.close();
+    } catch (err) {
+      console.log("SQL ERROR: " + err.message);
+    }
+  }
+
+  // TODO: MessaageUtils avec les parties de message
   public execute(
     user: User,
     msgId: string,
@@ -63,7 +103,7 @@ export default class RollCommand extends ACommand {
   ): void {
     var value: number = this.roll();
     var response: string = `${user.username} lance son dé et fait... ${value} !`;
-
+    this.insertValue(user.userId.toString(), user.username, value);
     if (value > this.currentMVP.score) {
       if (this.currentMVP.user === undefined) {
         // No current MVP
