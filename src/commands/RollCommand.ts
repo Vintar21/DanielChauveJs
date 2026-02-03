@@ -34,6 +34,7 @@ export default class RollCommand extends ACommand {
     const options: CommandOptions = new CommandOptions().setMaxUsePerUser(1);
     options.triggers = addPrefixToTriggers([/roll/i], options.prefix);
     super(options);
+    // TODO: create another command to reset MVP + reset when stream starts
     this.updateObsMvpSource("!roll pour devenir MVP");
   }
 
@@ -61,7 +62,6 @@ export default class RollCommand extends ACommand {
     }
   }
 
-  // TODO "!roll pour devenir MVP" on init
   private updateMvp(user: User, value: number): void {
     // On OBS
     this.updateObsMvpSource(`MVP : ${user.username} - ${value}`);
