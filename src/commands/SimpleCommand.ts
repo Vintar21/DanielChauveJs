@@ -1,9 +1,9 @@
+import { MessageEvent } from "@twurple/easy-bot/lib";
 import { reply, send } from "../app";
 import User from "../user/User";
-import { _ } from "../utils/ImportConstants";
+import { addPrefixToTriggers } from "../utils/CommandsUtils";
 import ACommand from "./ACommand";
 import CommandOptions from "./CommandOptions";
-import { addPrefixToTriggers } from "../utils/CommandsUtils";
 
 export default class SimpleCommand extends ACommand {
   private response: string;
@@ -16,11 +16,11 @@ export default class SimpleCommand extends ACommand {
 
   public execute(
     user: User = undefined,
-    msgId: string = undefined,
-    ignoreCooldowns: boolean = false
+    event: MessageEvent,
+    ignoreCooldowns: boolean = false,
   ): void {
-    if (super.canReplyToUser(msgId)) {
-      reply(this.response, msgId);
+    if (super.canReplyToUser(event)) {
+      reply(this.response, event);
     } else {
       send(`@${user.username} ${this.response}`);
     }

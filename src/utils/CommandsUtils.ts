@@ -1,9 +1,9 @@
 export const commandPrefix = "!";
-export const NO_MSG = "NO_MSG";
+export const NO_MSG = undefined;
 
 export function addPrefixToTriggers(
   triggers: Array<RegExp>,
-  prefix: string
+  prefix: string,
 ): Array<RegExp> {
   const prefixedTriggers: Array<RegExp> = [];
   triggers.forEach((trigger) => {

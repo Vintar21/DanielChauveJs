@@ -1,8 +1,8 @@
 import sql from "msnodesqlv8";
+import { QueryAggregatorResults } from "msnodesqlv8/types";
+import { sqlConnectionString } from "../utils/ImportConstants";
 import Connection = MsNodeSqlV8.Connection;
 import ConnectionPromises = MsNodeSqlV8.ConnectionPromises;
-import { _, sqlConnectionString } from "../utils/ImportConstants";
-import { QueryAggregatorResults } from "msnodesqlv8/types";
 
 export default class SqlManager {
   private static connection: Promise<Connection> =
@@ -11,10 +11,10 @@ export default class SqlManager {
   // Return true if a new user was inserted
   public static async insertNewUserQuery(
     userId: string,
-    username: string
+    username: string,
   ): Promise<boolean> {
     const queryAgregator = await SqlManager.executeQuery(
-      `IF NOT EXISTS(SELECT id FROM users WHERE id=${userId}) BEGIN INSERT INTO users (id, username) VALUES (${userId}, '${username}') END;`
+      `IF NOT EXISTS(SELECT id FROM users WHERE id=${userId}) BEGIN INSERT INTO users (id, username) VALUES (${userId}, '${username}') END;`,
     );
     const inserted: boolean =
       queryAgregator["first"] !== null && queryAgregator["first"].length > 0;
@@ -26,10 +26,10 @@ export default class SqlManager {
 
   public static async insertRollValueQuery(
     userId: string,
-    value: number
+    value: number,
   ): Promise<QueryAggregatorResults> {
     const queryAgregator = await SqlManager.executeQuery(
-      `INSERT INTO rolls (userId, score, dateRoll) VALUES (${userId}, ${value}, GETDATE());`
+      `INSERT INTO rolls (userId, score, dateRoll) VALUES (${userId}, ${value}, GETDATE());`,
     );
     console.log(`Roll added: ${userId} - ${value}`);
     return queryAgregator;
@@ -37,7 +37,7 @@ export default class SqlManager {
 
   public static async getCustomMessagesQuery(value: number): Promise<String[]> {
     const queryAgregator = await SqlManager.executeQuery(
-      `SELECT roll_message, proba FROM rolls_messages WHERE result=${value}`
+      `SELECT roll_message, proba FROM rolls_messages WHERE result=${value}`,
     );
     const customMessages = queryAgregator["first"];
     // No custrom message
@@ -61,7 +61,7 @@ export default class SqlManager {
   }
 
   private static async executeQuery(
-    query: string
+    query: string,
   ): Promise<QueryAggregatorResults> {
     try {
       const connection: Connection = await SqlManager.connection;

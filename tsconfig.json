@@ -1,7 +1,7 @@
 {
   
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2022",
     "module": "commonjs",
     "esModuleInterop": true,
     "outDir": "./dist/",

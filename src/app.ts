@@ -1,20 +1,22 @@
-import SimpleCommand from "./commands/SimpleCommand";
-import RollCommand from "./commands/RollCommand";
+import { StaticAuthProvider } from "@twurple/auth";
+import { Bot } from "@twurple/easy-bot";
+import { MessageEvent } from "@twurple/easy-bot/lib";
+import ChannelPointsListener from "./channel-points-rewards/ChannelPointsListener";
+import CommandOptions from "./commands/CommandOptions";
 import ICommand from "./commands/ICommand";
+import RollCommand from "./commands/RollCommand";
+import SimpleCommand from "./commands/SimpleCommand";
+import User from "./user/User";
+import { accessToken, channel, clientId } from "./utils/ImportConstants.js";
 import { getGreaterRole, Roles } from "./utils/RoleUtils";
 import { SPACE } from "./utils/StringConstants";
-import User from "./user/User";
-import { tmi, channel, options } from "./utils/ImportConstants";
-import CommandOptions from "./commands/CommandOptions";
-import { REROLL_REWARD_ID } from "./utils/TwitchRewardIdUtils";
 
-export function send(message: string) {
-  client.say(channel, message);
-}
-
-export function reply(message: string, msgId: string) {
-  client.reply(channel, message, msgId);
-}
+const authProvider: StaticAuthProvider = new StaticAuthProvider(
+  clientId,
+  accessToken,
+);
+const bot: Bot = new Bot({ authProvider, channels: [channel] });
+const promisedBroadcaster = bot.api.users.getUserByName(channel);
 
 var commands = new Array<ICommand>();
 const helloOptions: CommandOptions = new CommandOptions()
@@ -31,94 +33,48 @@ const helloOptions: CommandOptions = new CommandOptions()
   .setUnallowedRole(Roles.NO_ROLE);
 const helloCommand: SimpleCommand = new SimpleCommand(
   helloOptions,
-  "Salut le sang de la veine de l'artère aorte !"
+  "Salut le sang de la veine de l'artère aorte !",
 );
 
 // Order matters !!
 commands.push(helloCommand);
 commands.push(RollCommand.getInstance());
 
-var client = new tmi.client(options);
-client.connect();
+bot.onMessage((event) => {
+  const message: string = event.text;
+  const username: string = event.userName;
+  // Do we really need it to be a number ?
+  const userId: number = parseInt(event.userId);
 
-client.on(
-  "chat",
-  function (channel: any, userstate: any, message: any, self: any) {
-    var username: string = userstate.username;
-    var userId: number = userstate["user-id"];
-    const msgId: string = userstate.id;
-    const channelId: number = userstate["room-id"];
+  console.log(`Message received from [${userId}] ${username}: ${message}`);
+  const user = new User(username, userId);
 
-    const user = new User(username, userId);
-
-    //username = "Moobot";
-    //userId = 1564983;
-    // TODO: more complex commands
-    var parts = message.toLowerCase().split(SPACE);
-    var triggeredCommand = commands.find((command) => {
-      return command.match(parts[0]);
+  //username = "Moobot";
+  //userId = 1564983;
+  // TODO: more complex commands
+  var parts = message.toLowerCase().split(SPACE);
+  var triggeredCommand = commands.find((command) => {
+    return command.match(parts[0]);
+  });
+  triggeredCommand
+    ?.canExecute(
+      user,
+      getGreaterRole(event.getUser(), promisedBroadcaster, bot),
+    )
+    .then((canExecute) => {
+      if (canExecute) {
+        triggeredCommand.execute(user, event);
+      }
     });
-    triggeredCommand
-      ?.canExecute(user, getGreaterRole(userstate))
-      .then((canExecute) => {
-        if (canExecute) {
-          triggeredCommand.execute(user, msgId);
-        }
-      });
-  }
-);
+});
 
-client.on(
-  "raided",
-  function (raiderChannel: any, raiderUsername: any, viewers: any, tags: any) {
-    // send(`vintarSTP vintarSTP vintarSTP vintarSTP vintarSTP`);
-  }
-);
+ChannelPointsListener.getInstance(bot, promisedBroadcaster).init();
 
-client.on(
-  "subgift",
-  function (
-    subChannel: any,
-    subUsername: any,
-    streakMonths: any,
-    recipient: any,
-    methods: any,
-    tags: any
-  ) {
-    /*console.log(recipient)
-    console.log(subUsername)
-    if (recipient === "Moobot") {
-        send(`!merci @${subUsername}`);
-    }*/
-  }
-);
+export function send(message: string) {
+  bot.say(channel, message);
+}
 
-client.on(
-  "redeem",
-  function (
-    channel: any,
-    username: any,
-    rewardtype: any,
-    tags: any,
-    cleanedMsg: any
-  ) {
-    // TODO: TEST
-    console.log(rewardtype);
-    switch (rewardtype) {
-      case REROLL_REWARD_ID:
-        RollCommand.getInstance().executeNoMessage(
-          new User(username, parseInt(tags["user-id"])),
-          true
-        );
-        break;
-    }
-  }
-);
-
-// client.on("sub", function(subChannel, subUsername, streakMonths, message, tags, methods){
-//     send("vintarFraise vintarFraise vintarFraise vintarFraise vintarFraise");
-// });
-
-// client.on("resub", function(subChannel, subUsername, methods, message, tags){
-//     send("vintarFraise vintarFraise vintarFraise vintarFraise vintarFraise");
-// });
+export function reply(message: string, event: MessageEvent) {
+  // use bot.reply instead ? How ?
+  event.reply(message);
+}

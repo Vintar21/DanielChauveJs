@@ -1,13 +1,14 @@
+import { MessageEvent } from "@twurple/easy-bot/lib";
 import User from "../user/User";
 
 export default interface ICommand {
   match(input: string): boolean;
 
-  execute(user: User, msgId: string, ignoreCooldowns?: boolean): void;
+  execute(user: User, event: MessageEvent, ignoreCooldowns?: boolean): void;
 
   canExecute(user: User, promisedRole: Promise<symbol>): Promise<boolean>;
 
-  canReplyToUser(msgId: string): boolean;
+  canReplyToUser(event: MessageEvent): boolean;
 
   getPrefix(): string;
 }

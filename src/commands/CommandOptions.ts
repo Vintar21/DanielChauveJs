@@ -1,5 +1,5 @@
-import { Roles } from "../utils/RoleUtils";
 import { commandPrefix } from "../utils/CommandsUtils";
+import { Roles } from "../utils/RoleUtils";
 
 export default class CommandOptions {
   prefix: string = commandPrefix;
