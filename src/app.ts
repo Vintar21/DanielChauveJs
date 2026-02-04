@@ -1,14 +1,12 @@
-import Command from "./commands/SimpleCommand";
-import CommandBuilder from "./commands/builders/SimpleCommandBuilder";
+import SimpleCommand from "./commands/SimpleCommand";
+import RollCommand from "./commands/RollCommand";
+import ICommand from "./commands/ICommand";
 import { getGreaterRole, Roles } from "./utils/RoleUtils";
 import { SPACE } from "./utils/StringConstants";
-import {
-  tmi,
-  channel,
-  options,
-  username,
-  password,
-} from "./utils/ImportConstants";
+import User from "./user/User";
+import { tmi, channel, options } from "./utils/ImportConstants";
+import CommandOptions from "./commands/CommandOptions";
+import { REROLL_REWARD_ID } from "./utils/TwitchRewardIdUtils";
 
 export function send(message: string) {
   client.say(channel, message);
@@ -18,18 +16,27 @@ export function reply(message: string, msgId: string) {
   client.reply(channel, message, msgId);
 }
 
-var commands = new Array<Command>();
-const commandBuilder: CommandBuilder = new CommandBuilder();
-const helloCommand: Command = commandBuilder
-  .addTriggers([/s+a*l+u*t+/i, /bo*n*jo*u*r+/i, /yo+/i, /we*sh/i])
-  .setResponse("Salut BG!")
-  .canReplyToUser()
+var commands = new Array<ICommand>();
+const helloOptions: CommandOptions = new CommandOptions()
+  .addTriggers([
+    /s+a*l+u*t+/i,
+    /bo*n*jo*u*r+/i,
+    /yo+/i,
+    /we*sh/i,
+    /co*u*co*u*/i,
+    /he+l{2,}o+/,
+  ])
   .setMaxUsePerUser(1)
   .setByPassRole(Roles.BROADCASTER)
-  .setUnallowedRole(Roles.NO_ROLE)
-  .build();
+  .setUnallowedRole(Roles.NO_ROLE);
+const helloCommand: SimpleCommand = new SimpleCommand(
+  helloOptions,
+  "Salut le sang de la veine de l'artère aorte !"
+);
+
 // Order matters !!
 commands.push(helloCommand);
+commands.push(RollCommand.getInstance());
 
 var client = new tmi.client(options);
 client.connect();
@@ -42,19 +49,20 @@ client.on(
     const msgId: string = userstate.id;
     const channelId: number = userstate["room-id"];
 
+    const user = new User(username, userId);
+
     //username = "Moobot";
     //userId = 1564983;
-
     // TODO: more complex commands
     var parts = message.toLowerCase().split(SPACE);
     var triggeredCommand = commands.find((command) => {
       return command.match(parts[0]);
     });
     triggeredCommand
-      ?.canExecute(userId, getGreaterRole(userstate))
+      ?.canExecute(user, getGreaterRole(userstate))
       .then((canExecute) => {
         if (canExecute) {
-          triggeredCommand.execute(userId, msgId);
+          triggeredCommand.execute(user, msgId);
         }
       });
   }
@@ -94,10 +102,16 @@ client.on(
     tags: any,
     cleanedMsg: any
   ) {
-    /*if(rewardtype === "1b6beeec-c5ab-4ebe-9247-07fd4c6b3c64") {
-        addBonus(username, 50)
-        console.log("+50 amitié")
-    }*/
+    // TODO: TEST
+    console.log(rewardtype);
+    switch (rewardtype) {
+      case REROLL_REWARD_ID:
+        RollCommand.getInstance().executeNoMessage(
+          new User(username, parseInt(tags["user-id"])),
+          true
+        );
+        break;
+    }
   }
 );
 

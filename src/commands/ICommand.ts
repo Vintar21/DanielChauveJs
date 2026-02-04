@@ -1,9 +1,11 @@
+import User from "../user/User";
+
 export default interface ICommand {
   match(input: string): boolean;
 
-  execute(userId: number, msgId: string, ignoreCooldowns: boolean): void;
+  execute(user: User, msgId: string, ignoreCooldowns?: boolean): void;
 
-  canExecute(userId: number, promisedRole: Promise<symbol>): Promise<boolean>;
+  canExecute(user: User, promisedRole: Promise<symbol>): Promise<boolean>;
 
   canReplyToUser(msgId: string): boolean;
 
