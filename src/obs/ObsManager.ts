@@ -1,8 +1,7 @@
 import OBSWebSocket from "obs-websocket-js";
 import {
-  _,
-  obsWebSocketUrl,
   obsWebSocketPassword,
+  obsWebSocketUrl,
 } from "../utils/ImportConstants";
 import { INITIAL_MVP_VALUE, MVP_SOURCE } from "./ObsConstants";
 
@@ -25,7 +24,7 @@ export default class ObsManager {
           inputSettings: {
             text,
           },
-        })
+        }),
       );
     } catch (e) {
       console.log(`OBS source ${name} couldn't be updated`);

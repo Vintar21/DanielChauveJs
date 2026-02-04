@@ -1,4 +1,4 @@
-import { ApiClient, HelixUser } from "@twurple/api/lib";
+import { HelixUser } from "@twurple/api/lib";
 import { Bot } from "@twurple/easy-bot/lib";
 
 export const Roles = Object.freeze({

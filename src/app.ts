@@ -1,15 +1,15 @@
 import { StaticAuthProvider } from "@twurple/auth";
 import { Bot } from "@twurple/easy-bot";
-import SimpleCommand from "./commands/SimpleCommand";
-import RollCommand from "./commands/RollCommand";
-import ICommand from "./commands/ICommand";
-import { getGreaterRole, Roles } from "./utils/RoleUtils";
-import { SPACE } from "./utils/StringConstants";
-import User from "./user/User";
-import { channel, clientId, accessToken } from "./utils/ImportConstants.js";
-import CommandOptions from "./commands/CommandOptions";
 import { MessageEvent } from "@twurple/easy-bot/lib";
 import ChannelPointsListener from "./channel-points-rewards/ChannelPointsListener";
+import CommandOptions from "./commands/CommandOptions";
+import ICommand from "./commands/ICommand";
+import RollCommand from "./commands/RollCommand";
+import SimpleCommand from "./commands/SimpleCommand";
+import User from "./user/User";
+import { accessToken, channel, clientId } from "./utils/ImportConstants.js";
+import { getGreaterRole, Roles } from "./utils/RoleUtils";
+import { SPACE } from "./utils/StringConstants";
 
 const authProvider: StaticAuthProvider = new StaticAuthProvider(
   clientId,

@@ -1,10 +1,10 @@
-import { Bot } from "@twurple/easy-bot";
-import { EventSubWsListener } from "@twurple/eventsub-ws";
 import { HelixUser } from "@twurple/api";
-import RollCommand from "../commands/RollCommand";
-import { REROLL_REWARD_ID, TEST_REWARD_ID } from "../utils/TwitchRewardIdUtils";
-import User from "../user/User";
+import { Bot } from "@twurple/easy-bot";
 import { EventSubChannelRedemptionAddEvent } from "@twurple/eventsub-base/lib/events/EventSubChannelRedemptionAddEvent";
+import { EventSubWsListener } from "@twurple/eventsub-ws";
+import RollCommand from "../commands/RollCommand";
+import User from "../user/User";
+import { REROLL_REWARD_ID, TEST_REWARD_ID } from "../utils/TwitchRewardIdUtils";
 
 export default class ChannelPointsListener {
   private static listener: EventSubWsListener;

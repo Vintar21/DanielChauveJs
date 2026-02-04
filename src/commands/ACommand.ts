@@ -1,8 +1,8 @@
+import { MessageEvent } from "@twurple/easy-bot/lib";
 import User from "../user/User";
 import { _ } from "../utils/ImportConstants";
-import ICommand from "./ICommand";
 import CommandOptions from "./CommandOptions";
-import { MessageEvent } from "@twurple/easy-bot/lib";
+import ICommand from "./ICommand";
 
 export default abstract class ACommand implements ICommand {
   protected options: CommandOptions;

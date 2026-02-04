@@ -1,13 +1,12 @@
+import { MessageEvent } from "@twurple/easy-bot/lib";
 import { reply, send } from "../app";
-import { _ } from "../utils/ImportConstants";
-import ACommand from "./ACommand";
+import SqlManager from "../database/SqlManager";
+import ObsManager from "../obs/ObsManager";
+import User from "../user/User";
 import { addPrefixToTriggers, NO_MSG } from "../utils/CommandsUtils";
 import { EMPTY, SPACE } from "../utils/StringConstants";
-import User from "../user/User";
+import ACommand from "./ACommand";
 import CommandOptions from "./CommandOptions";
-import ObsManager from "../obs/ObsManager";
-import SqlManager from "../database/SqlManager";
-import { MessageEvent } from "@twurple/easy-bot/lib";
 
 // The famous
 export default class RollCommand extends ACommand {
