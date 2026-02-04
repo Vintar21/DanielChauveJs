@@ -13,16 +13,17 @@ const isFollowerOptions = {
   },
 };
 
+// @Deprecated('Use the Helix API methods in @twurple/api instead.')
 export async function isFollowerRequest(
   channelId: number,
-  userId: number
+  userId: number,
 ): Promise<boolean> {
   const response = await fetch(
     "https://api.twitch.tv/helix/channels/followers?broadcaster_id=" +
       channelId +
       "&user_id=" +
       userId,
-    isFollowerOptions
+    isFollowerOptions,
   );
   const data = await response.json().then((data) => {
     return data.data?.length > 0;

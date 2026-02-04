@@ -1,4 +1,5 @@
-import { isFollowerRequest } from "../request/RequestUtils";
+import { ApiClient, HelixUser } from "@twurple/api/lib";
+import { Bot } from "@twurple/easy-bot/lib";
 
 export const Roles = Object.freeze({
   BROADCASTER: Symbol("broadcaster"),
@@ -9,49 +10,50 @@ export const Roles = Object.freeze({
   NO_ROLE: Symbol("noRole"),
 });
 
-export function isBroadcaster(userstate: any): boolean {
-  return userstate["badges"] && userstate["badges"].broadcaster;
+export function isBroadcaster(
+  user: HelixUser,
+  broadcaster: HelixUser,
+): boolean {
+  return user.id === broadcaster.id;
 }
 
-export function isMod(userstate: any): boolean {
-  return userstate.mod || isBroadcaster(userstate);
-}
-
-export function isVip(userstate: any): boolean {
-  return userstate.vip;
-}
-
-export function isSubscriber(userstate: any): boolean {
-  return userstate.subscriber;
-}
-
-// Make a request builder or something in separate class
-export async function isFollower(
-  channelId: number,
-  userId: number
+export async function isMod(
+  user: HelixUser,
+  broadcaster: HelixUser,
+  bot: Bot,
 ): Promise<boolean> {
-  return await isFollowerRequest(channelId, userId);
+  return bot.api.moderation.checkUserMod(broadcaster.id, user.id);
 }
 
-export function getGreaterRole(userstate: any): Promise<symbol> {
+export async function isVip(
+  user: HelixUser,
+  broadcaster: HelixUser,
+  bot: Bot,
+): Promise<boolean> {
+  return bot.api.channels.checkVipForUser(broadcaster.id, user.id);
+}
+
+export async function getGreaterRole(
+  promisedUser: Promise<HelixUser>,
+  promisedBroadcaster: Promise<HelixUser>,
+  bot: Bot,
+): Promise<symbol> {
   var role: symbol;
-  if (isBroadcaster(userstate)) {
+  const user = await promisedUser;
+  const broadcaster = await promisedBroadcaster;
+
+  if (isBroadcaster(user, broadcaster)) {
     role = Roles.BROADCASTER;
-  } else if (isMod(userstate)) {
+  } else if (isMod(user, broadcaster, bot)) {
     role = Roles.MOD;
-  } else if (isVip(userstate)) {
+  } else if (isVip(user, broadcaster, bot)) {
     role = Roles.VIP;
-  } else if (isSubscriber(userstate)) {
+  } else if (user.isSubscribedTo(broadcaster)) {
     role = Roles.SUB;
+  } else if (user.follows(broadcaster)) {
+    role = Roles.FOLLOWER;
   } else {
-    return isFollower(userstate["room-id"], userstate["user-id"]).then(
-      (isFollower) => {
-        if (isFollower) {
-          return Roles.FOLLOWER;
-        }
-        return Roles.NO_ROLE;
-      }
-    );
+    role = Roles.NO_ROLE;
   }
-  return Promise.resolve(role);
+  return role;
 }

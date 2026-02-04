@@ -1,10 +1,11 @@
 export const _ = require("lodash");
-export const tmi = require("tmi.js");
 
 // Parsing Json
 const optionJson = require("../../package.json");
 export const username = optionJson.username;
+export const clientId = optionJson["client-id"];
 export const password = optionJson.password;
+export const accessToken = optionJson["access-token"];
 const channels = optionJson.channels;
 export const channel = channels[0];
 const obsWebSocket = optionJson["obs-websocket"];

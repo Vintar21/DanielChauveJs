@@ -7,6 +7,7 @@ import User from "../user/User";
 import CommandOptions from "./CommandOptions";
 import ObsManager from "../obs/ObsManager";
 import SqlManager from "../database/SqlManager";
+import { MessageEvent } from "@twurple/easy-bot/lib";
 
 // The famous
 export default class RollCommand extends ACommand {
@@ -43,7 +44,7 @@ export default class RollCommand extends ACommand {
   private async insertValue(
     userId: string,
     username: string,
-    value: number
+    value: number,
   ): Promise<void> {
     // Check if it's a new user
     const isInserted = await SqlManager.insertNewUserQuery(userId, username);
@@ -52,9 +53,8 @@ export default class RollCommand extends ACommand {
   }
 
   private async getCustomMessage(value: number): Promise<String> {
-    const availableMessages: String[] = await SqlManager.getCustomMessagesQuery(
-      value
-    );
+    const availableMessages: String[] =
+      await SqlManager.getCustomMessagesQuery(value);
 
     if (availableMessages.length === 0) {
       console.log(`No custom message for ${value}`);
@@ -67,7 +67,7 @@ export default class RollCommand extends ACommand {
 
   public async executeNoMessage(
     user: User,
-    ignoreCooldowns: boolean = false
+    ignoreCooldowns: boolean = false,
   ): Promise<void> {
     this.execute(user, NO_MSG, ignoreCooldowns);
   }
@@ -75,8 +75,8 @@ export default class RollCommand extends ACommand {
   // TODO: MesssageUtils avec les parties de message
   public async execute(
     user: User,
-    msgId: string,
-    ignoreCooldowns: boolean = false
+    event: MessageEvent,
+    ignoreCooldowns: boolean = false,
   ): Promise<void> {
     var value: number = this.roll();
     var response: string = `${user.username} lance son dé et fait... ${value} !`;
@@ -108,8 +108,8 @@ export default class RollCommand extends ACommand {
     const customMessage = await this.getCustomMessage(value);
     response += customMessage;
 
-    if (msgId !== NO_MSG && super.canReplyToUser(msgId)) {
-      reply(response, msgId);
+    if (super.canReplyToUser(event)) {
+      reply(response, event);
     } else {
       send(response);
     }

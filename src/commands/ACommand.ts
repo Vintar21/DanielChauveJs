@@ -2,6 +2,7 @@ import User from "../user/User";
 import { _ } from "../utils/ImportConstants";
 import ICommand from "./ICommand";
 import CommandOptions from "./CommandOptions";
+import { MessageEvent } from "@twurple/easy-bot/lib";
 
 export default abstract class ACommand implements ICommand {
   protected options: CommandOptions;
@@ -22,21 +23,21 @@ export default abstract class ACommand implements ICommand {
 
   public abstract execute(
     user: User,
-    msgId: string,
-    ignoreCooldowns: boolean
+    event: MessageEvent,
+    ignoreCooldowns: boolean,
   ): void;
 
   public match(input: string): boolean {
     return (
       _.find(this.options.triggers, (trigger: RegExp) =>
-        trigger.test(input)
+        trigger.test(input),
       ) !== undefined
     );
   }
 
   public async canExecute(
     user: User,
-    promisedRole: Promise<symbol>
+    promisedRole: Promise<symbol>,
   ): Promise<boolean> {
     const role = await promisedRole;
     // Specific user permissions
@@ -104,8 +105,13 @@ export default abstract class ACommand implements ICommand {
     );
   }
 
-  public canReplyToUser(msgId: string): boolean {
-    return this.options.replyToUser && msgId !== undefined;
+  public canReplyToUser(event: MessageEvent): boolean {
+    return (
+      this.options.replyToUser &&
+      event.text !== undefined &&
+      event.text !== null &&
+      event.text.length > 0
+    );
   }
 
   public getPrefix(): string {
