@@ -2,14 +2,11 @@ import { StaticAuthProvider } from "@twurple/auth";
 import { Bot } from "@twurple/easy-bot";
 import { MessageEvent } from "@twurple/easy-bot/lib";
 import ChannelPointsListener from "./channel-points-rewards/ChannelPointsListener";
-import CommandOptions from "./commands/CommandOptions";
-import ICommand from "./commands/ICommand";
 import RollCommand from "./commands/RollCommand";
-import SimpleCommand from "./commands/SimpleCommand";
+import CommandsManager from "./commands/CommandsManager";
 import User from "./user/User";
 import { accessToken, channel, clientId } from "./utils/ImportConstants.js";
-import { getGreaterRole, Roles } from "./utils/RoleUtils";
-import { SPACE } from "./utils/StringConstants";
+import { getGreaterRole } from "./utils/RoleUtils";
 
 const authProvider: StaticAuthProvider = new StaticAuthProvider(
   clientId,
@@ -18,27 +15,10 @@ const authProvider: StaticAuthProvider = new StaticAuthProvider(
 const bot: Bot = new Bot({ authProvider, channels: [channel] });
 const promisedBroadcaster = bot.api.users.getUserByName(channel);
 
-var commands = new Array<ICommand>();
-const helloOptions: CommandOptions = new CommandOptions()
-  .addTriggers([
-    /s+a*l+u*t+/i,
-    /bo*n*jo*u*r+/i,
-    /yo+/i,
-    /we*sh/i,
-    /co*u*co*u*/i,
-    /he+l{2,}o+/,
-  ])
-  .setMaxUsePerUser(1)
-  .setByPassRole(Roles.BROADCASTER)
-  .setUnallowedRole(Roles.NO_ROLE);
-const helloCommand: SimpleCommand = new SimpleCommand(
-  helloOptions,
-  "Salut le sang de la veine de l'artère aorte !",
-);
-
+const commandsManager: CommandsManager = CommandsManager.getInstance();
+commandsManager.init();
 // Order matters !!
-commands.push(helloCommand);
-commands.push(RollCommand.getInstance());
+commandsManager.addCommand(RollCommand.getInstance());
 
 bot.onMessage((event) => {
   const message: string = event.text;
@@ -52,10 +32,7 @@ bot.onMessage((event) => {
   //username = "Moobot";
   //userId = 1564983;
   // TODO: more complex commands
-  var parts = message.toLowerCase().split(SPACE);
-  var triggeredCommand = commands.find((command) => {
-    return command.match(parts[0]);
-  });
+  var triggeredCommand = commandsManager.getTriggeredCommand(message);
   triggeredCommand
     ?.canExecute(
       user,

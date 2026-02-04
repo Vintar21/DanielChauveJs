@@ -7,8 +7,8 @@ export default class CommandOptions {
   triggers: Array<RegExp> = [];
   replyToUser: boolean = true;
 
-  globalCooldown: number = 0; // In miliseconds
-  userCooldown: number = 0; // In miliseconds
+  globalCooldown: number = 1000; // In miliseconds
+  userCooldown: number = 3000; // In miliseconds
 
   maxUseGlobal: number = -1; // -1 = unlimited
   maxUsePerUser: number = -1; // -1 = unlimited
