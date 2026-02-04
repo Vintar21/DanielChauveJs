@@ -1,7 +1,7 @@
 import { reply, send } from "../app";
 import { _ } from "../utils/ImportConstants";
 import ACommand from "./ACommand";
-import { addPrefixToTriggers } from "../utils/CommandsUtils";
+import { addPrefixToTriggers, NO_MSG } from "../utils/CommandsUtils";
 import { EMPTY, SPACE } from "../utils/StringConstants";
 import User from "../user/User";
 import CommandOptions from "./CommandOptions";
@@ -65,6 +65,13 @@ export default class RollCommand extends ACommand {
     return SPACE + availableMessages[ind];
   }
 
+  public async executeNoMessage(
+    user: User,
+    ignoreCooldowns: boolean = false
+  ): Promise<void> {
+    this.execute(user, NO_MSG, ignoreCooldowns);
+  }
+
   // TODO: MesssageUtils avec les parties de message
   public async execute(
     user: User,
@@ -101,7 +108,7 @@ export default class RollCommand extends ACommand {
     const customMessage = await this.getCustomMessage(value);
     response += customMessage;
 
-    if (super.canReplyToUser(msgId)) {
+    if (msgId !== NO_MSG && super.canReplyToUser(msgId)) {
       reply(response, msgId);
     } else {
       send(response);

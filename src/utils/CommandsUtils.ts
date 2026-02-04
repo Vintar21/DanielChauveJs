@@ -1,4 +1,5 @@
 export const commandPrefix = "!";
+export const NO_MSG = "NO_MSG";
 
 export function addPrefixToTriggers(
   triggers: Array<RegExp>,
