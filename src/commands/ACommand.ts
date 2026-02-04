@@ -108,9 +108,9 @@ export default abstract class ACommand implements ICommand {
   public canReplyToUser(event: MessageEvent): boolean {
     return (
       this.options.replyToUser &&
-      event.text !== undefined &&
-      event.text !== null &&
-      event.text.length > 0
+      event?.text !== undefined &&
+      event?.text !== null &&
+      event?.text.length > 0
     );
   }
 

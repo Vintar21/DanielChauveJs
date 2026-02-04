@@ -8,16 +8,15 @@ import { SPACE } from "./utils/StringConstants";
 import User from "./user/User";
 import { channel, clientId, accessToken } from "./utils/ImportConstants.js";
 import CommandOptions from "./commands/CommandOptions";
-import { REROLL_REWARD_ID } from "./utils/TwitchRewardIdUtils";
-
 import { MessageEvent } from "@twurple/easy-bot/lib";
-import { EventSubWsListener } from "@twurple/eventsub-ws/lib";
+import ChannelPointsListener from "./channel-points-rewards/ChannelPointsListener";
 
 const authProvider: StaticAuthProvider = new StaticAuthProvider(
   clientId,
   accessToken,
 );
 const bot: Bot = new Bot({ authProvider, channels: [channel] });
+const promisedBroadcaster = bot.api.users.getUserByName(channel);
 
 var commands = new Array<ICommand>();
 const helloOptions: CommandOptions = new CommandOptions()
@@ -60,7 +59,7 @@ bot.onMessage((event) => {
   triggeredCommand
     ?.canExecute(
       user,
-      getGreaterRole(event.getUser(), event.getBroadcaster(), bot),
+      getGreaterRole(event.getUser(), promisedBroadcaster, bot),
     )
     .then((canExecute) => {
       if (canExecute) {
@@ -68,12 +67,8 @@ bot.onMessage((event) => {
       }
     });
 });
-/*
-bot.api.eventSub.subscribeToChannelRedemptionAddEventsForReward(
-  channel,
-  REROLL_REWARD_ID,
-  bot.api.eventSub.createConduit(2),
-);*/
+
+ChannelPointsListener.getInstance(bot, promisedBroadcaster).init();
 
 export function send(message: string) {
   bot.say(channel, message);
