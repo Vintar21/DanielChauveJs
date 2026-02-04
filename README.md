@@ -11,7 +11,7 @@ The template-package.json file needs to be renamed in package.json and completed
 
 ### Features
 
-    Please found below a quick overview of the features you will find in this bot.
+Please found below a quick overview of the features you will find in this bot.
 
 - **Simple text commands:** Commands that give a simple answer when triggered (e.g.: !hello => Hi Mark !)
 - **Custom commands:** More complex commands which doesn't simply reply to the user (e.g.: !roll => _gives a random number + update an OBS source + store the result in a database_)
