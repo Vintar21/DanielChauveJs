@@ -1,4 +1,8 @@
-import { allMiscCommands } from "./misc/AllMiscCommands";
+import {
+  allMiscCommands,
+  answerRandomMessage,
+  lastAddedCommands,
+} from "./misc/AllMiscCommands";
 import { allSimpleCommands } from "./simple/AllSimpleCommands";
 import { allNoPrefixSimpleCommands } from "./simple/no-prefix/AllNoPrefixSimpleCommands";
 
@@ -49,5 +53,8 @@ export default class CommandsManager {
 
     // No Prefix Commands (last to be add)
     this.addCommands(allNoPrefixSimpleCommands);
+
+    // Response to random message in chat (should be the last added)
+    this.addCommands(lastAddedCommands);
   }
 }

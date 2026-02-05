@@ -33,7 +33,7 @@ export default abstract class ACommand implements ICommand {
     user: User,
     event: MessageEvent,
     ignoreCooldowns: boolean,
-    message: string,
+    message: String,
   ) {
     if (this.canReplyToUser(event)) {
       reply(message, event);

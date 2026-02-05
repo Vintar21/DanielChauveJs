@@ -1,9 +1,9 @@
 import { MessageEvent } from "@twurple/easy-bot";
-import { bot, canUseObsWebsocket, reply, send } from "../../app";
+import { bot, reply, send } from "../../app";
 import SqlManager from "../../database/SqlManager";
 import ObsManager from "../../obs/ObsManager";
 import User from "../../user/User";
-import { NO_MSG } from "../../utils/CommandsUtils";
+import { NO_MSG, choose } from "../../utils/CommandsUtils";
 import { playRolled1, playRolled1000 } from "../../utils/MediaUtils";
 import { EMPTY, SPACE } from "../../utils/StringConstants";
 import { undefinedUser } from "../../user/User";
@@ -71,8 +71,7 @@ export default class RollCommand extends ACommand {
       return EMPTY;
     }
     console.log(`Available messages: [${availableMessages}]`);
-    const ind: number = Math.floor(Math.random() * availableMessages.length);
-    return SPACE + availableMessages[ind];
+    return SPACE + choose(availableMessages);
   }
 
   public async executeNoMessage(

@@ -1,7 +1,5 @@
 import { MessageEvent } from "@twurple/easy-bot/lib";
-import { reply, send } from "../app";
 import User from "../user/User";
-import { addPrefixToTriggers } from "../utils/CommandsUtils";
 import ACommand from "./ACommand";
 import CommandOptions from "./CommandOptions";
 

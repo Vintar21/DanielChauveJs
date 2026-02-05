@@ -14,3 +14,7 @@ export function addPrefixToTriggers(
   });
   return prefixedTriggers;
 }
+
+export function choose(strings: Array<String>): String {
+  return strings[Math.floor(Math.random() * strings.length)];
+}

@@ -23,6 +23,9 @@ export const bot: Bot = new Bot({ authProvider, channels: [channel] });
 const promisedBroadcaster = bot.api.users.getUserByName(channel);
 
 const commandsManager: CommandsManager = CommandsManager.getInstanceAndInit();
+ChannelPointsListener.getInstance(bot, promisedBroadcaster).init();
+
+console.log("### Bot started ###");
 
 bot.onMessage((event) => {
   const message: string = event.text;
@@ -49,13 +52,11 @@ bot.onMessage((event) => {
     });
 });
 
-ChannelPointsListener.getInstance(bot, promisedBroadcaster).init();
-
-export function send(message: string) {
-  bot.say(channel, message);
+export function send(message: String) {
+  bot.say(channel, message.toString());
 }
 
-export function reply(message: string, event: MessageEvent) {
+export function reply(message: String, event: MessageEvent) {
   // use bot.reply instead ? How ?
-  event.reply(message);
+  event.reply(message.toString());
 }
