@@ -3,6 +3,7 @@ import User from "../user/User";
 import { _ } from "../utils/ImportConstants";
 import CommandOptions from "./CommandOptions";
 import ICommand from "./ICommand";
+import { SPACE } from "../utils/StringConstants";
 
 export default abstract class ACommand implements ICommand {
   protected options: CommandOptions;
@@ -27,10 +28,12 @@ export default abstract class ACommand implements ICommand {
     ignoreCooldowns: boolean,
   ): void;
 
+  // By default we split the message, override this method to change this behavior
   public match(input: string): boolean {
+    const parts = input.toLowerCase().trim().split(SPACE);
     return (
       _.find(this.options.triggers, (trigger: RegExp) =>
-        trigger.test(input),
+        trigger.test(parts[0]),
       ) !== undefined
     );
   }
@@ -40,6 +43,12 @@ export default abstract class ACommand implements ICommand {
     promisedRole: Promise<symbol>,
   ): Promise<boolean> {
     const role = await promisedRole;
+
+    // Command enabled
+    if (!this.options.enabled) {
+      return false;
+    }
+
     // Specific user permissions
     if (this.options.usersPermissions.get(user.userId) === -1) {
       return false;

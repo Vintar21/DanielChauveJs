@@ -13,6 +13,8 @@ export default class CommandOptions {
   maxUseGlobal: number = -1; // -1 = unlimited
   maxUsePerUser: number = -1; // -1 = unlimited
 
+  enabled: boolean = true;
+
   // -1 = not allowed, 0 = allowed, 1 = bypass
   rolesPermissions: Map<symbol, number> = new Map([
     [Roles.BROADCASTER, 1],
@@ -37,6 +39,7 @@ export default class CommandOptions {
     newOptions.maxUsePerUser = commandOptions.maxUsePerUser;
     newOptions.rolesPermissions = commandOptions.rolesPermissions;
     newOptions.usersPermissions = commandOptions.usersPermissions;
+    newOptions.enabled = commandOptions.enabled;
     return newOptions;
   }
 
@@ -116,6 +119,16 @@ export default class CommandOptions {
 
   public setUnallowedUser(userId: number): CommandOptions {
     this.usersPermissions.set(userId, -1);
+    return this;
+  }
+
+  public enable(): CommandOptions {
+    this.enabled = true;
+    return this;
+  }
+
+  public disable(): CommandOptions {
+    this.enabled = false;
     return this;
   }
 }

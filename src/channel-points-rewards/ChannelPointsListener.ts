@@ -2,7 +2,7 @@ import { HelixUser } from "@twurple/api";
 import { Bot } from "@twurple/easy-bot";
 import { EventSubChannelRedemptionAddEvent } from "@twurple/eventsub-base/lib/events/EventSubChannelRedemptionAddEvent";
 import { EventSubWsListener } from "@twurple/eventsub-ws";
-import RollCommand from "../commands/RollCommand";
+import { rollCommand } from "../commands/misc/AllMiscCommands";
 import User from "../user/User";
 import { REROLL_REWARD_ID, TEST_REWARD_ID } from "../utils/TwitchRewardIdUtils";
 
@@ -47,10 +47,10 @@ export default class ChannelPointsListener {
     );
     switch (event.rewardId) {
       case REROLL_REWARD_ID:
-        RollCommand.getInstance().executeNoMessage(new User(username, userId));
+        rollCommand.executeNoMessage(new User(username, userId));
         break;
       case TEST_REWARD_ID:
-        RollCommand.getInstance().executeNoMessage(new User(username, userId));
+        rollCommand.executeNoMessage(new User(username, userId));
         break;
     }
   }

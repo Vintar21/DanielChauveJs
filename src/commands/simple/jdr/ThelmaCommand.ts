@@ -1,8 +1,16 @@
+import { JDR_PJ_MESSAGE_START } from "../../../utils/CommandsUtils";
 import CommandOptions from "../../CommandOptions";
+import SimpleCommand from "../../SimpleCommand";
 
-export const thelmaOptions: CommandOptions = new CommandOptions().addTriggers([
-  /th?elma/i,
-]);
+export default class ThelmaCommand extends SimpleCommand {
+  private static options: CommandOptions = new CommandOptions().addTriggers([
+    /thelma/i,
+  ]);
 
-export const thelmaAnswer: string =
-  "Pour en savoir plus sur Thelma: https://ibb.co/Z6LGH5Q7 📜";
+  private static answer: string =
+    JDR_PJ_MESSAGE_START + "Thelma: https://ibb.co/Z6LGH5Q7 📜";
+
+  constructor() {
+    super(ThelmaCommand.options, ThelmaCommand.answer);
+  }
+}

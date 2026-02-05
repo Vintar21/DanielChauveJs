@@ -1,7 +1,15 @@
 import CommandOptions from "../CommandOptions";
+import SimpleCommand from "../SimpleCommand";
 
-export const shittyGameOptions: CommandOptions =
-  new CommandOptions().addTriggers([/(jeux?)?[aà]chi[eéè]r?/i]);
+export default class ShittyGameCommand extends SimpleCommand {
+  private static options: CommandOptions = new CommandOptions().addTriggers([
+    /(jeux?)?[aà]chi[eéè]r?/i,
+  ]);
 
-export const shittyGameAnswer: string =
-  "​​Le jeu n'est pas vraiment à chier sinon je n'y jouerais pas. j'extériorise simplement ma frustration et suis vulgaire mais y a r.";
+  private static answer: string =
+    "​​Le jeu n'est pas vraiment à chier sinon je n'y jouerais pas. j'extériorise simplement ma frustration et suis vulgaire mais y a r.";
+
+  constructor() {
+    super(ShittyGameCommand.options, ShittyGameCommand.answer);
+  }
+}

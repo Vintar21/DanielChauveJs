@@ -1,8 +1,16 @@
+import { JDR_PJ_MESSAGE_START } from "../../../utils/CommandsUtils";
 import CommandOptions from "../../CommandOptions";
+import SimpleCommand from "../../SimpleCommand";
 
-export const marlaOptions: CommandOptions = new CommandOptions().addTriggers([
-  /marla/i,
-]);
+export default class MarlaCommand extends SimpleCommand {
+  private static options: CommandOptions = new CommandOptions().addTriggers([
+    /marla/i,
+  ]);
 
-export const marlaAnswer: string =
-  "Pour en savoir plus sur Marla: https://ibb.co/tTfScb5X 🔎";
+  private static answer: string =
+    JDR_PJ_MESSAGE_START + "Marla: https://ibb.co/tTfScb5X 🔎";
+
+  constructor() {
+    super(MarlaCommand.options, MarlaCommand.answer);
+  }
+}

@@ -1,20 +1,19 @@
-import { MessageEvent } from "@twurple/easy-bot/lib";
-import { reply, send } from "../app";
-import SqlManager from "../database/SqlManager";
-import ObsManager from "../obs/ObsManager";
-import User from "../user/User";
-import { addPrefixToTriggers, NO_MSG } from "../utils/CommandsUtils";
-import { EMPTY, SPACE } from "../utils/StringConstants";
-import ACommand from "./ACommand";
-import CommandOptions from "./CommandOptions";
+import { MessageEvent } from "@twurple/easy-bot";
+import { reply, send } from "../../app";
+import SqlManager from "../../database/SqlManager";
+import ObsManager from "../../obs/ObsManager";
+import User from "../../user/User";
+import { addPrefixToTriggers, NO_MSG } from "../../utils/CommandsUtils";
+import { EMPTY, SPACE } from "../../utils/StringConstants";
+import ACommand from "../ACommand";
+import CommandOptions from "../CommandOptions";
+import { undefinedUser } from "../../user/User";
 
 // The famous
 export default class RollCommand extends ACommand {
   private static RANGE_MAX: number = 1000;
 
-  private currentMVP = { user: undefined, score: 0 };
-
-  private static instance: RollCommand = new RollCommand();
+  private currentMVP = { user: undefinedUser, score: 0 };
 
   constructor() {
     const options: CommandOptions = new CommandOptions().setMaxUsePerUser(1);
@@ -22,10 +21,6 @@ export default class RollCommand extends ACommand {
     super(options);
     // TODO: create another command to reset MVP + reset when stream starts
     ObsManager.resetObsMvpSource();
-  }
-
-  public static getInstance(): RollCommand {
-    return RollCommand.instance;
   }
 
   private roll(): number {

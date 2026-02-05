@@ -2,7 +2,6 @@ import { StaticAuthProvider } from "@twurple/auth";
 import { Bot } from "@twurple/easy-bot";
 import { MessageEvent } from "@twurple/easy-bot/lib";
 import ChannelPointsListener from "./channel-points-rewards/ChannelPointsListener";
-import RollCommand from "./commands/RollCommand";
 import CommandsManager from "./commands/CommandsManager";
 import User from "./user/User";
 import { accessToken, channel, clientId } from "./utils/ImportConstants.js";
@@ -15,10 +14,7 @@ const authProvider: StaticAuthProvider = new StaticAuthProvider(
 const bot: Bot = new Bot({ authProvider, channels: [channel] });
 const promisedBroadcaster = bot.api.users.getUserByName(channel);
 
-const commandsManager: CommandsManager = CommandsManager.getInstance();
-commandsManager.init();
-// Order matters !!
-commandsManager.addCommand(RollCommand.getInstance());
+const commandsManager: CommandsManager = CommandsManager.getInstanceAndInit();
 
 bot.onMessage((event) => {
   const message: string = event.text;

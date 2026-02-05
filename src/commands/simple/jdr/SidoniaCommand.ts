@@ -1,8 +1,16 @@
+import { JDR_PJ_MESSAGE_START } from "../../../utils/CommandsUtils";
 import CommandOptions from "../../CommandOptions";
+import SimpleCommand from "../../SimpleCommand";
 
-export const sidoniaOptions: CommandOptions = new CommandOptions().addTriggers([
-  /sidonia/i,
-]);
+export default class SidoniaCommand extends SimpleCommand {
+  private static options: CommandOptions = new CommandOptions().addTriggers([
+    /sidonia/i,
+  ]);
 
-export const sidoniaAnswer: string =
-  "Pour en savoir plus sur Sidonia: https://ibb.co/RGTnMKYT 🦝";
+  private static answer: string =
+    JDR_PJ_MESSAGE_START + "Sidonia: https://ibb.co/RGTnMKYT 🦝";
+
+  constructor() {
+    super(SidoniaCommand.options, SidoniaCommand.answer);
+  }
+}

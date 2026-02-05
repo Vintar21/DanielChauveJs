@@ -1,8 +1,16 @@
+import { JDR_PJ_MESSAGE_START } from "../../../utils/CommandsUtils";
 import CommandOptions from "../../CommandOptions";
+import SimpleCommand from "../../SimpleCommand";
 
-export const michelOptions: CommandOptions = new CommandOptions().addTriggers([
-  /mich[eèéê]l(le)?/i,
-]);
+export default class MichelCommand extends SimpleCommand {
+  private static options: CommandOptions = new CommandOptions().addTriggers([
+    /mich[eèéê]l(le)?/i,
+  ]);
 
-export const michelAnswer: string =
-  "Pour en savoir plus sur Michel: https://ibb.co/v49xqhWX 🎵";
+  private static answer: string =
+    JDR_PJ_MESSAGE_START + "Michel: https://ibb.co/v49xqhWX 🎵";
+
+  constructor() {
+    super(MichelCommand.options, MichelCommand.answer);
+  }
+}

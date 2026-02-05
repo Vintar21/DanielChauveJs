@@ -1,8 +1,16 @@
+import { JDR_PJ_MESSAGE_START } from "../../../utils/CommandsUtils";
 import CommandOptions from "../../CommandOptions";
+import SimpleCommand from "../../SimpleCommand";
 
-export const gianniOptions: CommandOptions = new CommandOptions().addTriggers([
-  /[gj]iann?i/i,
-]);
+export default class GianniCommand extends SimpleCommand {
+  private static options: CommandOptions = new CommandOptions().addTriggers([
+    /[gj]iann?i/i,
+  ]);
 
-export const gianniAnswer: string =
-  "Pour en savoir plus sur Gianni: https://ibb.co/mFhskd5n 🇮🇹";
+  private static answer: string =
+    JDR_PJ_MESSAGE_START + "Gianni: https://ibb.co/mFhskd5n 🇮🇹";
+
+  constructor() {
+    super(GianniCommand.options, GianniCommand.answer);
+  }
+}

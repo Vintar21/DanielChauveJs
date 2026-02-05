@@ -1,5 +1,8 @@
+import { MessageEvent } from "@twurple/easy-bot/lib";
+
 export const commandPrefix = "!";
-export const NO_MSG = undefined;
+export const NO_MSG: MessageEvent = undefined;
+export const JDR_PJ_MESSAGE_START = "Pour en savoir plus sur Peter: ";
 
 export function addPrefixToTriggers(
   triggers: Array<RegExp>,

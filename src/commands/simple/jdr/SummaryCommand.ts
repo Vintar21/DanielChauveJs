@@ -1,10 +1,17 @@
 import CommandOptions from "../../CommandOptions";
+import SimpleCommand from "../../SimpleCommand";
 
-export const summaryOptions: CommandOptions = new CommandOptions().addTriggers([
-  /r[éeêè]sum[éeêè]e?/i,
-  /campagne/i,
-  /histoire/i,
-]);
+export default class SummaryCommand extends SimpleCommand {
+  private static options: CommandOptions = new CommandOptions().addTriggers([
+    /r[éeêè]sum[éeêè]e?/i,
+    /campagne/i,
+    /histoire/i,
+  ]);
 
-export const summaryAnswer: string =
-  "Retrouvez le résumé de la campagne ici: https://shorturl.at/owCWc 🐙";
+  private static answer: string =
+    "Retrouvez le résumé de la campagne ici: https://shorturl.at/owCWc 🐙";
+
+  constructor() {
+    super(SummaryCommand.options, SummaryCommand.answer);
+  }
+}

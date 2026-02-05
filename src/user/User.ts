@@ -8,3 +8,5 @@ export default class User {
     this.userId = userId;
   }
 }
+
+export const undefinedUser: User = { username: undefined, userId: undefined };

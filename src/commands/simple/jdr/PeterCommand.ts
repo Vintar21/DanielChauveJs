@@ -1,8 +1,16 @@
+import { JDR_PJ_MESSAGE_START } from "../../../utils/CommandsUtils";
 import CommandOptions from "../../CommandOptions";
+import SimpleCommand from "../../SimpleCommand";
 
-export const peterOptions: CommandOptions = new CommandOptions().addTriggers([
-  /peter/i,
-]);
+export default class PeterCommand extends SimpleCommand {
+  private static options: CommandOptions = new CommandOptions().addTriggers([
+    /peter/i,
+  ]);
 
-export const peterAnswer: string =
-  "Pour en savoir plus sur Peter: https://ibb.co/CpTz77tC 🔫";
+  private static answer: string =
+    JDR_PJ_MESSAGE_START + "Peter: https://ibb.co/CpTz77tC 🔫";
+
+  constructor() {
+    super(PeterCommand.options, PeterCommand.answer);
+  }
+}

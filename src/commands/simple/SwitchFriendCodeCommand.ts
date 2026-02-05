@@ -1,7 +1,14 @@
 import CommandOptions from "../CommandOptions";
+import SimpleCommand from "../SimpleCommand";
 
-export const switchFriendCodeOptions: CommandOptions =
-  new CommandOptions().addTriggers([/code-?ami/i]);
+export default class SwitchFriendCodeCommand extends SimpleCommand {
+  private static options: CommandOptions = new CommandOptions().addTriggers([
+    /code-?ami/i,
+  ]);
 
-export const switchFriendCodeAnswer: string =
-  "​Mon code ami Switch est SW-7448-5566-7296";
+  private static answer: string = "​Mon code ami Switch est SW-7448-5566-7296";
+
+  constructor() {
+    super(SwitchFriendCodeCommand.options, SwitchFriendCodeCommand.answer);
+  }
+}
