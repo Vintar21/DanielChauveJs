@@ -1,8 +1,4 @@
-import {
-  allMiscCommands,
-  answerRandomMessage,
-  lastAddedCommands,
-} from "./misc/AllMiscCommands";
+import { allMiscCommands, lastAddedCommands } from "./misc/AllMiscCommands";
 import { allSimpleCommands } from "./simple/AllSimpleCommands";
 import { allNoPrefixSimpleCommands } from "./simple/no-prefix/AllNoPrefixSimpleCommands";
 

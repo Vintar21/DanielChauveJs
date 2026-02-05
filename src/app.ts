@@ -11,6 +11,7 @@ import {
   lightTesting,
 } from "./utils/ImportConstants.js";
 import { getGreaterRole } from "./utils/RoleUtils";
+import TimerManager from "./timers/TimerManager";
 
 export const canUseSqlBase: boolean = !lightTesting;
 export const canUseObsWebsocket: boolean = !lightTesting;
@@ -24,6 +25,8 @@ const promisedBroadcaster = bot.api.users.getUserByName(channel);
 
 const commandsManager: CommandsManager = CommandsManager.getInstanceAndInit();
 ChannelPointsListener.getInstance(bot, promisedBroadcaster).init();
+const timerManager: TimerManager = TimerManager.getInstanceAndInit();
+timerManager.startAllTimers();
 
 console.log("### Bot started ###");
 
@@ -34,11 +37,11 @@ bot.onMessage((event) => {
   const userId: number = parseInt(event.userId);
 
   console.log(`Message received from [${userId}] ${username}: ${message}`);
+  timerManager.updateAllTimersOnMessage();
   const user = new User(username, userId);
 
   //username = "Moobot";
   //userId = 1564983;
-  // TODO: more complex commands
   var triggeredCommand = commandsManager.getTriggeredCommand(message);
   triggeredCommand
     ?.canExecute(
