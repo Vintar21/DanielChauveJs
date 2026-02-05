@@ -41,11 +41,11 @@ export default class CommandsManager {
       return;
     }
 
+    // Misc Commands (more used, so they're better first)
+    this.addCommands(allMiscCommands);
+
     // Simple Commands
     this.addCommands(allSimpleCommands);
-
-    // Misc Commands
-    this.addCommands(allMiscCommands);
 
     // No Prefix Commands (last to be add)
     this.addCommands(allNoPrefixSimpleCommands);

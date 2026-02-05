@@ -1,5 +1,5 @@
 import CommandOptions from "../CommandOptions";
-import SimpleCommand from "../SimpleCommand";
+import SimpleCommand from "../templates/SimpleCommand";
 
 export default class DanielCommand extends SimpleCommand {
   private static options: CommandOptions = new CommandOptions([

@@ -1,5 +1,5 @@
 import CommandOptions from "../CommandOptions";
-import SimpleCommand from "../SimpleCommand";
+import SimpleCommand from "../templates/SimpleCommand";
 
 export default class ShittyGameCommand extends SimpleCommand {
   private static options: CommandOptions = new CommandOptions([

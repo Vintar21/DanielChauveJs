@@ -18,7 +18,8 @@ export default class SqlManager {
       `IF NOT EXISTS(SELECT id FROM users WHERE id=${userId}) BEGIN INSERT INTO users (id, username) VALUES (${userId}, '${username}') END;`,
     );
     const inserted: boolean =
-      queryAgregator["first"] !== null && queryAgregator["first"].length > 0;
+      SqlManager.isValideQueryAgregator(queryAgregator) &&
+      queryAgregator["first"].length > 0;
     if (inserted) {
       console.log(`New user inserted: {${userId} | ${username}}`);
     }
@@ -36,11 +37,24 @@ export default class SqlManager {
     return queryAgregator;
   }
 
+  private static isValideQueryAgregator(
+    queryAgregator: QueryAggregatorResults,
+  ): boolean {
+    return (
+      queryAgregator !== undefined &&
+      queryAgregator !== null &&
+      queryAgregator["first"] !== undefined &&
+      queryAgregator["first"] !== null
+    );
+  }
+
   public static async getCustomMessagesQuery(value: number): Promise<String[]> {
     const queryAgregator = await SqlManager.executeQuery(
       `SELECT roll_message, proba FROM rolls_messages WHERE result=${value}`,
     );
-    const customMessages = queryAgregator["first"];
+    const customMessages = SqlManager.isValideQueryAgregator(queryAgregator)
+      ? queryAgregator["first"]
+      : undefined;
     // No custrom message
     if (
       customMessages === undefined ||

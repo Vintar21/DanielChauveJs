@@ -1,16 +1,19 @@
 import { send } from "../app";
 import { EMPTY } from "../utils/StringConstants";
 import TimerOptions from "./TimerOptions";
-
+import { TimerMessage } from "./TimerMessage";
+import ACommand from "../commands/ACommand";
+import { timerUser, undefinedUser } from "../user/User";
+import { NO_MSG } from "../utils/CommandsUtils";
 export default abstract class ATimer {
   protected options: TimerOptions;
   protected timerFinished: boolean = false;
   // Number of messages posted since last trigger
   protected numberOfMessagePosted: number = 0;
 
-  protected messages: String[];
+  protected messages: TimerMessage[];
 
-  constructor(options: TimerOptions, messages: String[]) {
+  constructor(options: TimerOptions, messages: TimerMessage[]) {
     this.options = options;
     this.messages = messages.reverse();
   }
@@ -45,8 +48,14 @@ export default abstract class ATimer {
   // Check if a message is received or if the timer is finished
   public check() {
     if (this.canBeTriggered()) {
-      const messageToSend: String = this.messages.pop() ?? EMPTY;
-      send(messageToSend);
+      const messageToSend: TimerMessage = this.messages.pop() ?? EMPTY;
+
+      if (messageToSend instanceof ACommand) {
+        messageToSend.execute(timerUser, NO_MSG, true);
+      } else if (messageToSend !== EMPTY) {
+        send(messageToSend);
+      }
+
       this.messages = [messageToSend].concat(this.messages);
       this.restart();
     }

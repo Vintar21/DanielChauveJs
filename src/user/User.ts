@@ -10,3 +10,14 @@ export default class User {
 }
 
 export const undefinedUser: User = { username: undefined, userId: undefined };
+export const timerUser: User = { username: undefined, userId: undefined };
+
+export function isNotAUser(user: User) {
+  return (
+    user === undefinedUser ||
+    user === timerUser ||
+    user === undefined ||
+    user.username === undefined ||
+    user.userId === undefined
+  );
+}

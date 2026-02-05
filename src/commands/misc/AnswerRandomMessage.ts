@@ -1,7 +1,8 @@
 import User from "../../user/User";
+import { MOOBOT_USER_ID } from "../../utils/CommandsUtils";
 import { Roles } from "../../utils/RoleUtils";
 import CommandOptions from "../CommandOptions";
-import MultipleAnswersCommand from "../MultipleAnswersCommand";
+import MultipleAnswersCommand from "../templates/MultipleAnswersCommand";
 import { MessageEvent } from "@twurple/easy-bot/lib";
 
 export default class AnswerRandomMessage extends MultipleAnswersCommand {
@@ -19,7 +20,8 @@ export default class AnswerRandomMessage extends MultipleAnswersCommand {
 
   private static options: CommandOptions = new CommandOptions([/.+/i])
     .dontUsePrefix()
-    .setUnallowedRole(Roles.BROADCASTER);
+    .setUnallowedRole(Roles.BROADCASTER)
+    .setUnallowedUser(MOOBOT_USER_ID);
 
   constructor() {
     super(AnswerRandomMessage.options, AnswerRandomMessage.answers);

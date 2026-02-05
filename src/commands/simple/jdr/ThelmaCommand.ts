@@ -1,6 +1,6 @@
 import { JDR_PJ_MESSAGE_START } from "../../../utils/CommandsUtils";
 import CommandOptions from "../../CommandOptions";
-import SimpleCommand from "../../SimpleCommand";
+import SimpleCommand from "../../templates/SimpleCommand";
 
 export default class ThelmaCommand extends SimpleCommand {
   private static options: CommandOptions = new CommandOptions([/thelma/i]);

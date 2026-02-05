@@ -1,5 +1,5 @@
 import { MessageEvent } from "@twurple/easy-bot/lib";
-import User from "../user/User";
+import User, { isNotAUser } from "../user/User";
 import { _ } from "../utils/ImportConstants";
 import CommandOptions from "./CommandOptions";
 import ICommand from "./ICommand";
@@ -37,6 +37,8 @@ export default abstract class ACommand implements ICommand {
   ) {
     if (this.canReplyToUser(event)) {
       reply(message, event);
+    } else if (isNotAUser(user)) {
+      send(message);
     } else {
       send(`@${user.username} ${message}`);
     }

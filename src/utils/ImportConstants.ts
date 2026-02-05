@@ -13,11 +13,26 @@ export const obsWebSocketUrl = `ws://${obsWebSocket.address}:${obsWebSocket.port
 export const obsWebSocketPassword = obsWebSocket.password;
 const sqlServer = optionJson["sql-server"];
 export const sqlConnectionString = `Driver={ODBC Driver 18 for SQL Server}; Server=${sqlServer.server}; Database=${sqlServer.database};Trusted_Connection=yes;TrustServerCertificate=yes;`;
+
+// Social medias
 const socialMedias = optionJson["social-media-links"];
 export const discordLink = socialMedias.discord;
 export const youtubeLink = socialMedias.youtube;
 export const instagramLink = socialMedias.instagram;
 export const blueskyLink = socialMedias.bluesky;
+export const rankoneLink = socialMedias.rankone;
+export const speedrunComLink = socialMedias["speedrun.com"];
+
+// Clips
+const clips = optionJson.clips;
+export const chaiseClip = clips.chaise;
+export const pbCelesteVOD = clips["pb-celeste"];
+
+// Other Links
+const otherLinks = optionJson["other-links"];
+export const docRollLink = otherLinks["docroll-sheet"];
+export const tutosCelestePlaylist = otherLinks["tutos-celeste"];
+
 // Light testing doesn't use any external ressource like SQL base or OBS websocket
 export const lightTesting: boolean = optionJson["light-testing"];
 

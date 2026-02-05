@@ -1,5 +1,5 @@
 import CommandOptions from "../CommandOptions";
-import SimpleCommand from "../SimpleCommand";
+import SimpleCommand from "../templates/SimpleCommand";
 
 export default class SwitchFriendCodeCommand extends SimpleCommand {
   private static options: CommandOptions = new CommandOptions([/code-?ami/i]);

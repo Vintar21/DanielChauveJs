@@ -2,7 +2,7 @@ import { MessageEvent } from "@twurple/easy-bot";
 import { bot, reply, send } from "../../app";
 import SqlManager from "../../database/SqlManager";
 import ObsManager from "../../obs/ObsManager";
-import User from "../../user/User";
+import User, { isNotAUser } from "../../user/User";
 import { NO_MSG, choose } from "../../utils/CommandsUtils";
 import { playRolled1, playRolled1000 } from "../../utils/MediaUtils";
 import { EMPTY, SPACE } from "../../utils/StringConstants";
@@ -81,6 +81,14 @@ export default class RollCommand extends ACommand {
     this.execute(user, NO_MSG, ignoreCooldowns);
   }
 
+  // @Override need to be a real user
+  public async canExecute(
+    user: User,
+    promisedRole: Promise<symbol>,
+  ): Promise<boolean> {
+    return !isNotAUser(user) && super.canExecute(user, promisedRole);
+  }
+
   // TODO: MesssageUtils avec les parties de message
   public async execute(
     user: User,
@@ -91,7 +99,7 @@ export default class RollCommand extends ACommand {
     var response: string = `${user.username} lance son dé et fait... ${value} !`;
     this.insertValue(user.userId.toString(), user.username, value);
     if (value > this.currentMVP.score) {
-      if (this.currentMVP.user === undefinedUser) {
+      if (isNotAUser(this.currentMVP.user)) {
         // No current MVP
         response += ` Et iel devient notre premièr·e MVP du stream !!!`;
       } else if (user.userId === this.currentMVP.user.userId) {
@@ -127,14 +135,6 @@ export default class RollCommand extends ACommand {
     }
     response += customMessage;
 
-    if (super.canReplyToUser(event)) {
-      reply(response, event);
-    } else {
-      send(response);
-    }
-
-    if (!ignoreCooldowns) {
-      super.updateCooldowns(user.userId);
-    }
+    super.replyOrSend(user, event, ignoreCooldowns, response);
   }
 }

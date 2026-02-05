@@ -1,6 +1,6 @@
 import CommandOptions from "../CommandOptions";
 import { Roles } from "../../utils/RoleUtils";
-import SimpleCommand from "../SimpleCommand";
+import SimpleCommand from "../templates/SimpleCommand";
 
 export default class HelloCommand extends SimpleCommand {
   private static options: CommandOptions = new CommandOptions([

@@ -1,5 +1,5 @@
 import CommandOptions from "../../CommandOptions";
-import NoPrefixSimpleCommand from "../NoPrefixSimpleCommand";
+import NoPrefixSimpleCommand from "../../templates/NoPrefixSimpleCommand";
 
 export default class OuaisOuaisOuaisCommand extends NoPrefixSimpleCommand {
   private static options: CommandOptions = new CommandOptions([

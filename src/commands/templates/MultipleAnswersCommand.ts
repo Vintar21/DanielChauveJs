@@ -1,8 +1,8 @@
-import { MessageEvent } from "@twurple/easy-bot/lib";
-import User from "../user/User";
-import { choose } from "../utils/CommandsUtils";
-import ACommand from "./ACommand";
-import CommandOptions from "./CommandOptions";
+import { MessageEvent } from "@twurple/easy-bot";
+import User from "../../user/User";
+import { choose } from "../../utils/CommandsUtils";
+import ACommand from "../ACommand";
+import CommandOptions from "../CommandOptions";
 
 export default class MultipleAnswersCommand extends ACommand {
   private responses: String[];
