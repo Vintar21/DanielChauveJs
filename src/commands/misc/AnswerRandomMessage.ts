@@ -14,6 +14,7 @@ export default class AnswerRandomMessage extends MultipleAnswersCommand {
     "LUL grave marrant ça !",
     ".............",
     "Mdrr tu dis ça à chaque fois !",
+    "Et donc ça, ça te fait rire ?",
   ];
 
   private static options: CommandOptions = new CommandOptions([/.+/i])
