@@ -14,6 +14,23 @@
   "client-id": "Your Twitch Client ID",
   "password": "Your OAuth token",
   "channels": ["The channel to join"],
+  "social-media-links": {
+    "discord": "Your Discord link goes here",
+    "youtube": "Your YouTube link goes here",
+    "instagram": "Your Instagram link goes here",
+    "bluesky": "Your BlueSky link goes here",
+    "rankone": "Your RankOne link goes here",
+    "speedrun.com": "Your Speedrun.com link goes here"
+  },
+  "clips": {
+    "chaise": "A clip link",
+    "pb-celeste": "A VOD link"
+  },
+  "other-links": {
+    "docroll-sheet": "A GSheet link",
+    "tutos-celeste": "A YouTube playlist link"
+  },
+  "light-testing": false,
   "obs-websocket": {
     "address": "XXX.XXX.XXX.XXX",
     "port": 1234,
