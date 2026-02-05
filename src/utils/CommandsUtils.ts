@@ -16,6 +16,6 @@ export function addPrefixToTriggers(
   return prefixedTriggers;
 }
 
-export function choose(strings: Array<String>): String {
+export function choose(strings: Array<any>): any {
   return strings[Math.floor(Math.random() * strings.length)];
 }
