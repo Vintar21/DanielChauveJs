@@ -1,5 +1,5 @@
 import { MessageEvent } from "@twurple/easy-bot";
-import { bot, reply, send } from "../../app";
+import { bot, canUseObsWebsocket, reply, send } from "../../app";
 import SqlManager from "../../database/SqlManager";
 import ObsManager from "../../obs/ObsManager";
 import User from "../../user/User";

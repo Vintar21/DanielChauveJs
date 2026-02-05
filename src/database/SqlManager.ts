@@ -3,6 +3,7 @@ import { QueryAggregatorResults } from "msnodesqlv8/types";
 import { sqlConnectionString } from "../utils/ImportConstants";
 import Connection = MsNodeSqlV8.Connection;
 import ConnectionPromises = MsNodeSqlV8.ConnectionPromises;
+import { canUseSqlBase } from "../app";
 
 export default class SqlManager {
   private static connection: Promise<Connection> =
@@ -63,13 +64,15 @@ export default class SqlManager {
   private static async executeQuery(
     query: string,
   ): Promise<QueryAggregatorResults> {
-    try {
-      const connection: Connection = await SqlManager.connection;
-      const promises: ConnectionPromises = connection.promises;
-      return await promises.query(query);
-    } catch (err) {
-      // TODO: handle error properly
-      console.log("SQL ERROR: " + err.message);
+    if (canUseSqlBase) {
+      try {
+        const connection: Connection = await SqlManager.connection;
+        const promises: ConnectionPromises = connection.promises;
+        return await promises.query(query);
+      } catch (err) {
+        // TODO: handle error properly
+        console.log("SQL ERROR: " + err.message);
+      }
     }
   }
 }

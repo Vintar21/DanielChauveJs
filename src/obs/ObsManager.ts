@@ -4,6 +4,7 @@ import {
   obsWebSocketUrl,
 } from "../utils/ImportConstants";
 import { INITIAL_MVP_VALUE, MVP_SOURCE } from "./ObsConstants";
+import { canUseObsWebsocket } from "../app";
 
 export default class ObsManager {
   private static obs: OBSWebSocket = new OBSWebSocket();
@@ -17,18 +18,20 @@ export default class ObsManager {
   }
 
   public static updateObsTextSource(name: string, text: string): void {
-    try {
-      ObsManager.obs.connect(obsWebSocketUrl, obsWebSocketPassword).then(() =>
-        ObsManager.obs.call("SetInputSettings", {
-          inputName: name,
-          inputSettings: {
-            text,
-          },
-        }),
-      );
-    } catch (e) {
-      console.log(`OBS source ${name} couldn't be updated`);
-      console.log(e);
+    if (canUseObsWebsocket) {
+      try {
+        ObsManager.obs.connect(obsWebSocketUrl, obsWebSocketPassword).then(() =>
+          ObsManager.obs.call("SetInputSettings", {
+            inputName: name,
+            inputSettings: {
+              text,
+            },
+          }),
+        );
+      } catch (e) {
+        console.log(`OBS source ${name} couldn't be updated`);
+        console.log(e);
+      }
     }
   }
 }

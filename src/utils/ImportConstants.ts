@@ -14,6 +14,9 @@ export const obsWebSocketPassword = obsWebSocket.password;
 const sqlServer = optionJson["sql-server"];
 export const sqlConnectionString = `Driver={ODBC Driver 18 for SQL Server}; Server=${sqlServer.server}; Database=${sqlServer.database};Trusted_Connection=yes;TrustServerCertificate=yes;`;
 
+// Light testing doesn't use any external ressource like SQL base or OBS websocket
+export const lightTesting: boolean = optionJson["light-testing"];
+
 export const options = {
   options: {
     debug: true,

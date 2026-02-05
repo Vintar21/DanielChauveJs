@@ -4,8 +4,16 @@ import { MessageEvent } from "@twurple/easy-bot/lib";
 import ChannelPointsListener from "./channel-points-rewards/ChannelPointsListener";
 import CommandsManager from "./commands/CommandsManager";
 import User from "./user/User";
-import { accessToken, channel, clientId } from "./utils/ImportConstants.js";
+import {
+  accessToken,
+  channel,
+  clientId,
+  lightTesting,
+} from "./utils/ImportConstants.js";
 import { getGreaterRole } from "./utils/RoleUtils";
+
+export const canUseSqlBase: boolean = !lightTesting;
+export const canUseObsWebsocket: boolean = !lightTesting;
 
 const authProvider: StaticAuthProvider = new StaticAuthProvider(
   clientId,
