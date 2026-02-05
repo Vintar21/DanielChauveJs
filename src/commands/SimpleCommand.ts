@@ -9,7 +9,6 @@ export default class SimpleCommand extends ACommand {
   private response: string;
 
   constructor(options: CommandOptions, response: string) {
-    options.triggers = addPrefixToTriggers(options.triggers, options.prefix);
     super(options);
     this.response = response;
   }
@@ -19,14 +18,6 @@ export default class SimpleCommand extends ACommand {
     event: MessageEvent,
     ignoreCooldowns: boolean = false,
   ): void {
-    if (super.canReplyToUser(event)) {
-      reply(this.response, event);
-    } else {
-      send(`@${user.username} ${this.response}`);
-    }
-
-    if (!ignoreCooldowns) {
-      super.updateCooldowns(user.userId);
-    }
+    this.replyOrSend(user, event, ignoreCooldowns, this.response);
   }
 }

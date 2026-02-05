@@ -2,7 +2,7 @@ import CommandOptions from "../CommandOptions";
 import SimpleCommand from "../SimpleCommand";
 
 export default class DanielCommand extends SimpleCommand {
-  private static options: CommandOptions = new CommandOptions().addTriggers([
+  private static options: CommandOptions = new CommandOptions([
     /daniel(chauve)?/i,
   ]);
 

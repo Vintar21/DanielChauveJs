@@ -1,6 +1,8 @@
 import { HelixUser } from "@twurple/api/lib";
 import { Bot } from "@twurple/easy-bot/lib";
 
+export type Role = symbol;
+
 export const Roles = Object.freeze({
   BROADCASTER: Symbol("broadcaster"),
   MOD: Symbol("moderator"),
@@ -9,6 +11,15 @@ export const Roles = Object.freeze({
   FOLLOWER: Symbol("follower"),
   NO_ROLE: Symbol("noRole"),
 });
+
+export const ALL_ROLES: Role[] = [
+  Roles.BROADCASTER,
+  Roles.MOD,
+  Roles.VIP,
+  Roles.SUB,
+  Roles.FOLLOWER,
+  Roles.NO_ROLE,
+];
 
 export function isBroadcaster(
   user: HelixUser,
@@ -37,8 +48,8 @@ export async function getGreaterRole(
   promisedUser: Promise<HelixUser>,
   promisedBroadcaster: Promise<HelixUser>,
   bot: Bot,
-): Promise<symbol> {
-  var role: symbol;
+): Promise<Role> {
+  var role: Role;
   const user = await promisedUser;
   const broadcaster = await promisedBroadcaster;
 

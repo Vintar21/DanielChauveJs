@@ -11,7 +11,7 @@ const authProvider: StaticAuthProvider = new StaticAuthProvider(
   clientId,
   accessToken,
 );
-const bot: Bot = new Bot({ authProvider, channels: [channel] });
+export const bot: Bot = new Bot({ authProvider, channels: [channel] });
 const promisedBroadcaster = bot.api.users.getUserByName(channel);
 
 const commandsManager: CommandsManager = CommandsManager.getInstanceAndInit();

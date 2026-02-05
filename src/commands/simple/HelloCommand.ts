@@ -3,15 +3,14 @@ import { Roles } from "../../utils/RoleUtils";
 import SimpleCommand from "../SimpleCommand";
 
 export default class HelloCommand extends SimpleCommand {
-  private static options: CommandOptions = new CommandOptions()
-    .addTriggers([
-      /s+a*l+u*t+/i,
-      /bo*n*jo*u*r+/i,
-      /yo+/i,
-      /we*sh/i,
-      /co*u*co*u*/i,
-      /he+l{2,}o+/,
-    ])
+  private static options: CommandOptions = new CommandOptions([
+    /s+a*l+u*t+/i,
+    /bo*n*jo*u*r+/i,
+    /yo+/i,
+    /we*sh/i,
+    /co*u*co*u*/i,
+    /he+l{2,}o+/,
+  ])
     .setMaxUsePerUser(1)
     .setByPassRole(Roles.BROADCASTER)
     .setUnallowedRole(Roles.NO_ROLE)

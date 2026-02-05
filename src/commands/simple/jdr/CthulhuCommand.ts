@@ -2,7 +2,7 @@ import CommandOptions from "../../CommandOptions";
 import SimpleCommand from "../../SimpleCommand";
 
 export default class CthulhuCommand extends SimpleCommand {
-  private static options: CommandOptions = new CommandOptions().addTriggers([
+  private static options: CommandOptions = new CommandOptions([
     /ch?th?uh?lh?uh?/i,
   ]);
 

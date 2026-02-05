@@ -2,7 +2,7 @@ import CommandOptions from "../CommandOptions";
 import SimpleCommand from "../SimpleCommand";
 
 export default class ShittyGameCommand extends SimpleCommand {
-  private static options: CommandOptions = new CommandOptions().addTriggers([
+  private static options: CommandOptions = new CommandOptions([
     /(jeux?)?[aà]chi[eéè]r?/i,
   ]);
 

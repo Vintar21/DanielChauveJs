@@ -3,7 +3,7 @@ import CommandOptions from "../../CommandOptions";
 import SimpleCommand from "../../SimpleCommand";
 
 export default class MichelCommand extends SimpleCommand {
-  private static options: CommandOptions = new CommandOptions().addTriggers([
+  private static options: CommandOptions = new CommandOptions([
     /mich[eèéê]l(le)?/i,
   ]);
 

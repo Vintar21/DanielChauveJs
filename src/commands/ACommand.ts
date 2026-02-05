@@ -4,6 +4,7 @@ import { _ } from "../utils/ImportConstants";
 import CommandOptions from "./CommandOptions";
 import ICommand from "./ICommand";
 import { SPACE } from "../utils/StringConstants";
+import { send, reply } from "../app";
 
 export default abstract class ACommand implements ICommand {
   protected options: CommandOptions;
@@ -28,13 +29,33 @@ export default abstract class ACommand implements ICommand {
     ignoreCooldowns: boolean,
   ): void;
 
+  protected replyOrSend(
+    user: User,
+    event: MessageEvent,
+    ignoreCooldowns: boolean,
+    message: string,
+  ) {
+    if (this.canReplyToUser(event)) {
+      reply(message, event);
+    } else {
+      send(`@${user.username} ${message}`);
+    }
+
+    if (!ignoreCooldowns) {
+      this.updateCooldowns(user.userId);
+    }
+  }
+
   // By default we split the message, override this method to change this behavior
   public match(input: string): boolean {
     const parts = input.toLowerCase().trim().split(SPACE);
+
+    return this.internalMatch(parts[0], this.options.getTriggers());
+  }
+
+  protected internalMatch(input: string, triggers: Array<RegExp>): boolean {
     return (
-      _.find(this.options.triggers, (trigger: RegExp) =>
-        trigger.test(parts[0]),
-      ) !== undefined
+      _.find(triggers, (trigger: RegExp) => trigger.test(input)) !== undefined
     );
   }
 

@@ -1,13 +1,14 @@
 import { MessageEvent } from "@twurple/easy-bot";
-import { reply, send } from "../../app";
+import { bot, reply, send } from "../../app";
 import SqlManager from "../../database/SqlManager";
 import ObsManager from "../../obs/ObsManager";
 import User from "../../user/User";
-import { addPrefixToTriggers, NO_MSG } from "../../utils/CommandsUtils";
+import { NO_MSG } from "../../utils/CommandsUtils";
+import { playRolled1, playRolled1000 } from "../../utils/MediaUtils";
 import { EMPTY, SPACE } from "../../utils/StringConstants";
+import { undefinedUser } from "../../user/User";
 import ACommand from "../ACommand";
 import CommandOptions from "../CommandOptions";
-import { undefinedUser } from "../../user/User";
 
 // The famous
 export default class RollCommand extends ACommand {
@@ -16,8 +17,9 @@ export default class RollCommand extends ACommand {
   private currentMVP = { user: undefinedUser, score: 0 };
 
   constructor() {
-    const options: CommandOptions = new CommandOptions().setMaxUsePerUser(1);
-    options.triggers = addPrefixToTriggers([/roll/i], options.prefix);
+    const options: CommandOptions = new CommandOptions([
+      /roll/i,
+    ]).setMaxUsePerUser(1);
     super(options);
     // TODO: create another command to reset MVP + reset when stream starts
     ObsManager.resetObsMvpSource();
@@ -46,7 +48,21 @@ export default class RollCommand extends ACommand {
     await SqlManager.insertRollValueQuery(userId, value);
   }
 
-  private async getCustomMessage(value: number): Promise<String> {
+  private static FOLLOWER_COUNT_MESSAGE: string =
+    "Comme le nombre de followers ici, pourtant on aimerait tous que tu n'en fasse pas partie.";
+
+  private async getCustomMessage(
+    value: number,
+    event: MessageEvent,
+  ): Promise<String> {
+    // Not sure if we should have direct access to bot, and not this way
+    var followerCount: number = await bot.api.channels.getChannelFollowerCount(
+      event.broadcasterId,
+    );
+    if (value === followerCount) {
+      return SPACE + RollCommand.FOLLOWER_COUNT_MESSAGE;
+    }
+
     const availableMessages: String[] =
       await SqlManager.getCustomMessagesQuery(value);
 
@@ -54,7 +70,7 @@ export default class RollCommand extends ACommand {
       console.log(`No custom message for ${value}`);
       return EMPTY;
     }
-    console.log("Available messages: " + availableMessages);
+    console.log(`Available messages: [${availableMessages}]`);
     const ind: number = Math.floor(Math.random() * availableMessages.length);
     return SPACE + availableMessages[ind];
   }
@@ -76,7 +92,7 @@ export default class RollCommand extends ACommand {
     var response: string = `${user.username} lance son dé et fait... ${value} !`;
     this.insertValue(user.userId.toString(), user.username, value);
     if (value > this.currentMVP.score) {
-      if (this.currentMVP.user === undefined) {
+      if (this.currentMVP.user === undefinedUser) {
         // No current MVP
         response += ` Et iel devient notre premièr·e MVP du stream !!!`;
       } else if (user.userId === this.currentMVP.user.userId) {
@@ -95,11 +111,21 @@ export default class RollCommand extends ACommand {
         // MVP is another user
         response += ` Et iel vole le MVP en égalisant @${this.currentMVP.user.username}!!!`;
       }
+
       //TODO: nombre de follower
       this.updateMvp(user, value);
     }
 
-    const customMessage = await this.getCustomMessage(value);
+    var customMessage = await this.getCustomMessage(value, event);
+
+    switch (value) {
+      case 1:
+        playRolled1();
+        break;
+      case 1000:
+        playRolled1000();
+        break;
+    }
     response += customMessage;
 
     if (super.canReplyToUser(event)) {

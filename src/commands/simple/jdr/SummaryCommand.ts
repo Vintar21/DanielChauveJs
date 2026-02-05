@@ -2,7 +2,7 @@ import CommandOptions from "../../CommandOptions";
 import SimpleCommand from "../../SimpleCommand";
 
 export default class SummaryCommand extends SimpleCommand {
-  private static options: CommandOptions = new CommandOptions().addTriggers([
+  private static options: CommandOptions = new CommandOptions([
     /r[éeêè]sum[éeêè]e?/i,
     /campagne/i,
     /histoire/i,

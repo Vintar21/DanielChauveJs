@@ -33,7 +33,8 @@
     "lodash": "^4.17.21",
     "msnodesqlv8": "^5.1.3",
     "mssql": "^12.2.0",
-    "obs-websocket-js": "^5.0.7"
+    "obs-websocket-js": "^5.0.7",
+    "play-sound": "^1.1.6"
   },
   "devDependencies": {
     "@ts-safeql/eslint-plugin": "^4.2.0",
