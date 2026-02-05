@@ -32,7 +32,6 @@ export default class AnswerRandomMessage extends MultipleAnswersCommand {
     event: MessageEvent,
     ignoreCooldowns: boolean,
   ): void {
-    console.log("Triggered:" + 1 / this.proba);
     if (Math.random() < 1 / this.proba) {
       super.execute(user, event, ignoreCooldowns);
     }
