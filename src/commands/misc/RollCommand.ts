@@ -1,10 +1,14 @@
 import { MessageEvent } from "@twurple/easy-bot";
-import { bot, reply, send } from "../../app";
+import { bot } from "../../app";
 import SqlManager from "../../database/SqlManager";
 import ObsManager from "../../obs/ObsManager";
 import User, { isNotAUser } from "../../user/User";
 import { NO_MSG, choose } from "../../utils/CommandsUtils";
-import { playRolled1, playRolled1000 } from "../../utils/MediaUtils";
+import {
+  playSound,
+  ROLLED_1000_SOUND,
+  ROLLED_1_SOUND,
+} from "../../utils/MediaUtils";
 import { EMPTY, SPACE } from "../../utils/StringConstants";
 import { undefinedUser } from "../../user/User";
 import ACommand from "../ACommand";
@@ -127,10 +131,10 @@ export default class RollCommand extends ACommand {
 
     switch (value) {
       case 1:
-        playRolled1();
+        playSound(ROLLED_1_SOUND);
         break;
       case 1000:
-        playRolled1000();
+        playSound(ROLLED_1000_SOUND);
         break;
     }
     response += customMessage;
