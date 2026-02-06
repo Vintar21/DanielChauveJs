@@ -37,6 +37,9 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
+# Configs
+configs/*.json
+!configs/*.template.json
+
 # Misc
-package.json
 package-lock.json

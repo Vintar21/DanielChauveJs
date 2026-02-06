@@ -8,13 +8,15 @@ import {
   accessToken,
   channel,
   clientId,
-  lightTesting,
-} from "./utils/ImportConstants.js";
+  obsLightTesting,
+  sqlLightTesting,
+} from "./config/ConfigLoader";
+
 import { getGreaterRole } from "./utils/RoleUtils";
 import TimerManager from "./timers/TimerManager";
 
-export const canUseSqlBase: boolean = !lightTesting;
-export const canUseObsWebsocket: boolean = !lightTesting;
+export const canUseSqlBase: boolean = !sqlLightTesting;
+export const canUseObsWebsocket: boolean = !obsLightTesting;
 
 const authProvider: StaticAuthProvider = new StaticAuthProvider(
   clientId,

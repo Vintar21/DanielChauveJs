@@ -1,4 +1,4 @@
-import { rankoneLink } from "../../utils/ImportConstants";
+import { rankoneLink } from "../../config/ConfigLoader";
 import CommandOptions from "../CommandOptions";
 import SimpleCommand from "../templates/SimpleCommand";
 

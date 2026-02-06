@@ -1,6 +1,6 @@
 import sql from "msnodesqlv8";
 import { QueryAggregatorResults } from "msnodesqlv8/types";
-import { sqlConnectionString } from "../utils/ImportConstants";
+import { sqlConnectionString } from "../config/ConfigLoader";
 import Connection = MsNodeSqlV8.Connection;
 import ConnectionPromises = MsNodeSqlV8.ConnectionPromises;
 import { canUseSqlBase } from "../app";

@@ -1,4 +1,4 @@
-import { pbCelesteVOD, speedrunComLink } from "../../utils/ImportConstants";
+import { pbCelesteVOD, speedrunComLink } from "../../config/ConfigLoader";
 import CommandOptions from "../CommandOptions";
 import SimpleCommand from "../templates/SimpleCommand";
 

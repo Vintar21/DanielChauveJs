@@ -1,0 +1,18 @@
+{
+  "social-media-links": {
+    "discord": "Your Discord link goes here",
+    "youtube": "Your YouTube link goes here",
+    "instagram": "Your Instagram link goes here",
+    "bluesky": "Your BlueSky link goes here",
+    "rankone": "Your RankOne link goes here",
+    "speedrun.com": "Your Speedrun.com link goes here"
+  },
+  "clips": {
+    "chaise": "A clip link",
+    "pb-celeste": "A VOD link"
+  },
+  "other-links": {
+    "docroll-sheet": "A GSheet link",
+    "tutos-celeste": "A YouTube playlist link"
+  }
+}

@@ -1,9 +1,6 @@
 import OBSWebSocket from "obs-websocket-js";
 import { canUseObsWebsocket } from "../app";
-import {
-  obsWebSocketPassword,
-  obsWebSocketUrl,
-} from "../utils/ImportConstants";
+import { obsWebSocketPassword, obsWebSocketUrl } from "../config/ConfigLoader";
 import { allObsCameraEffects } from "./camera-effects/AllObsCameraEffects";
 import { INITIAL_MVP_VALUE, MVP_SOURCE } from "./ObsConstants";
 import AObsCameraEffect from "./camera-effects/AObsCameraEffect";

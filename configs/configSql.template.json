@@ -1,0 +1,10 @@
+{
+  "sql-light-testing": false,
+  "sql-server": {
+    "server": "Your SQL server address goes here",
+    "database": "Your database name goes here",
+    "trusted-connection": "yes",
+    "trust-server-certificate": "yes",
+    "driver": "ODBC Driver 18 for SQL Server"
+  }
+}

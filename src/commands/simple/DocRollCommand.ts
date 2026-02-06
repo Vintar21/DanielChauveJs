@@ -1,4 +1,4 @@
-import { docRollLink } from "../../utils/ImportConstants";
+import { docRollLink } from "../../config/ConfigLoader";
 import CommandOptions from "../CommandOptions";
 import SimpleCommand from "../templates/SimpleCommand";
 

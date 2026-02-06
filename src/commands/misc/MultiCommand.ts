@@ -1,5 +1,5 @@
 import User from "../../user/User";
-import { channel } from "../../utils/ImportConstants";
+import { channel } from "../../config/ConfigLoader";
 import { Roles } from "../../utils/RoleUtils";
 import ACommand from "../ACommand";
 import CommandOptions from "../CommandOptions";

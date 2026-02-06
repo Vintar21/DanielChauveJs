@@ -1,6 +1,6 @@
+import { discordLink } from "../../config/ConfigLoader";
 import CommandOptions from "../CommandOptions";
 import SimpleCommand from "../templates/SimpleCommand";
-import { discordLink } from "../../utils/ImportConstants";
 
 export default class DiscordCommand extends SimpleCommand {
   private static options: CommandOptions = new CommandOptions([/discord/i]);

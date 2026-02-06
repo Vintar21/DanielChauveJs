@@ -1,4 +1,4 @@
-import { youtubeLink } from "../../utils/ImportConstants";
+import { youtubeLink } from "../../config/ConfigLoader";
 import CommandOptions from "../CommandOptions";
 import SimpleCommand from "../templates/SimpleCommand";
 

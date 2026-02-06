@@ -1,4 +1,4 @@
-import { tutosCelestePlaylist } from "../../utils/ImportConstants";
+import { tutosCelestePlaylist } from "../../config/ConfigLoader";
 import CommandOptions from "../CommandOptions";
 import SimpleCommand from "../templates/SimpleCommand";
 

@@ -1,0 +1,6 @@
+{
+  "username": "Your Bot Twitch username",
+  "client-id": "Your Twitch Client ID",
+  "token": "Your OAuth token",
+  "channels": ["The channel to join"]
+}

@@ -1,4 +1,4 @@
-import { blueskyLink, instagramLink } from "../../utils/ImportConstants";
+import { blueskyLink, instagramLink } from "../../config/ConfigLoader";
 import CommandOptions from "../CommandOptions";
 import SimpleCommand from "../templates/SimpleCommand";
 
