@@ -23,23 +23,18 @@ import {
   TIKTOK_REWARD_ID,
   TOCTOC_REWARD_ID,
 } from "./ChannelPointsConstants";
+import { broadcasterId } from "../config/ConfigLoader";
 
 export default class ChannelPointsListener {
   private static listener: EventSubWsListener;
-  private static broadcaster: Promise<HelixUser>;
   private static instance: ChannelPointsListener;
 
-  constructor(broadcaster: Promise<HelixUser>) {
-    ChannelPointsListener.broadcaster = broadcaster;
-  }
+  constructor() {}
 
-  public static getInstanceAndInit(
-    bot: Bot,
-    broadcaster: Promise<HelixUser>,
-  ): ChannelPointsListener {
+  public static getInstanceAndInit(bot: Bot): ChannelPointsListener {
     var instance = ChannelPointsListener.instance;
     if (instance === undefined) {
-      instance = new ChannelPointsListener(broadcaster);
+      instance = new ChannelPointsListener();
       ChannelPointsListener.listener = new EventSubWsListener({
         apiClient: bot.api,
       });
@@ -51,12 +46,10 @@ export default class ChannelPointsListener {
   // Use getInstanceAndInit instead
   public init(): void {
     ChannelPointsListener.listener.start();
-    ChannelPointsListener.broadcaster.then((broadcaster) => {
-      ChannelPointsListener.listener.onChannelRedemptionAdd(
-        broadcaster,
-        this.onRedemptionRedeemed,
-      );
-    });
+    ChannelPointsListener.listener.onChannelRedemptionAdd(
+      broadcasterId,
+      this.onRedemptionRedeemed,
+    );
   }
 
   private static onCameraEffectRedeemed(input: string): void {

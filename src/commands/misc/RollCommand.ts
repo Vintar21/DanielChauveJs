@@ -14,6 +14,7 @@ import { EMPTY, SPACE } from "../../utils/StringConstants";
 import ACommand from "../ACommand";
 import CommandOptions from "../CommandOptions";
 import { FOLLOWER_COUNT_MESSAGE, NO_MSG } from "../CommandsUtils";
+import { broadcasterId } from "../../config/ConfigLoader";
 
 const options: CommandOptions = new CommandOptions([/roll/i]).setMaxUsePerUser(
   1,
@@ -75,9 +76,8 @@ export default class RollCommand extends ACommand {
     event: MessageEvent,
   ): Promise<String> {
     // Not sure if we should have direct access to bot, and not this way
-    var followerCount: number = await bot.api.channels.getChannelFollowerCount(
-      event.broadcasterId,
-    );
+    var followerCount: number =
+      await bot.api.channels.getChannelFollowerCount(broadcasterId);
     if (value === followerCount) {
       return SPACE + FOLLOWER_COUNT_MESSAGE;
     }

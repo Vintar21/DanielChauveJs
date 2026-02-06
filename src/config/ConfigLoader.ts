@@ -3,6 +3,7 @@ const CONFIGS_FOLDER = "../../configs/";
 // Twitch
 const twitchConfig = require(CONFIGS_FOLDER + "configTwitch.json");
 export const username = twitchConfig.username;
+export const broadcasterId = twitchConfig["twitch-user-id"];
 export const clientId = twitchConfig["client-id"];
 export const accessToken = twitchConfig["access-token"];
 const channels = twitchConfig.channels;

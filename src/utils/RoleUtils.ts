@@ -1,5 +1,6 @@
 import { HelixUser } from "@twurple/api/lib";
 import { Bot } from "@twurple/easy-bot/lib";
+import { broadcasterId } from "../config/ConfigLoader";
 
 export type Role = symbol;
 
@@ -21,47 +22,34 @@ export const ALL_ROLES: Role[] = [
   Roles.NO_ROLE,
 ];
 
-export function isBroadcaster(
-  user: HelixUser,
-  broadcaster: HelixUser,
-): boolean {
-  return user.id === broadcaster.id;
+export function isBroadcaster(user: HelixUser): boolean {
+  return user.id === broadcasterId;
 }
 
-export async function isMod(
-  user: HelixUser,
-  broadcaster: HelixUser,
-  bot: Bot,
-): Promise<boolean> {
-  return bot.api.moderation.checkUserMod(broadcaster.id, user.id);
+export async function isMod(user: HelixUser, bot: Bot): Promise<boolean> {
+  return bot.api.moderation.checkUserMod(broadcasterId, user.id);
 }
 
-export async function isVip(
-  user: HelixUser,
-  broadcaster: HelixUser,
-  bot: Bot,
-): Promise<boolean> {
-  return bot.api.channels.checkVipForUser(broadcaster.id, user.id);
+export async function isVip(user: HelixUser, bot: Bot): Promise<boolean> {
+  return bot.api.channels.checkVipForUser(broadcasterId, user.id);
 }
 
 export async function getGreaterRole(
   promisedUser: Promise<HelixUser>,
-  promisedBroadcaster: Promise<HelixUser>,
   bot: Bot,
 ): Promise<Role> {
   var role: Role;
   const user = await promisedUser;
-  const broadcaster = await promisedBroadcaster;
 
-  if (isBroadcaster(user, broadcaster)) {
+  if (isBroadcaster(user)) {
     role = Roles.BROADCASTER;
-  } else if (isMod(user, broadcaster, bot)) {
+  } else if (isMod(user, bot)) {
     role = Roles.MOD;
-  } else if (isVip(user, broadcaster, bot)) {
+  } else if (isVip(user, bot)) {
     role = Roles.VIP;
-  } else if (user.isSubscribedTo(broadcaster)) {
+  } else if (user.isSubscribedTo(broadcasterId)) {
     role = Roles.SUB;
-  } else if (user.follows(broadcaster)) {
+  } else if (user.follows(broadcasterId)) {
     role = Roles.FOLLOWER;
   } else {
     role = Roles.NO_ROLE;

@@ -3,6 +3,7 @@ import {
   BYPASS,
   DEFAULT_RIGHT,
   Right,
+  seconds,
   UNALLOWED,
 } from "../utils/CommonUtils";
 import { ALL_ROLES, Role, Roles } from "../utils/RoleUtils";
@@ -97,12 +98,12 @@ export default class CommandOptions {
   }
 
   public setGlobalCooldown(cooldownInSeconds: number): CommandOptions {
-    this.globalCooldown = cooldownInSeconds * 1000;
+    this.globalCooldown = seconds(cooldownInSeconds);
     return this;
   }
 
   public setUserCooldown(cooldownInSeconds: number): CommandOptions {
-    this.userCooldown = cooldownInSeconds * 1000;
+    this.userCooldown = seconds(cooldownInSeconds);
     return this;
   }
 

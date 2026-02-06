@@ -3,11 +3,13 @@ import AnswerRandomMessage from "./AnswerRandomMessage";
 import MultiCommand from "./MultiCommand";
 import RollCommand from "./RollCommand";
 import ResetMvpCommand from "./ResetMvpCommand";
+import MarkerCommand from "./MarkerCommand";
 
 // Commands
 export const rollCommand: RollCommand = new RollCommand();
 export const multiCommand: MultiCommand = new MultiCommand();
 export const resetMvpCommand: ResetMvpCommand = new ResetMvpCommand();
+export const markerCommand: MarkerCommand = new MarkerCommand();
 // In a separate array because it should be added in last !
 export const answerRandomMessage: AnswerRandomMessage =
   new AnswerRandomMessage();
