@@ -1,0 +1,7 @@
+{
+  "server-id": "Your Discord server id",
+  "token": "Your Discord Token",
+  "cron": "*/5 * * * *",
+  "channel-id": "The channel ID where the messages will be send",
+  "role-id": "Role ID to tag"
+}

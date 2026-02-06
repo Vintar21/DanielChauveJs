@@ -43,3 +43,11 @@ const sqlConfig = require(CONFIGS_FOLDER + "configSql.json");
 export const sqlLightTesting = sqlConfig["sql-light-testing"];
 const sqlServer = sqlConfig["sql-server"];
 export const sqlConnectionString = `Driver={${sqlServer.driver}}; Server=${sqlServer.server}; Database=${sqlServer.database};Trusted_Connection=${sqlServer["trusted-connection"]};TrustServerCertificate=${sqlServer["trust-server-certificate"]};`;
+
+// Discord
+const discordConfig = require(CONFIGS_FOLDER + "configDiscord.json");
+export const discordServerId = discordConfig["server-id"];
+export const discordToken = discordConfig.token;
+export const cron = discordConfig.cron;
+export const discordChannelId = discordConfig["channel-id"];
+export const discordRoleId = discordConfig["role-id"];

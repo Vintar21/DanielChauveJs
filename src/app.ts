@@ -8,13 +8,16 @@ import {
   accessToken,
   channel,
   clientId,
+  discordToken,
   obsLightTesting,
   sqlLightTesting,
 } from "./config/ConfigLoader";
-
+import DiscordClient from "./discord/DiscordClient";
 import { getGreaterRole } from "./utils/RoleUtils";
 import TimerManager from "./timers/TimerManager";
 import { rollCommand } from "./commands/misc/AllMiscCommands";
+
+import { Events } from "discord.js";
 
 export const canUseSqlBase: boolean = !sqlLightTesting;
 export const canUseObsWebsocket: boolean = !obsLightTesting;
@@ -24,8 +27,16 @@ const authProvider: StaticAuthProvider = new StaticAuthProvider(
   accessToken,
 );
 export const bot: Bot = new Bot({ authProvider, channels: [channel] });
-const promisedBroadcaster = bot.api.users.getUserByName(channel);
+export const promisedBroadcaster = bot.api.users.getUserByName(channel);
 
+const discordClient: DiscordClient = new DiscordClient();
+// When the client is ready, run this code (only once).
+// The distinction between `client: Client<boolean>` and `readyClient: Client<true>` is important for TypeScript developers.
+// It makes some properties non-nullable.
+/*discordClient.once(Events.ClientReady, (readyClient) => {
+  console.log(`Discord client ready ! Logged in as ${readyClient.user.tag}`);
+});*/
+discordClient.start();
 const commandsManager: CommandsManager = CommandsManager.getInstanceAndInit();
 const channelPointsListener: ChannelPointsListener =
   ChannelPointsListener.getInstanceAndInit(bot, promisedBroadcaster);

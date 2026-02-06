@@ -15,6 +15,7 @@
     "@twurple/easy-bot": "^8.0.3",
     "@twurple/eventsub-ws": "^8.0.3",
     "@types/mssql": "^9.1.9",
+    "discord.js": "^14.25.1",
     "es6-promise": "^4.2.8",
     "lodash": "^4.17.21",
     "msnodesqlv8": "^5.1.3",

@@ -4,8 +4,13 @@ import { canUseSqlBase } from "../app";
 import { sqlConnectionString } from "../config/ConfigLoader";
 import { UserId } from "../user/User";
 import {
+  ANNOUNCE_COLUMN,
   DATE_ROLL_COLUMN,
   FIRST,
+  GAME_ANNOUNCES_TABLE,
+  GAME_ID_COLUMN,
+  GAME_NAME_COLUMN,
+  GAMES_TABLE,
   ID_COLUMN,
   PROBA_COLUMN,
   RESULT_COLUMN,
@@ -88,6 +93,37 @@ export default class SqlManager {
     customMessages.forEach((row: any) => {
       for (let i = 0; i < row.proba; i++) {
         availableMessages.push(row.roll_message);
+      }
+    });
+    return availableMessages;
+  }
+
+  public static async getAnnounceMessagesQuery(
+    gameName: string,
+  ): Promise<string[]> {
+    const queryAgregator = await SqlManager.executeQuery(
+      `SELECT ${ANNOUNCE_COLUMN}, ${PROBA_COLUMN} FROM ${GAME_ANNOUNCES_TABLE} 
+        JOIN ${GAMES_TABLE} ON ${GAMES_TABLE}.${ID_COLUMN}=${GAME_ANNOUNCES_TABLE}.${GAME_ID_COLUMN}
+       WHERE ${GAME_NAME_COLUMN}='${gameName}'`,
+    );
+    const customMessages = SqlManager.isValideQueryAgregator(queryAgregator)
+      ? queryAgregator[FIRST]
+      : undefined;
+    // No custrom message
+    if (
+      customMessages === undefined ||
+      customMessages.length === 0 ||
+      customMessages[0]?.roll_message === null
+    ) {
+      return [];
+    }
+
+    // Return a table with duplicated messages according to their probability
+    var availableMessages: string[] = [];
+    // TODO create interface for sql datas
+    customMessages.forEach((row: any) => {
+      for (let i = 0; i < row.proba; i++) {
+        availableMessages.push(row.announce);
       }
     });
     return availableMessages;
