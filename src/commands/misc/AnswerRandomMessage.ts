@@ -1,30 +1,29 @@
+import { MessageEvent } from "@twurple/easy-bot/lib";
 import User from "../../user/User";
-import { MOOBOT_USER_ID } from "../../utils/CommandsUtils";
+import { moobotUser } from "../../user/UserConstants";
 import { Roles } from "../../utils/RoleUtils";
 import CommandOptions from "../CommandOptions";
 import MultipleAnswersCommand from "../templates/MultipleAnswersCommand";
-import { MessageEvent } from "@twurple/easy-bot/lib";
 
+const options: CommandOptions = new CommandOptions([/.+/i])
+  .dontUsePrefix()
+  .setUnallowedRole(Roles.BROADCASTER)
+  .setUnallowedUser(moobotUser.userId);
+
+const answers: String[] = [
+  "J'en ai vu des avis désastreux mais alors celui-ci...",
+  "Les TERMES !",
+  "Ca intéresse qui ?",
+  "LUL grave marrant ça !",
+  ".............",
+  "Mdrr tu dis ça à chaque fois !",
+  "Et donc ça, ça te fait rire ?",
+];
 export default class AnswerRandomMessage extends MultipleAnswersCommand {
-  protected proba: number = 3000;
+  protected proba: number = 1 / 3000;
 
-  private static answers: String[] = [
-    "J'en ai vu des avis désastreux mais alors celui-ci...",
-    "Les TERMES !",
-    "Ca intéresse qui ?",
-    "LUL grave marrant ça !",
-    ".............",
-    "Mdrr tu dis ça à chaque fois !",
-    "Et donc ça, ça te fait rire ?",
-  ];
-
-  private static options: CommandOptions = new CommandOptions([/.+/i])
-    .dontUsePrefix()
-    .setUnallowedRole(Roles.BROADCASTER)
-    .setUnallowedUser(MOOBOT_USER_ID);
-
-  constructor() {
-    super(AnswerRandomMessage.options, AnswerRandomMessage.answers);
+  constructor(enabled: boolean = true) {
+    super(options, answers, enabled);
   }
 
   public execute(
@@ -32,7 +31,7 @@ export default class AnswerRandomMessage extends MultipleAnswersCommand {
     event: MessageEvent,
     ignoreCooldowns: boolean,
   ): void {
-    if (Math.random() < 1 / this.proba) {
+    if (Math.random() < this.proba) {
       super.execute(user, event, ignoreCooldowns);
     }
   }

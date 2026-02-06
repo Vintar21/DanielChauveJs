@@ -16,3 +16,9 @@ export const noCamScenes: Array<string> = [
 ];
 
 export const TIKTOK_SCENE_NAME = "Tiktok verticale";
+
+// API calls
+export const UPDATE_TEXT_SOURCE_CALL = "SetInputSettings";
+export const UPDATE_SOURCE_FILTER_CALL = "SetSourceFilterEnabled";
+export const GET_SCENE_CALL = "GetCurrentProgramScene";
+export const SET_SCENE_CALL = "SetCurrentProgramScene";

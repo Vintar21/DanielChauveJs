@@ -2,8 +2,15 @@ import OBSWebSocket from "obs-websocket-js";
 import { canUseObsWebsocket } from "../app";
 import { obsWebSocketPassword, obsWebSocketUrl } from "../config/ConfigLoader";
 import { allObsCameraEffects } from "./camera-effects/AllObsCameraEffects";
-import { INITIAL_MVP_VALUE, MVP_SOURCE } from "./ObsConstants";
 import AObsCameraEffect from "./camera-effects/AObsCameraEffect";
+import {
+  GET_SCENE_CALL,
+  INITIAL_MVP_VALUE,
+  MVP_SOURCE,
+  SET_SCENE_CALL,
+  UPDATE_SOURCE_FILTER_CALL,
+  UPDATE_TEXT_SOURCE_CALL,
+} from "./ObsConstants";
 
 export default class ObsManager {
   private static obs: OBSWebSocket = new OBSWebSocket();
@@ -20,7 +27,7 @@ export default class ObsManager {
     if (canUseObsWebsocket) {
       try {
         ObsManager.obs.connect(obsWebSocketUrl, obsWebSocketPassword).then(() =>
-          ObsManager.obs.call("SetInputSettings", {
+          ObsManager.obs.call(UPDATE_TEXT_SOURCE_CALL, {
             inputName: name,
             inputSettings: {
               text,
@@ -42,7 +49,7 @@ export default class ObsManager {
     if (canUseObsWebsocket) {
       try {
         ObsManager.obs.connect(obsWebSocketUrl, obsWebSocketPassword).then(() =>
-          ObsManager.obs.call("SetSourceFilterEnabled", {
+          ObsManager.obs.call(UPDATE_SOURCE_FILTER_CALL, {
             sourceName: source,
             filterName: filter,
             filterEnabled: enabled,
@@ -61,7 +68,7 @@ export default class ObsManager {
     if (canUseObsWebsocket) {
       try {
         ObsManager.obs.connect(obsWebSocketUrl, obsWebSocketPassword).then(() =>
-          ObsManager.obs.call("SetCurrentProgramScene", {
+          ObsManager.obs.call(SET_SCENE_CALL, {
             sceneName: scene,
           }),
         );
@@ -77,7 +84,7 @@ export default class ObsManager {
       try {
         return ObsManager.obs
           .connect(obsWebSocketUrl, obsWebSocketPassword)
-          .then(() => ObsManager.obs.call("GetCurrentProgramScene"));
+          .then(() => ObsManager.obs.call(GET_SCENE_CALL));
       } catch (e) {
         console.log(`Can't get OBS current scene`);
         console.log(e);

@@ -1,25 +1,28 @@
 import { MessageEvent } from "@twurple/easy-bot/lib";
-import User, { isNotAUser } from "../user/User";
+import { reply, send } from "../app";
+import User, { isNotAUser, UserId } from "../user/User";
+import { BYPASS, Right, UNALLOWED } from "../utils/CommonUtils";
 import { _ } from "../utils/ImportConstants";
+import { Role } from "../utils/RoleUtils";
+import { SPACE } from "../utils/StringConstants";
 import CommandOptions from "./CommandOptions";
 import ICommand from "./ICommand";
-import { SPACE } from "../utils/StringConstants";
-import { send, reply } from "../app";
+import { UNLIMITED } from "./CommandsUtils";
 
 export default abstract class ACommand implements ICommand {
   protected options: CommandOptions;
 
-  protected userCooldowns: Map<number, number> = new Map();
+  protected userCooldowns: Map<UserId, number> = new Map();
   protected lastUsed: number = 0;
 
-  protected usersUseCount: Map<number, number> = new Map();
+  protected usersUseCount: Map<UserId, number> = new Map();
   protected globalUseCount: number = 0;
 
-  // -1 = not allowed, 0 = allowed, 1 = bypass
-  protected rolesPermissions: Map<symbol, number>;
-  protected usersPermissions: Map<number, number> = new Map();
+  protected rolesPermissions: Map<Role, Right>;
+  protected usersPermissions: Map<UserId, Right> = new Map();
 
-  constructor(options: CommandOptions) {
+  constructor(options: CommandOptions, enabled: boolean = true) {
+    options.enabled = enabled;
     this.options = options;
   }
 
@@ -63,7 +66,7 @@ export default abstract class ACommand implements ICommand {
 
   public async canExecute(
     user: User,
-    promisedRole: Promise<symbol>,
+    promisedRole: Promise<Role>,
   ): Promise<boolean> {
     const role = await promisedRole;
 
@@ -73,16 +76,16 @@ export default abstract class ACommand implements ICommand {
     }
 
     // Specific user permissions
-    if (this.options.usersPermissions.get(user.userId) === -1) {
+    if (this.options.usersPermissions.get(user.userId) === UNALLOWED) {
       return false;
-    } else if (this.options.usersPermissions.get(user.userId) === 1) {
+    } else if (this.options.usersPermissions.get(user.userId) === BYPASS) {
       return true;
     }
 
     // Role permissions
-    if (this.options.rolesPermissions.get(role) === -1) {
+    if (this.options.rolesPermissions.get(role) === UNALLOWED) {
       return false;
-    } else if (this.options.rolesPermissions.get(role) === 1) {
+    } else if (this.options.rolesPermissions.get(role) === BYPASS) {
       return true;
     }
 
@@ -94,7 +97,7 @@ export default abstract class ACommand implements ICommand {
     );
   }
 
-  protected updateCooldowns(userId: number): void {
+  protected updateCooldowns(userId: UserId): void {
     this.globalUseCount += 1;
     this.lastUsed = Date.now();
     if (userId !== undefined) {
@@ -114,7 +117,7 @@ export default abstract class ACommand implements ICommand {
   }
 
   // Return true if the user cooldown has finished
-  private isUserCooldownFinished(userId: number): boolean {
+  private isUserCooldownFinished(userId: UserId): boolean {
     const lastUsed = this.userCooldowns.get(userId);
     if (this.options.userCooldown === 0 || lastUsed === undefined) {
       return true;
@@ -124,15 +127,15 @@ export default abstract class ACommand implements ICommand {
 
   private canUseGlobal(): boolean {
     return (
-      this.options.maxUseGlobal === -1 ||
+      this.options.maxUseGlobal === UNLIMITED ||
       this.globalUseCount < this.options.maxUseGlobal
     );
   }
 
-  private canUseForUser(userId: number): boolean {
+  private canUseForUser(userId: UserId): boolean {
     const userUseCount = this.usersUseCount.get(userId) || 0;
     return (
-      this.options.maxUsePerUser === -1 ||
+      this.options.maxUsePerUser === UNLIMITED ||
       userUseCount < this.options.maxUsePerUser
     );
   }

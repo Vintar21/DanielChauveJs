@@ -1,16 +1,14 @@
-import { JDR_PJ_MESSAGE_START } from "../../../utils/CommandsUtils";
+import { JDR_PJ_MESSAGE_START } from "../../CommandsUtils";
 import CommandOptions from "../../CommandOptions";
 import SimpleCommand from "../../templates/SimpleCommand";
 
+const options: CommandOptions = new CommandOptions([/mich[eèéê]l(le)?/i]);
+
+const answer: String =
+  JDR_PJ_MESSAGE_START + "Michel: https://ibb.co/v49xqhWX 🎵";
+
 export default class MichelCommand extends SimpleCommand {
-  private static options: CommandOptions = new CommandOptions([
-    /mich[eèéê]l(le)?/i,
-  ]);
-
-  private static answer: string =
-    JDR_PJ_MESSAGE_START + "Michel: https://ibb.co/v49xqhWX 🎵";
-
-  constructor() {
-    super(MichelCommand.options, MichelCommand.answer);
+  constructor(enabled: boolean = true) {
+    super(options, answer, enabled);
   }
 }

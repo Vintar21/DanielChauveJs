@@ -2,11 +2,11 @@ import { discordLink } from "../../config/ConfigLoader";
 import CommandOptions from "../CommandOptions";
 import SimpleCommand from "../templates/SimpleCommand";
 
-export default class DiscordCommand extends SimpleCommand {
-  private static options: CommandOptions = new CommandOptions([/discord/i]);
-  private static answer: string = `Ouais y a un discord: ${discordLink}`;
+const options: CommandOptions = new CommandOptions([/discord/i]);
+const answer: String = `Ouais y a un discord: ${discordLink}`;
 
-  constructor() {
-    super(DiscordCommand.options, DiscordCommand.answer);
+export default class DiscordCommand extends SimpleCommand {
+  constructor(enabled: boolean = true) {
+    super(options, answer, enabled);
   }
 }

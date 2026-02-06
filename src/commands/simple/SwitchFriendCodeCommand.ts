@@ -1,12 +1,13 @@
+import { switchFriendCode } from "../../config/ConfigLoader";
 import CommandOptions from "../CommandOptions";
 import SimpleCommand from "../templates/SimpleCommand";
 
+const options: CommandOptions = new CommandOptions([/code-?ami/i]);
+
+const answer: String = `​Mon code ami Switch est ${switchFriendCode}`;
+
 export default class SwitchFriendCodeCommand extends SimpleCommand {
-  private static options: CommandOptions = new CommandOptions([/code-?ami/i]);
-
-  private static answer: string = "​Mon code ami Switch est SW-7448-5566-7296";
-
-  constructor() {
-    super(SwitchFriendCodeCommand.options, SwitchFriendCodeCommand.answer);
+  constructor(enabled: boolean = true) {
+    super(options, answer, enabled);
   }
 }

@@ -10,20 +10,18 @@ import { COOLDOWN_CAMERA_EFFECT } from "../obs/ObsCameraFilterEffect";
 import { noCamScenes, TIKTOK_SCENE_NAME } from "../obs/ObsConstants";
 import ObsManager from "../obs/ObsManager";
 import User from "../user/User";
-import { choose } from "../utils/CommandsUtils";
+import { choose } from "../utils/CommonUtils";
 import { CHILD_LAUGH_SOUND, playSound } from "../utils/MediaUtils";
 import {
   CAMERA_EFFECT_REWARD_ID,
   CHILD_LAUGH_REWARD_ID,
   DRING_REWARD_ID,
+  MAX_TIME_TIKTOK_SCENE,
+  MIN_TIME_TIKTOK_SCENE,
   REROLL_REWARD_ID,
   TEST_REWARD_ID,
   TIKTOK_REWARD_ID,
   TOCTOC_REWARD_ID,
-} from "../utils/TwitchRewardIdUtils";
-import {
-  MAX_TIME_TIKTOK_SCENE,
-  MIN_TIME_TIKTOK_SCENE,
 } from "./ChannelPointsConstants";
 
 export default class ChannelPointsListener {
@@ -35,19 +33,22 @@ export default class ChannelPointsListener {
     ChannelPointsListener.broadcaster = broadcaster;
   }
 
-  public static getInstance(
+  public static getInstanceAndInit(
     bot: Bot,
     broadcaster: Promise<HelixUser>,
   ): ChannelPointsListener {
-    if (ChannelPointsListener.instance === undefined) {
-      ChannelPointsListener.instance = new ChannelPointsListener(broadcaster);
+    var instance = ChannelPointsListener.instance;
+    if (instance === undefined) {
+      instance = new ChannelPointsListener(broadcaster);
       ChannelPointsListener.listener = new EventSubWsListener({
         apiClient: bot.api,
       });
+      instance.init();
     }
-    return ChannelPointsListener.instance;
+    return instance;
   }
 
+  // Use getInstanceAndInit instead
   public init(): void {
     ChannelPointsListener.listener.start();
     ChannelPointsListener.broadcaster.then((broadcaster) => {

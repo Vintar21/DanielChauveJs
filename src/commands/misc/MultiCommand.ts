@@ -1,10 +1,14 @@
-import User from "../../user/User";
+import { MessageEvent } from "@twurple/easy-bot";
 import { channel } from "../../config/ConfigLoader";
+import User from "../../user/User";
 import { Roles } from "../../utils/RoleUtils";
+import { SLASH, SPACE } from "../../utils/StringConstants";
 import ACommand from "../ACommand";
 import CommandOptions from "../CommandOptions";
-import { MessageEvent } from "@twurple/easy-bot";
-import { SPACE, SLASH } from "../../utils/StringConstants";
+
+const options: CommandOptions = new CommandOptions([
+  /multi/i,
+]).unallowAllRolesExcept([Roles.BROADCASTER, Roles.MOD, Roles.VIP]);
 
 export default class MultiCommand extends ACommand {
   // The broadcaster channel is always in the link
@@ -12,11 +16,8 @@ export default class MultiCommand extends ACommand {
   private static linkPrefix: string = "https://kadgar.net/live/";
   private static messageStart: string = "Pour suivre toutes les POVs: ";
 
-  constructor() {
-    const options: CommandOptions = new CommandOptions([
-      /multi/i,
-    ]).unallowAllRolesExcept([Roles.BROADCASTER, Roles.MOD, Roles.VIP]);
-    super(options);
+  constructor(enabled: boolean = true) {
+    super(options, enabled);
   }
 
   public execute(

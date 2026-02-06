@@ -3,11 +3,16 @@ import CommandOptions from "../CommandOptions";
 import SimpleCommand from "./SimpleCommand";
 
 export default class NoPrefixSimpleCommand extends SimpleCommand {
-  constructor(options: CommandOptions, response: string) {
+  constructor(
+    options: CommandOptions,
+    response: String,
+    enabled: boolean = true,
+  ) {
     options.dontUsePrefix();
-    super(options, response);
+    super(options, response, enabled);
   }
 
+  // TODO: add option useFullMessage instead and put that code in ACommand
   // @Override
   public match(input: string): boolean {
     const formattedInput = input.toLowerCase().trim();

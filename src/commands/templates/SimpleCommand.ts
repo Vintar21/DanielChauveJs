@@ -4,10 +4,14 @@ import ACommand from "../ACommand";
 import CommandOptions from "../CommandOptions";
 
 export default class SimpleCommand extends ACommand {
-  private response: string;
+  private response: String;
 
-  constructor(options: CommandOptions, response: string) {
-    super(options);
+  constructor(
+    options: CommandOptions,
+    response: String,
+    enabled: boolean = true,
+  ) {
+    super(options, enabled);
     this.response = response;
   }
 

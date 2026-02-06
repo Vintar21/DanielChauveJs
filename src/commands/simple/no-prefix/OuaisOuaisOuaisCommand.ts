@@ -1,14 +1,12 @@
 import CommandOptions from "../../CommandOptions";
 import NoPrefixSimpleCommand from "../../templates/NoPrefixSimpleCommand";
 
+const options: CommandOptions = new CommandOptions([/(oua(is?|é|e)\s*){3}/i]);
+
+const answer: String = "Ouais ouais ouais !";
+
 export default class OuaisOuaisOuaisCommand extends NoPrefixSimpleCommand {
-  private static options: CommandOptions = new CommandOptions([
-    /(oua(is?|é|e)\s*){3}/i,
-  ]);
-
-  private static answer: string = "Ouais ouais ouais !";
-
-  constructor() {
-    super(OuaisOuaisOuaisCommand.options, OuaisOuaisOuaisCommand.answer);
+  constructor(enabled: boolean = true) {
+    super(options, answer, enabled);
   }
 }

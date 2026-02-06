@@ -1,16 +1,16 @@
+import { undefinedUser, timerUser } from "./UserConstants";
+
 export default class User {
   public username: string;
-  public userId: number;
-  // TODO: refaire le userstate dans un vrai objet ici
+  public userId: UserId;
 
-  constructor(username: string, userId: number) {
+  constructor(username: string, userId: UserId) {
     this.username = username;
     this.userId = userId;
   }
 }
 
-export const undefinedUser: User = { username: undefined, userId: undefined };
-export const timerUser: User = { username: undefined, userId: undefined };
+export type UserId = number | undefined;
 
 export function isNotAUser(user: User) {
   return (

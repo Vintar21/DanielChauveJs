@@ -2,31 +2,43 @@ import { MessageEvent } from "@twurple/easy-bot";
 import { bot } from "../../app";
 import SqlManager from "../../database/SqlManager";
 import ObsManager from "../../obs/ObsManager";
-import User, { isNotAUser } from "../../user/User";
-import { NO_MSG, choose } from "../../utils/CommandsUtils";
+import User, { isNotAUser, UserId } from "../../user/User";
+import { undefinedUser } from "../../user/UserConstants";
+import { choose } from "../../utils/CommonUtils";
 import {
   playSound,
   ROLLED_1000_SOUND,
   ROLLED_1_SOUND,
 } from "../../utils/MediaUtils";
 import { EMPTY, SPACE } from "../../utils/StringConstants";
-import { undefinedUser } from "../../user/User";
 import ACommand from "../ACommand";
 import CommandOptions from "../CommandOptions";
+import { FOLLOWER_COUNT_MESSAGE, NO_MSG } from "../CommandsUtils";
 
-// The famous
+const options: CommandOptions = new CommandOptions([/roll/i]).setMaxUsePerUser(
+  1,
+);
+
+class Mvp {
+  public user: User = undefinedUser;
+  public score: number = 0;
+
+  constructor(user: User, score: number) {
+    this.user = user;
+    this.score = score;
+  }
+}
+
+/* Roll a number between 1 and 1000, store the role in database and update the OBS layout with the greatest number rolled
+ * Reply with a custom message for each value if there is one
+ */
 export default class RollCommand extends ACommand {
   private static RANGE_MAX: number = 1000;
 
-  private currentMVP = { user: undefinedUser, score: 0 };
+  private currentMVP: Mvp = new Mvp(undefinedUser, 0);
 
-  constructor() {
-    const options: CommandOptions = new CommandOptions([
-      /roll/i,
-    ]).setMaxUsePerUser(1);
-    super(options);
-    // TODO: create another command to reset MVP + reset when stream starts
-    ObsManager.resetObsMvpSource();
+  constructor(enabled: boolean = true) {
+    super(options, enabled);
   }
 
   private roll(): number {
@@ -38,11 +50,17 @@ export default class RollCommand extends ACommand {
     ObsManager.updateObsMvpSource(user.username, value);
 
     // Update currentMVP
-    this.currentMVP = { user: user, score: value };
+    this.currentMVP = new Mvp(user, value);
+  }
+
+  public resetMvp() {
+    console.log("Reset MVP");
+    this.currentMVP = new Mvp(undefinedUser, 0);
+    ObsManager.resetObsMvpSource();
   }
 
   private async insertValue(
-    userId: string,
+    userId: UserId,
     username: string,
     value: number,
   ): Promise<void> {
@@ -51,9 +69,6 @@ export default class RollCommand extends ACommand {
     // Insert roll value
     await SqlManager.insertRollValueQuery(userId, value);
   }
-
-  private static FOLLOWER_COUNT_MESSAGE: string =
-    "Comme le nombre de followers ici, pourtant on aimerait tous que tu n'en fasse pas partie.";
 
   private async getCustomMessage(
     value: number,
@@ -64,7 +79,7 @@ export default class RollCommand extends ACommand {
       event.broadcasterId,
     );
     if (value === followerCount) {
-      return SPACE + RollCommand.FOLLOWER_COUNT_MESSAGE;
+      return SPACE + FOLLOWER_COUNT_MESSAGE;
     }
 
     const availableMessages: String[] =
@@ -101,7 +116,7 @@ export default class RollCommand extends ACommand {
   ): Promise<void> {
     var value: number = this.roll();
     var response: string = `${user.username} lance son dé et fait... ${value} !`;
-    this.insertValue(user.userId.toString(), user.username, value);
+    this.insertValue(user.userId, user.username, value);
     if (value > this.currentMVP.score) {
       if (isNotAUser(this.currentMVP.user)) {
         // No current MVP
@@ -140,5 +155,9 @@ export default class RollCommand extends ACommand {
     response += customMessage;
 
     super.replyOrSend(user, event, ignoreCooldowns, response);
+  }
+
+  public getCurrentMvp(): Mvp {
+    return this.currentMVP;
   }
 }

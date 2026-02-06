@@ -1,8 +1,15 @@
-import { commandPrefix } from "../utils/CommandsUtils";
-import { Roles, Role, ALL_ROLES } from "../utils/RoleUtils";
+import {
+  ALLOWED,
+  BYPASS,
+  DEFAULT_RIGHT,
+  Right,
+  UNALLOWED,
+} from "../utils/CommonUtils";
+import { ALL_ROLES, Role, Roles } from "../utils/RoleUtils";
+import { COMMAND_PREFIX, UNLIMITED, UseCount } from "./CommandsUtils";
 
 export default class CommandOptions {
-  prefix: string = commandPrefix;
+  prefix: string = COMMAND_PREFIX;
 
   private triggers: Array<RegExp> = [];
   replyToUser: boolean = true;
@@ -10,22 +17,21 @@ export default class CommandOptions {
   globalCooldown: number = 1000; // In miliseconds
   userCooldown: number = 3000; // In miliseconds
 
-  maxUseGlobal: number = -1; // -1 = unlimited
-  maxUsePerUser: number = -1; // -1 = unlimited
+  maxUseGlobal: UseCount = UNLIMITED;
+  maxUsePerUser: UseCount = UNLIMITED;
 
   enabled: boolean = true;
   private usePrefix: boolean = true;
 
-  // -1 = not allowed, 0 = allowed, 1 = bypass
-  rolesPermissions: Map<Role, number> = new Map([
-    [Roles.BROADCASTER, 1],
-    [Roles.MOD, 0],
-    [Roles.VIP, 0],
-    [Roles.SUB, 0],
-    [Roles.FOLLOWER, 0],
-    [Roles.NO_ROLE, 0],
+  rolesPermissions: Map<Role, Right> = new Map([
+    [Roles.BROADCASTER, BYPASS],
+    [Roles.MOD, DEFAULT_RIGHT],
+    [Roles.VIP, DEFAULT_RIGHT],
+    [Roles.SUB, DEFAULT_RIGHT],
+    [Roles.FOLLOWER, DEFAULT_RIGHT],
+    [Roles.NO_ROLE, DEFAULT_RIGHT],
   ]);
-  usersPermissions: Map<number, number> = new Map();
+  usersPermissions: Map<number, Right> = new Map();
 
   constructor(triggers: Array<RegExp>) {
     this.triggers = triggers;
@@ -114,7 +120,7 @@ export default class CommandOptions {
     if (!Object.values(Roles).includes(role)) {
       throw new Error("Role not recognized");
     }
-    this.rolesPermissions.set(role, 1);
+    this.rolesPermissions.set(role, BYPASS);
     return this;
   }
 
@@ -136,7 +142,7 @@ export default class CommandOptions {
     if (!Object.values(Roles).includes(role)) {
       throw new Error("Role not recognized");
     }
-    this.rolesPermissions.set(role, 0);
+    this.rolesPermissions.set(role, ALLOWED);
     return this;
   }
 
@@ -158,7 +164,7 @@ export default class CommandOptions {
     if (!Object.values(Roles).includes(role)) {
       throw new Error("Role not recognized");
     }
-    this.rolesPermissions.set(role, -1);
+    this.rolesPermissions.set(role, UNALLOWED);
     return this;
   }
 
@@ -176,17 +182,32 @@ export default class CommandOptions {
   }
 
   public setByPassUser(userId: number): CommandOptions {
-    this.usersPermissions.set(userId, 1);
+    this.usersPermissions.set(userId, BYPASS);
+    return this;
+  }
+
+  public setByPassUsers(userIds: number[]): CommandOptions {
+    userIds.forEach((user) => this.setByPassUser(user));
     return this;
   }
 
   public setAllowedUser(userId: number): CommandOptions {
-    this.usersPermissions.set(userId, 0);
+    this.usersPermissions.set(userId, ALLOWED);
+    return this;
+  }
+
+  public setAllowedUsers(userIds: number[]): CommandOptions {
+    userIds.forEach((user) => this.setAllowedUser(user));
     return this;
   }
 
   public setUnallowedUser(userId: number): CommandOptions {
-    this.usersPermissions.set(userId, -1);
+    this.usersPermissions.set(userId, UNALLOWED);
+    return this;
+  }
+
+  public setUnallowedUsers(userIds: number[]): CommandOptions {
+    userIds.forEach((user) => this.setUnallowedUser(user));
     return this;
   }
 

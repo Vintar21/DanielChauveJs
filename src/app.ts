@@ -14,6 +14,7 @@ import {
 
 import { getGreaterRole } from "./utils/RoleUtils";
 import TimerManager from "./timers/TimerManager";
+import { rollCommand } from "./commands/misc/AllMiscCommands";
 
 export const canUseSqlBase: boolean = !sqlLightTesting;
 export const canUseObsWebsocket: boolean = !obsLightTesting;
@@ -26,9 +27,12 @@ export const bot: Bot = new Bot({ authProvider, channels: [channel] });
 const promisedBroadcaster = bot.api.users.getUserByName(channel);
 
 const commandsManager: CommandsManager = CommandsManager.getInstanceAndInit();
-ChannelPointsListener.getInstance(bot, promisedBroadcaster).init();
+const channelPointsListener: ChannelPointsListener =
+  ChannelPointsListener.getInstanceAndInit(bot, promisedBroadcaster);
 const timerManager: TimerManager = TimerManager.getInstanceAndInit();
 timerManager.startAllTimers();
+
+rollCommand.resetMvp();
 
 console.log("### Bot started ###");
 
@@ -42,8 +46,6 @@ bot.onMessage((event) => {
   timerManager.updateAllTimersOnMessage();
   const user = new User(username, userId);
 
-  //username = "Moobot";
-  //userId = 1564983;
   var triggeredCommand = commandsManager.getTriggeredCommand(message);
   triggeredCommand
     ?.canExecute(

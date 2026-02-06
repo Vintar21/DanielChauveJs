@@ -1,9 +1,24 @@
 import sql from "msnodesqlv8";
 import { QueryAggregatorResults } from "msnodesqlv8/types";
+import { canUseSqlBase } from "../app";
 import { sqlConnectionString } from "../config/ConfigLoader";
+import { UserId } from "../user/User";
+import {
+  DATE_ROLL_COLUMN,
+  FIRST,
+  ID_COLUMN,
+  PROBA_COLUMN,
+  RESULT_COLUMN,
+  ROLL_MESSAGE_COLUMN,
+  ROLLS_MESSAGES_TABLE,
+  ROLLS_TABLE,
+  SCORE_COLUMN,
+  USER_ID_COLUMN,
+  USERNAME_COLUMN,
+  USERS_TABLE,
+} from "./SqlConstants";
 import Connection = MsNodeSqlV8.Connection;
 import ConnectionPromises = MsNodeSqlV8.ConnectionPromises;
-import { canUseSqlBase } from "../app";
 
 export default class SqlManager {
   private static connection: Promise<Connection> =
@@ -11,15 +26,18 @@ export default class SqlManager {
 
   // Return true if a new user was inserted
   public static async insertNewUserQuery(
-    userId: string,
+    userId: UserId,
     username: string,
   ): Promise<boolean> {
     const queryAgregator = await SqlManager.executeQuery(
-      `IF NOT EXISTS(SELECT id FROM users WHERE id=${userId}) BEGIN INSERT INTO users (id, username) VALUES (${userId}, '${username}') END;`,
+      `IF NOT EXISTS(SELECT ${ID_COLUMN} FROM ${USERS_TABLE} WHERE ${ID_COLUMN}=${userId})
+        BEGIN 
+          INSERT INTO ${USERS_TABLE} (${ID_COLUMN}, ${USERNAME_COLUMN}) VALUES (${userId}, '${username}')
+        END;`,
     );
     const inserted: boolean =
       SqlManager.isValideQueryAgregator(queryAgregator) &&
-      queryAgregator["first"].length > 0;
+      queryAgregator[FIRST].length > 0;
     if (inserted) {
       console.log(`New user inserted: {${userId} | ${username}}`);
     }
@@ -27,11 +45,11 @@ export default class SqlManager {
   }
 
   public static async insertRollValueQuery(
-    userId: string,
+    userId: UserId,
     value: number,
   ): Promise<QueryAggregatorResults> {
     const queryAgregator = await SqlManager.executeQuery(
-      `INSERT INTO rolls (userId, score, dateRoll) VALUES (${userId}, ${value}, GETDATE());`,
+      `INSERT INTO ${ROLLS_TABLE} (${USER_ID_COLUMN}, ${SCORE_COLUMN}, ${DATE_ROLL_COLUMN}) VALUES (${userId}, ${value}, GETDATE());`,
     );
     console.log(`Roll added: ${userId} - ${value}`);
     return queryAgregator;
@@ -43,17 +61,17 @@ export default class SqlManager {
     return (
       queryAgregator !== undefined &&
       queryAgregator !== null &&
-      queryAgregator["first"] !== undefined &&
-      queryAgregator["first"] !== null
+      queryAgregator[FIRST] !== undefined &&
+      queryAgregator[FIRST] !== null
     );
   }
 
   public static async getCustomMessagesQuery(value: number): Promise<String[]> {
     const queryAgregator = await SqlManager.executeQuery(
-      `SELECT roll_message, proba FROM rolls_messages WHERE result=${value}`,
+      `SELECT ${ROLL_MESSAGE_COLUMN}, ${PROBA_COLUMN} FROM ${ROLLS_MESSAGES_TABLE} WHERE ${RESULT_COLUMN}=${value}`,
     );
     const customMessages = SqlManager.isValideQueryAgregator(queryAgregator)
-      ? queryAgregator["first"]
+      ? queryAgregator[FIRST]
       : undefined;
     // No custrom message
     if (

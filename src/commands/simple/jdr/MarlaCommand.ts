@@ -1,14 +1,14 @@
-import { JDR_PJ_MESSAGE_START } from "../../../utils/CommandsUtils";
+import { JDR_PJ_MESSAGE_START } from "../../CommandsUtils";
 import CommandOptions from "../../CommandOptions";
 import SimpleCommand from "../../templates/SimpleCommand";
 
+const options: CommandOptions = new CommandOptions([/marla/i]);
+
+const answer: String =
+  JDR_PJ_MESSAGE_START + "Marla: https://ibb.co/tTfScb5X 🔎";
+
 export default class MarlaCommand extends SimpleCommand {
-  private static options: CommandOptions = new CommandOptions([/marla/i]);
-
-  private static answer: string =
-    JDR_PJ_MESSAGE_START + "Marla: https://ibb.co/tTfScb5X 🔎";
-
-  constructor() {
-    super(MarlaCommand.options, MarlaCommand.answer);
+  constructor(enabled: boolean = true) {
+    super(options, answer, enabled);
   }
 }

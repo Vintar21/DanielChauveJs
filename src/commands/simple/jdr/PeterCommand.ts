@@ -1,14 +1,14 @@
-import { JDR_PJ_MESSAGE_START } from "../../../utils/CommandsUtils";
+import { JDR_PJ_MESSAGE_START } from "../../CommandsUtils";
 import CommandOptions from "../../CommandOptions";
 import SimpleCommand from "../../templates/SimpleCommand";
 
+const options: CommandOptions = new CommandOptions([/peter/i]);
+
+const answer: String =
+  JDR_PJ_MESSAGE_START + "Peter: https://ibb.co/CpTz77tC 🔫";
+
 export default class PeterCommand extends SimpleCommand {
-  private static options: CommandOptions = new CommandOptions([/peter/i]);
-
-  private static answer: string =
-    JDR_PJ_MESSAGE_START + "Peter: https://ibb.co/CpTz77tC 🔫";
-
-  constructor() {
-    super(PeterCommand.options, PeterCommand.answer);
+  constructor(enabled: boolean = true) {
+    super(options, answer, enabled);
   }
 }

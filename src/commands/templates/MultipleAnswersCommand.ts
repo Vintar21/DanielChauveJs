@@ -1,14 +1,18 @@
 import { MessageEvent } from "@twurple/easy-bot";
 import User from "../../user/User";
-import { choose } from "../../utils/CommandsUtils";
+import { choose } from "../../utils/CommonUtils";
 import ACommand from "../ACommand";
 import CommandOptions from "../CommandOptions";
 
 export default class MultipleAnswersCommand extends ACommand {
   private responses: String[];
 
-  constructor(options: CommandOptions, responses: String[]) {
-    super(options);
+  constructor(
+    options: CommandOptions,
+    responses: String[],
+    enabled: boolean = true,
+  ) {
+    super(options, enabled);
     this.responses = responses;
   }
 

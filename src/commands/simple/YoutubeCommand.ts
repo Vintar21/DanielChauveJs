@@ -2,11 +2,11 @@ import { youtubeLink } from "../../config/ConfigLoader";
 import CommandOptions from "../CommandOptions";
 import SimpleCommand from "../templates/SimpleCommand";
 
-export default class YoutubeCommand extends SimpleCommand {
-  private static options: CommandOptions = new CommandOptions([/youtube/i]);
-  private static answer: string = `​Twitch nous oblige à limiter les rediffs, mais vous pouvez tout retrouver sur YouTube: ${youtubeLink}`;
+const options: CommandOptions = new CommandOptions([/youtube/i]);
+const answer: String = `​Twitch nous oblige à limiter les rediffs, mais vous pouvez tout retrouver sur YouTube: ${youtubeLink}`;
 
-  constructor() {
-    super(YoutubeCommand.options, YoutubeCommand.answer);
+export default class YoutubeCommand extends SimpleCommand {
+  constructor(enabled: boolean = true) {
+    super(options, answer, enabled);
   }
 }

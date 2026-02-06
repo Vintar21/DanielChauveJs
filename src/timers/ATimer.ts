@@ -1,10 +1,10 @@
 import { send } from "../app";
-import { EMPTY } from "../utils/StringConstants";
-import TimerOptions from "./TimerOptions";
-import { TimerMessage } from "./TimerMessage";
 import ACommand from "../commands/ACommand";
-import { timerUser, undefinedUser } from "../user/User";
-import { NO_MSG } from "../utils/CommandsUtils";
+import { NO_MSG } from "../commands/CommandsUtils";
+import { timerUser } from "../user/UserConstants";
+import { EMPTY } from "../utils/StringConstants";
+import { TimerMessage } from "./TimerMessage";
+import TimerOptions from "./TimerOptions";
 export default abstract class ATimer {
   protected options: TimerOptions;
   protected timerFinished: boolean = false;

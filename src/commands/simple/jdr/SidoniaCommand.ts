@@ -1,14 +1,14 @@
-import { JDR_PJ_MESSAGE_START } from "../../../utils/CommandsUtils";
+import { JDR_PJ_MESSAGE_START } from "../../CommandsUtils";
 import CommandOptions from "../../CommandOptions";
 import SimpleCommand from "../../templates/SimpleCommand";
 
+const options: CommandOptions = new CommandOptions([/sidonia/i]);
+
+const answer: String =
+  JDR_PJ_MESSAGE_START + "Sidonia: https://ibb.co/RGTnMKYT 🦝";
+
 export default class SidoniaCommand extends SimpleCommand {
-  private static options: CommandOptions = new CommandOptions([/sidonia/i]);
-
-  private static answer: string =
-    JDR_PJ_MESSAGE_START + "Sidonia: https://ibb.co/RGTnMKYT 🦝";
-
-  constructor() {
-    super(SidoniaCommand.options, SidoniaCommand.answer);
+  constructor(enabled: boolean = true) {
+    super(options, answer, enabled);
   }
 }
