@@ -1,5 +1,4 @@
 import { MessageEvent } from "@twurple/easy-bot";
-import { bot } from "../../app";
 import SqlManager from "../../database/SqlManager";
 import ObsManager from "../../obs/ObsManager";
 import User, { isNotAUser, UserId } from "../../user/User";
@@ -15,6 +14,7 @@ import ACommand from "../ACommand";
 import CommandOptions from "../CommandOptions";
 import { FOLLOWER_COUNT_MESSAGE, NO_MSG } from "../CommandsUtils";
 import { broadcasterId } from "../../config/ConfigLoader";
+import { broadcasterApp } from "../../app";
 
 const options: CommandOptions = new CommandOptions([/roll/i]).setMaxUsePerUser(
   1,
@@ -77,7 +77,7 @@ export default class RollCommand extends ACommand {
   ): Promise<String> {
     // Not sure if we should have direct access to bot, and not this way
     var followerCount: number =
-      await bot.api.channels.getChannelFollowerCount(broadcasterId);
+      await broadcasterApp.api.channels.getChannelFollowerCount(broadcasterId);
     if (value === followerCount) {
       return SPACE + FOLLOWER_COUNT_MESSAGE;
     }

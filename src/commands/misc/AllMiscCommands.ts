@@ -17,6 +17,7 @@ export const answerRandomMessage: AnswerRandomMessage =
 // Arrays
 export const allMiscCommands: Array<ICommand> = [
   rollCommand,
+  markerCommand,
   multiCommand,
   resetMvpCommand,
 ];

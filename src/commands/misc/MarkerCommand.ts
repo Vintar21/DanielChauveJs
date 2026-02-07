@@ -3,7 +3,7 @@ import User from "../../user/User";
 import { Roles } from "../../utils/RoleUtils";
 import CommandOptions from "../CommandOptions";
 import ACommand from "../ACommand";
-import { bot } from "../../app";
+import { botApp } from "../../app";
 import { broadcasterId } from "../../config/ConfigLoader";
 
 const options: CommandOptions = new CommandOptions([
@@ -21,7 +21,8 @@ export default class AnswerRandomMessage extends ACommand {
     event: MessageEvent,
     ignoreCooldowns: boolean,
   ): void {
-    bot.api.streams.createStreamMarker(broadcasterId);
+    // Check if stream is online first
+    botApp.api.streams.createStreamMarker(broadcasterId);
     this.replyOrSend(user, event, ignoreCooldowns, "Marker créé chef !");
   }
 }

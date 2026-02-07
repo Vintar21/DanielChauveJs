@@ -5,7 +5,6 @@ import {
   GatewayIntentBits,
   GuildBasedChannel,
 } from "discord.js";
-import { bot } from "../app";
 import {
   broadcasterId,
   channel,
@@ -22,6 +21,7 @@ import {
   twitchEmbedTemplate,
   TAG_EVERYONE,
 } from "./DiscordConstants";
+import { broadcasterApp } from "../app";
 export default class DiscordClient extends Client {
   private twitchAnnouncesChannel: GuildBasedChannel;
   private currentStreamStart: number;
@@ -35,7 +35,7 @@ export default class DiscordClient extends Client {
   }
 
   private async getStreamCategoryName(): Promise<string> {
-    return bot.api.channels
+    return broadcasterApp.api.channels
       .getChannelInfoById(broadcasterId)
       .then((channel) => channel.gameName);
   }
@@ -72,7 +72,7 @@ export default class DiscordClient extends Client {
   }
 
   private async check() {
-    const broadcaster = await bot.api.users.getUserByName(channel);
+    const broadcaster = await broadcasterApp.api.users.getUserByName(channel);
     const stream = await this.getCurrentStream(broadcaster);
     if (this.canSendLiveAnnounce(stream)) {
       const category = await this.getStreamCategoryName();

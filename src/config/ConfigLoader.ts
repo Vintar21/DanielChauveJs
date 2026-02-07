@@ -2,12 +2,14 @@ const CONFIGS_FOLDER = "../../configs/";
 
 // Twitch
 const twitchConfig = require(CONFIGS_FOLDER + "configTwitch.json");
-export const username = twitchConfig.username;
-export const broadcasterId = twitchConfig["twitch-user-id"];
-export const clientId = twitchConfig["client-id"];
-export const accessToken = twitchConfig["access-token"];
-const channels = twitchConfig.channels;
-export const channel = channels[0];
+export const broadcasterId = twitchConfig["twitch-broadcaster-id"];
+export const broadcasterClientId = twitchConfig["broadcaster-client-id"];
+export const broadCasterAccessToken = twitchConfig["broadcaster-access-token"];
+export const botId = twitchConfig["twitch-bot-id"] ?? broadcasterId;
+export const botClientId = twitchConfig["bot-client-id"] ?? broadcasterClientId;
+export const botAccessToken =
+  twitchConfig["bot-access-token"] ?? broadCasterAccessToken;
+export const channel = twitchConfig.channel;
 
 // Links
 const linksConfig = require(CONFIGS_FOLDER + "configLinks.json");
