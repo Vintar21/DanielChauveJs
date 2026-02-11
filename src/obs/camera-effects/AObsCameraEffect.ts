@@ -17,8 +17,7 @@ export default abstract class AObsCameraEffect {
 
   public match(input: string): boolean {
     return (
-      _.find(this.triggers, (trigger: RegExp) => trigger.test(input)) !==
-      undefined
+      _.find(this.triggers, (trigger: RegExp) => trigger.test(input))
     );
   }
 

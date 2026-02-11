@@ -8,18 +8,7 @@ export default class NoPrefixSimpleCommand extends SimpleCommand {
     response: String,
     enabled: boolean = true,
   ) {
-    options.dontUsePrefix();
+    options.dontUsePrefix().canUseFullMessage();
     super(options, response, enabled);
-  }
-
-  // TODO: add option useFullMessage instead and put that code in ACommand
-  // @Override
-  public match(input: string): boolean {
-    const formattedInput = input.toLowerCase().trim();
-    return (
-      _.find(this.options.getTriggers(), (trigger: RegExp) =>
-        trigger.test(formattedInput),
-      ) !== undefined
-    );
   }
 }
