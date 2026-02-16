@@ -13,27 +13,58 @@ import {
 } from "./ObsConstants";
 
 export default class ObsManager {
+  private ready: boolean;
   private static obs: OBSWebSocket = new OBSWebSocket();
 
-  public static updateObsMvpSource(username: string, value: number): void {
+  private static instance: ObsManager;
+
+  public static getInstanceAndInit(): ObsManager {
+    if (!ObsManager.instance) {
+      ObsManager.instance = new ObsManager();
+    }
+    const instance = ObsManager.instance;
+    instance.connect();
+    return instance;
+  }
+
+  private constructor() {}
+
+  public updateObsMvpSource(username: string, value: number): void {
     this.updateObsTextSource(MVP_SOURCE, `MVP : ${username} - ${value}`);
   }
 
-  public static resetObsMvpSource(): void {
+  public resetObsMvpSource(): void {
     this.updateObsTextSource(MVP_SOURCE, INITIAL_MVP_VALUE);
   }
 
-  public static updateObsTextSource(name: string, text: string): void {
+  private async connect(): Promise<boolean> {
     if (canUseObsWebsocket) {
-      try {
-        ObsManager.obs.connect(obsWebSocketUrl, obsWebSocketPassword).then(() =>
-          ObsManager.obs.call(UPDATE_TEXT_SOURCE_CALL, {
-            inputName: name,
-            inputSettings: {
-              text,
-            },
-          }),
+      await ObsManager.obs
+        .connect(obsWebSocketUrl, obsWebSocketPassword)
+        .then(() => {
+          this.ready = true;
+          this.resetObsMvpSource();
+          console.log("Connected to OBS Websocket");
+        })
+        .catch((err) =>
+          console.log(
+            `Couldn't connect to OBS Websocket, some features won't work : ${err}`,
+          ),
         );
+    }
+
+    return this.ready;
+  }
+
+  public updateObsTextSource(name: string, text: string): void {
+    if (canUseObsWebsocket && this.ready) {
+      try {
+        ObsManager.obs.call(UPDATE_TEXT_SOURCE_CALL, {
+          inputName: name,
+          inputSettings: {
+            text,
+          },
+        });
       } catch (e) {
         console.log(`OBS source ${name} couldn't be updated`);
         console.log(e);
@@ -41,20 +72,18 @@ export default class ObsManager {
     }
   }
 
-  public static setSourceFilter(
+  public setSourceFilter(
     source: string,
     filter: string,
     enabled: boolean,
   ): void {
-    if (canUseObsWebsocket) {
+    if (canUseObsWebsocket && this.ready) {
       try {
-        ObsManager.obs.connect(obsWebSocketUrl, obsWebSocketPassword).then(() =>
-          ObsManager.obs.call(UPDATE_SOURCE_FILTER_CALL, {
-            sourceName: source,
-            filterName: filter,
-            filterEnabled: enabled,
-          }),
-        );
+        ObsManager.obs.call(UPDATE_SOURCE_FILTER_CALL, {
+          sourceName: source,
+          filterName: filter,
+          filterEnabled: enabled,
+        });
       } catch (e) {
         console.log(
           `OBS filter ${filter} status couldn't be changed on source ${source}`,
@@ -64,14 +93,12 @@ export default class ObsManager {
     }
   }
 
-  public static changeScene(scene: string): void {
-    if (canUseObsWebsocket) {
+  public changeScene(scene: string): void {
+    if (canUseObsWebsocket && this.ready) {
       try {
-        ObsManager.obs.connect(obsWebSocketUrl, obsWebSocketPassword).then(() =>
-          ObsManager.obs.call(SET_SCENE_CALL, {
-            sceneName: scene,
-          }),
-        );
+        ObsManager.obs.call(SET_SCENE_CALL, {
+          sceneName: scene,
+        });
       } catch (e) {
         console.log(`Can't switch to OBS scene ${scene}`);
         console.log(e);
@@ -79,12 +106,10 @@ export default class ObsManager {
     }
   }
 
-  public static async getCurrentScene(): Promise<any> {
-    if (canUseObsWebsocket) {
+  public async getCurrentScene(): Promise<any> {
+    if (canUseObsWebsocket && this.ready) {
       try {
-        return ObsManager.obs
-          .connect(obsWebSocketUrl, obsWebSocketPassword)
-          .then(() => ObsManager.obs.call(GET_SCENE_CALL));
+        return ObsManager.obs.call(GET_SCENE_CALL);
       } catch (e) {
         console.log(`Can't get OBS current scene`);
         console.log(e);

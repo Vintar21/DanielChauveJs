@@ -1,6 +1,8 @@
+import { minutes, seconds } from "../utils/CommonUtils";
+
 export default class TimerOptions {
   private minNumberOfMessages: number = 25;
-  private minTimeElapsed: number = 10 * 60 * 1000; // milliseconds
+  private minTimeElapsed: number = minutes(10);
 
   constructor() {}
 
@@ -14,12 +16,12 @@ export default class TimerOptions {
   }
 
   public setTimerInSeconds(sec: number): TimerOptions {
-    this.minTimeElapsed = sec * 1000;
+    this.minTimeElapsed = seconds(sec);
     return this;
   }
 
   public setTimerInMinutes(min: number): TimerOptions {
-    this.setTimerInSeconds(min * 60);
+    this.minTimeElapsed = minutes(min);
     return this;
   }
 

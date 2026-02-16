@@ -1,3 +1,5 @@
+import { minutes } from "../utils/CommonUtils";
+
 export const CameraEffects = Object.freeze({
   BLURRY: Symbol("blurry"),
   MIRROR: Symbol("mirror"),
@@ -16,7 +18,7 @@ export const CameraEffects = Object.freeze({
 
 export type CameraEffect = symbol;
 export const CAMERA_SOURCE_FILTER_NAME = "Filtres Caméra";
-export const COOLDOWN_CAMERA_EFFECT = 2 * 60 * 1000;
+export const COOLDOWN_CAMERA_EFFECT = minutes(2);
 
 export const cameraEffectRealName: Map<CameraEffect, string> = new Map<
   CameraEffect,

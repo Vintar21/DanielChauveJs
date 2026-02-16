@@ -1,6 +1,7 @@
 import { allMiscCommands, lastAddedCommands } from "./misc/AllMiscCommands";
 import { allSimpleCommands } from "./simple/AllSimpleCommands";
 import { allNoPrefixSimpleCommands } from "./simple/no-prefix/AllNoPrefixSimpleCommands";
+import { commands } from "./CommandCreation";
 
 import ICommand from "./ICommand";
 
@@ -31,11 +32,13 @@ export default class CommandsManager {
   }
 
   public addCommands(commands: Array<ICommand>): void {
-    commands.forEach((command) => this.addCommand(command));
+    commands
+      .filter((command) => command.isEnabled())
+      .forEach((command) => this.addCommand(command));
   }
 
   // Shouldn't init yourself, use getInstanceAndInit instead
-  public init(): void {
+  protected init(): void {
     // Init only once
     if (CommandsManager.commands.length > 0) {
       return;
@@ -46,6 +49,8 @@ export default class CommandsManager {
 
     // Simple Commands
     this.addCommands(allSimpleCommands);
+
+    // this.addCommands(commands);
 
     // No Prefix Commands (last to be add)
     this.addCommands(allNoPrefixSimpleCommands);

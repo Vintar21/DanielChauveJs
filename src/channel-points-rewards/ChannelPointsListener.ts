@@ -1,8 +1,7 @@
-import { HelixUser } from "@twurple/api";
 import { Bot } from "@twurple/easy-bot";
 import { EventSubChannelRedemptionAddEvent } from "@twurple/eventsub-base/lib/events/EventSubChannelRedemptionAddEvent";
 import { EventSubWsListener } from "@twurple/eventsub-ws";
-import { send } from "../app";
+import { obsManager, send } from "../app";
 import { rollCommand } from "../commands/misc/AllMiscCommands";
 import { allObsCameraEffects } from "../obs/camera-effects/AllObsCameraEffects";
 import AObsCameraEffect from "../obs/camera-effects/AObsCameraEffect";
@@ -23,23 +22,18 @@ import {
   TIKTOK_REWARD_ID,
   TOCTOC_REWARD_ID,
 } from "./ChannelPointsConstants";
+import { broadcasterId } from "../config/ConfigLoader";
 
 export default class ChannelPointsListener {
   private static listener: EventSubWsListener;
-  private static broadcaster: Promise<HelixUser>;
   private static instance: ChannelPointsListener;
 
-  constructor(broadcaster: Promise<HelixUser>) {
-    ChannelPointsListener.broadcaster = broadcaster;
-  }
+  constructor() {}
 
-  public static getInstanceAndInit(
-    bot: Bot,
-    broadcaster: Promise<HelixUser>,
-  ): ChannelPointsListener {
+  public static getInstanceAndInit(bot: Bot): ChannelPointsListener {
     var instance = ChannelPointsListener.instance;
     if (instance === undefined) {
-      instance = new ChannelPointsListener(broadcaster);
+      instance = new ChannelPointsListener();
       ChannelPointsListener.listener = new EventSubWsListener({
         apiClient: bot.api,
       });
@@ -49,14 +43,12 @@ export default class ChannelPointsListener {
   }
 
   // Use getInstanceAndInit instead
-  public init(): void {
+  protected init(): void {
     ChannelPointsListener.listener.start();
-    ChannelPointsListener.broadcaster.then((broadcaster) => {
-      ChannelPointsListener.listener.onChannelRedemptionAdd(
-        broadcaster,
-        this.onRedemptionRedeemed,
-      );
-    });
+    ChannelPointsListener.listener.onChannelRedemptionAdd(
+      broadcasterId,
+      this.onRedemptionRedeemed,
+    );
   }
 
   private static onCameraEffectRedeemed(input: string): void {
@@ -73,7 +65,7 @@ export default class ChannelPointsListener {
   private static onTikTokSceneRedeemed(
     event: EventSubChannelRedemptionAddEvent,
   ): void {
-    ObsManager.getCurrentScene().then((scene) => {
+    obsManager.getCurrentScene().then((scene) => {
       const sceneName = scene.currentProgramSceneName;
       if (noCamScenes.includes(sceneName)) {
         send(
@@ -86,12 +78,12 @@ export default class ChannelPointsListener {
         );
         // TODO: refund if possible
       } else {
-        ObsManager.changeScene(TIKTOK_SCENE_NAME);
+        obsManager.changeScene(TIKTOK_SCENE_NAME);
         var randomCooldown =
           Math.floor(
             Math.random() * (MAX_TIME_TIKTOK_SCENE - MIN_TIME_TIKTOK_SCENE),
           ) + MIN_TIME_TIKTOK_SCENE;
-        setTimeout(() => ObsManager.changeScene(sceneName), randomCooldown);
+        setTimeout(() => obsManager.changeScene(sceneName), randomCooldown);
       }
     });
   }

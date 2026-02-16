@@ -1,3 +1,4 @@
+import { obsManager } from "../../app";
 import { _ } from "../../utils/ImportConstants";
 import {
   CAMERA_SOURCE_FILTER_NAME,
@@ -16,10 +17,7 @@ export default abstract class AObsCameraEffect {
   }
 
   public match(input: string): boolean {
-    return (
-      _.find(this.triggers, (trigger: RegExp) => trigger.test(input)) !==
-      undefined
-    );
+    return _.find(this.triggers, (trigger: RegExp) => trigger.test(input));
   }
 
   public enable(): void {
@@ -37,10 +35,10 @@ export default abstract class AObsCameraEffect {
   }
 
   private enableSourceFilter(source: string, filter: string): void {
-    ObsManager.setSourceFilter(source, filter, true);
+    obsManager.setSourceFilter(source, filter, true);
   }
 
   private disableSourceFilter(source: string, filter: string): void {
-    ObsManager.setSourceFilter(source, filter, false);
+    obsManager.setSourceFilter(source, filter, false);
   }
 }

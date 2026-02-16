@@ -1,6 +1,9 @@
 {
-  "username": "Your Bot Twitch username",
-  "client-id": "Your Twitch Client ID",
-  "token": "Your OAuth token",
-  "channels": ["The channel to join"]
+  "channel": "Your Twitch channel the bot will connect to",
+  "twitch-broadcaster-id": 12345678,
+  "broadcaster-client-id": "Your Twitch Client ID from your acccount",
+  "broadcaster-access-token": "Your OAuth token from your account",
+  "twitch-bot-id": 12345678,
+  "bot-client-id": "Your Twitch Client ID from your bot acccount",
+  "bot-access-token": "Your OAuth token from your bot account"
 }

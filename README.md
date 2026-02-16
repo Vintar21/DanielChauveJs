@@ -6,7 +6,7 @@ The name comes from my own bot name account.
 
 ## Twitch Bot Template
 
-Based on [Twurple](https://twurple.js.org/).
+For getting your Twitch ClientIds/AccessTokens you can use: [Twitch Token Generator](https://twitchtokengenerator.com/).
 
 This is the source code of my personal bot but I believe you could find concrete use of several features and TS/JS packages for your own bot.
 
@@ -25,6 +25,12 @@ Please found below a quick overview of the features you will find in this bot.
 - **Link with an OBS websocket:** Everything needed to connect your bot to your OBS and update sources and scenes (currently not updating scene)
 
 - **Channel Points Redemption Listener:** Listen to channel points redemptions rewards (with or without text message)
+
+- **Discord announces:** Connect the bot to a Discord Client to send announce messages (with embed) when live is on
+
+## References & documentations
+
+Based mainly on [Twurple](https://twurple.js.org/), [Discord.js](https://discord.js.org/).
 
 ## Remarks
 

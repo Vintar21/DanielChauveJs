@@ -1,0 +1,8 @@
+{
+  "testing": false,
+  "server-id": "Your Discord server id",
+  "token": "Your Discord Token",
+  "channel-id": "The channel ID where the messages will be send",
+  "channel-id-test": "The channel ID to send messages to when testing is enabled",
+  "role-id": "Role ID to tag"
+}

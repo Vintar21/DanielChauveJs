@@ -7,3 +7,19 @@ export const BYPASS: Right = 1;
 export const ALLOWED: Right = 0;
 export const UNALLOWED: Right = -1;
 export const DEFAULT_RIGHT: Right = ALLOWED;
+
+export function days(days: number): number {
+  return hours(days * 24);
+}
+
+export function hours(hours: number): number {
+  return minutes(hours * 60);
+}
+
+export function minutes(minutes: number): number {
+  return seconds(minutes * 60);
+}
+
+export function seconds(seconds: number): number {
+  return seconds * 1000;
+}

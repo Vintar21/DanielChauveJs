@@ -3,40 +3,56 @@ import { Bot } from "@twurple/easy-bot";
 import { MessageEvent } from "@twurple/easy-bot/lib";
 import ChannelPointsListener from "./channel-points-rewards/ChannelPointsListener";
 import CommandsManager from "./commands/CommandsManager";
-import User from "./user/User";
+import { rollCommand } from "./commands/misc/AllMiscCommands";
 import {
-  accessToken,
+  botAccessToken,
+  botClientId,
+  broadCasterAccessToken,
+  broadcasterClientId,
   channel,
-  clientId,
   obsLightTesting,
   sqlLightTesting,
 } from "./config/ConfigLoader";
-
-import { getGreaterRole } from "./utils/RoleUtils";
+import DiscordClient from "./discord/DiscordClient";
 import TimerManager from "./timers/TimerManager";
-import { rollCommand } from "./commands/misc/AllMiscCommands";
+import User from "./user/User";
+import { getGreaterRole } from "./utils/RoleUtils";
+import ObsManager from "./obs/ObsManager";
 
 export const canUseSqlBase: boolean = !sqlLightTesting;
 export const canUseObsWebsocket: boolean = !obsLightTesting;
 
-const authProvider: StaticAuthProvider = new StaticAuthProvider(
-  clientId,
-  accessToken,
+const broadcasterAuthProvider: StaticAuthProvider = new StaticAuthProvider(
+  broadcasterClientId,
+  broadCasterAccessToken,
 );
-export const bot: Bot = new Bot({ authProvider, channels: [channel] });
-const promisedBroadcaster = bot.api.users.getUserByName(channel);
+export const broadcasterApp: Bot = new Bot({
+  authProvider: broadcasterAuthProvider,
+  channels: [channel],
+});
 
+// TODO: Limit bot rights ? Just need to send message as broadcaster has all other rights ?
+const botAuthProvider: StaticAuthProvider = new StaticAuthProvider(
+  botClientId,
+  botAccessToken,
+);
+export const botApp: Bot = new Bot({
+  authProvider: botAuthProvider,
+  channels: [channel],
+});
+
+const discordClient: DiscordClient = new DiscordClient();
+discordClient.start();
+export const obsManager = ObsManager.getInstanceAndInit();
 const commandsManager: CommandsManager = CommandsManager.getInstanceAndInit();
 const channelPointsListener: ChannelPointsListener =
-  ChannelPointsListener.getInstanceAndInit(bot, promisedBroadcaster);
+  ChannelPointsListener.getInstanceAndInit(broadcasterApp);
 const timerManager: TimerManager = TimerManager.getInstanceAndInit();
 timerManager.startAllTimers();
 
-rollCommand.resetMvp();
-
 console.log("### Bot started ###");
 
-bot.onMessage((event) => {
+botApp.onMessage((event) => {
   const message: string = event.text;
   const username: string = event.userName;
   // Do we really need it to be a number ?
@@ -48,10 +64,7 @@ bot.onMessage((event) => {
 
   var triggeredCommand = commandsManager.getTriggeredCommand(message);
   triggeredCommand
-    ?.canExecute(
-      user,
-      getGreaterRole(event.getUser(), promisedBroadcaster, bot),
-    )
+    ?.canExecute(user, getGreaterRole(event.getUser(), broadcasterApp))
     .then((canExecute) => {
       if (canExecute) {
         triggeredCommand.execute(user, event);
@@ -60,7 +73,7 @@ bot.onMessage((event) => {
 });
 
 export function send(message: String) {
-  bot.say(channel, message.toString());
+  botApp.say(channel, message.toString());
 }
 
 export function reply(message: String, event: MessageEvent) {

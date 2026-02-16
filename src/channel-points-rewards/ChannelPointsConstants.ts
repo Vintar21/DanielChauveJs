@@ -1,5 +1,7 @@
-export const MAX_TIME_TIKTOK_SCENE = 5 * 60 * 1000;
-export const MIN_TIME_TIKTOK_SCENE = 2 * 60 * 1000;
+import { minutes } from "../utils/CommonUtils";
+
+export const MAX_TIME_TIKTOK_SCENE = minutes(5);
+export const MIN_TIME_TIKTOK_SCENE = minutes(2);
 
 // Common
 export const REROLL_REWARD_ID = "f1138809-f8f6-4c00-87c9-00d6af9fa4e6";
