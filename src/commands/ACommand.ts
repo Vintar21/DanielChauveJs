@@ -51,12 +51,18 @@ export default abstract class ACommand implements ICommand {
     }
   }
 
-  // By default we split the message, override this method to change this behavior
-  public match(input: string): boolean {
-    const parts = input.toLowerCase().trim().split(SPACE);
+  // By default we split and format the message, override this method to change this behavior
+  public match(input: string, formatMessage: boolean = true): boolean {
+    const formattedInput = formatMessage ? input.toLowerCase().trim() : input;
+
+    if (this.options.useFullMessage) {
+      return this.internalMatch(formattedInput, this.options.getTriggers());
+    }
+    const parts = formattedInput.split(SPACE);
 
     return this.internalMatch(parts[0], this.options.getTriggers());
   }
+    
 
   protected internalMatch(input: string, triggers: Array<RegExp>): boolean {
     return (

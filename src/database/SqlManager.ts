@@ -60,13 +60,14 @@ export default class SqlManager {
     return queryAgregator;
   }
 
+  // TODO: Can it really be null ?
   private static isValideQueryAgregator(
     queryAgregator: QueryAggregatorResults,
   ): boolean {
     return (
-      queryAgregator !== undefined &&
+      queryAgregator &&
       queryAgregator !== null &&
-      queryAgregator[FIRST] !== undefined &&
+      queryAgregator[FIRST] &&
       queryAgregator[FIRST] !== null
     );
   }
@@ -80,7 +81,7 @@ export default class SqlManager {
       : undefined;
     // No custrom message
     if (
-      customMessages === undefined ||
+      !customMessages ||
       customMessages.length === 0 ||
       customMessages[0]?.roll_message === null
     ) {
@@ -111,7 +112,7 @@ export default class SqlManager {
       : undefined;
     // No custrom message
     if (
-      customMessages === undefined ||
+      !customMessages ||
       customMessages.length === 0 ||
       customMessages[0]?.roll_message === null
     ) {

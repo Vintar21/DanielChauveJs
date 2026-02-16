@@ -1,4 +1,3 @@
-import { HelixUser } from "@twurple/api";
 import { Bot } from "@twurple/easy-bot";
 import { EventSubChannelRedemptionAddEvent } from "@twurple/eventsub-base/lib/events/EventSubChannelRedemptionAddEvent";
 import { EventSubWsListener } from "@twurple/eventsub-ws";
@@ -44,7 +43,7 @@ export default class ChannelPointsListener {
   }
 
   // Use getInstanceAndInit instead
-  public init(): void {
+  protected init(): void {
     ChannelPointsListener.listener.start();
     ChannelPointsListener.listener.onChannelRedemptionAdd(
       broadcasterId,

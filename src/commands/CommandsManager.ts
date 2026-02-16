@@ -35,7 +35,7 @@ export default class CommandsManager {
   }
 
   // Shouldn't init yourself, use getInstanceAndInit instead
-  public init(): void {
+  protected init(): void {
     // Init only once
     if (CommandsManager.commands.length > 0) {
       return;

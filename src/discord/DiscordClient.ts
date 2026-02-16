@@ -22,12 +22,13 @@ import {
   TAG_EVERYONE,
 } from "./DiscordConstants";
 import { broadcasterApp } from "../app";
+
 export default class DiscordClient extends Client {
   private twitchAnnouncesChannel: GuildBasedChannel;
   private currentStreamStart: number;
   private cooldownBetweenLiveAnnounces: number = hours(8);
   private lastLiveAnnounce: number = 0;
-  // 10 sec for test purpose
+
   private checkInterval: number = minutes(5);
 
   constructor() {
