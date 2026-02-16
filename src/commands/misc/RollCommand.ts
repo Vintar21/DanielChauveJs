@@ -14,7 +14,7 @@ import ACommand from "../ACommand";
 import CommandOptions from "../CommandOptions";
 import { FOLLOWER_COUNT_MESSAGE, NO_MSG } from "../CommandsUtils";
 import { broadcasterId } from "../../config/ConfigLoader";
-import { broadcasterApp } from "../../app";
+import { broadcasterApp, obsManager } from "../../app";
 
 const options: CommandOptions = new CommandOptions([/roll/i]).setMaxUsePerUser(
   1,
@@ -48,7 +48,7 @@ export default class RollCommand extends ACommand {
 
   private updateMvp(user: User, value: number): void {
     // On OBS
-    ObsManager.updateObsMvpSource(user.username, value);
+    obsManager.updateObsMvpSource(user.username, value);
 
     // Update currentMVP
     this.currentMVP = new Mvp(user, value);
@@ -57,7 +57,7 @@ export default class RollCommand extends ACommand {
   public resetMvp() {
     console.log("Reset MVP");
     this.currentMVP = new Mvp(undefinedUser, 0);
-    ObsManager.resetObsMvpSource();
+    obsManager.resetObsMvpSource();
   }
 
   private async insertValue(

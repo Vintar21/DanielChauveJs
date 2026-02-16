@@ -1,7 +1,7 @@
 import { Bot } from "@twurple/easy-bot";
 import { EventSubChannelRedemptionAddEvent } from "@twurple/eventsub-base/lib/events/EventSubChannelRedemptionAddEvent";
 import { EventSubWsListener } from "@twurple/eventsub-ws";
-import { send } from "../app";
+import { obsManager, send } from "../app";
 import { rollCommand } from "../commands/misc/AllMiscCommands";
 import { allObsCameraEffects } from "../obs/camera-effects/AllObsCameraEffects";
 import AObsCameraEffect from "../obs/camera-effects/AObsCameraEffect";
@@ -65,7 +65,7 @@ export default class ChannelPointsListener {
   private static onTikTokSceneRedeemed(
     event: EventSubChannelRedemptionAddEvent,
   ): void {
-    ObsManager.getCurrentScene().then((scene) => {
+    obsManager.getCurrentScene().then((scene) => {
       const sceneName = scene.currentProgramSceneName;
       if (noCamScenes.includes(sceneName)) {
         send(
@@ -78,12 +78,12 @@ export default class ChannelPointsListener {
         );
         // TODO: refund if possible
       } else {
-        ObsManager.changeScene(TIKTOK_SCENE_NAME);
+        obsManager.changeScene(TIKTOK_SCENE_NAME);
         var randomCooldown =
           Math.floor(
             Math.random() * (MAX_TIME_TIKTOK_SCENE - MIN_TIME_TIKTOK_SCENE),
           ) + MIN_TIME_TIKTOK_SCENE;
-        setTimeout(() => ObsManager.changeScene(sceneName), randomCooldown);
+        setTimeout(() => obsManager.changeScene(sceneName), randomCooldown);
       }
     });
   }

@@ -62,7 +62,6 @@ export default abstract class ACommand implements ICommand {
 
     return this.internalMatch(parts[0], this.options.getTriggers());
   }
-    
 
   protected internalMatch(input: string, triggers: Array<RegExp>): boolean {
     return (
@@ -153,6 +152,10 @@ export default abstract class ACommand implements ICommand {
       event?.text !== null &&
       event?.text.length > 0
     );
+  }
+
+  public isEnabled(): boolean {
+    return this.options.enabled;
   }
 
   public getPrefix(): string {

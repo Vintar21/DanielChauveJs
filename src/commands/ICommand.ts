@@ -12,4 +12,6 @@ export default interface ICommand {
   canReplyToUser(event: MessageEvent): boolean;
 
   getPrefix(): string;
+
+  isEnabled(): boolean;
 }

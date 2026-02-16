@@ -17,6 +17,7 @@ import DiscordClient from "./discord/DiscordClient";
 import TimerManager from "./timers/TimerManager";
 import User from "./user/User";
 import { getGreaterRole } from "./utils/RoleUtils";
+import ObsManager from "./obs/ObsManager";
 
 export const canUseSqlBase: boolean = !sqlLightTesting;
 export const canUseObsWebsocket: boolean = !obsLightTesting;
@@ -30,6 +31,7 @@ export const broadcasterApp: Bot = new Bot({
   channels: [channel],
 });
 
+// TODO: Limit bot rights ? Just need to send message as broadcaster has all other rights ?
 const botAuthProvider: StaticAuthProvider = new StaticAuthProvider(
   botClientId,
   botAccessToken,
@@ -41,13 +43,12 @@ export const botApp: Bot = new Bot({
 
 const discordClient: DiscordClient = new DiscordClient();
 discordClient.start();
+export const obsManager = ObsManager.getInstanceAndInit();
 const commandsManager: CommandsManager = CommandsManager.getInstanceAndInit();
 const channelPointsListener: ChannelPointsListener =
   ChannelPointsListener.getInstanceAndInit(broadcasterApp);
 const timerManager: TimerManager = TimerManager.getInstanceAndInit();
 timerManager.startAllTimers();
-
-rollCommand.resetMvp();
 
 console.log("### Bot started ###");
 
