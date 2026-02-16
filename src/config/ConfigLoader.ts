@@ -68,11 +68,12 @@ function loadSpecificConfig(configKind: string): any {
   const jsonFile = `config${configKind}.json`;
   const configPath = CONFIGS_FOLDER + jsonFile;
 
-  if (!fs.existsSync(configPath)) {
+  // Assuming you run the bot from the root folder
+  if (!fs.existsSync("./configs/" + jsonFile)) {
     console.warn(
       `${configPath} can't be found, ${configKind} features will not be available`,
     );
     return undefined;
   }
-  return require(CONFIGS_FOLDER + jsonFile);
+  return require(configPath);
 }
