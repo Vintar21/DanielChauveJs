@@ -18,12 +18,12 @@ export default class ObsManager {
 
   private static instance: ObsManager;
 
-  public static getInstanceAndInit(): ObsManager {
+  public static async getInstanceAndInit(): Promise<ObsManager> {
     if (!ObsManager.instance) {
       ObsManager.instance = new ObsManager();
     }
     const instance = ObsManager.instance;
-    instance.connect();
+    await instance.connect();
     return instance;
   }
 

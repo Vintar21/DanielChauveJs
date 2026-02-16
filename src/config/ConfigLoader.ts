@@ -4,10 +4,8 @@ const CONFIGS_FOLDER = "../../configs/";
 
 // Twitch
 const twitchConfig = loadSpecificConfig("Twitch");
-export const broadcasterId = twitchConfig["twitch-broadcaster-id"];
 export const broadcasterClientId = twitchConfig["broadcaster-client-id"];
 export const broadCasterAccessToken = twitchConfig["broadcaster-access-token"];
-export const botId = twitchConfig["twitch-bot-id"] ?? broadcasterId;
 export const botClientId = twitchConfig["bot-client-id"] ?? broadcasterClientId;
 export const botAccessToken =
   twitchConfig["bot-access-token"] ?? broadCasterAccessToken;

@@ -3,7 +3,6 @@ import { Bot } from "@twurple/easy-bot";
 import { MessageEvent } from "@twurple/easy-bot/lib";
 import ChannelPointsListener from "./channel-points-rewards/ChannelPointsListener";
 import CommandsManager from "./commands/CommandsManager";
-import { rollCommand } from "./commands/misc/AllMiscCommands";
 import {
   botAccessToken,
   botClientId,
@@ -18,6 +17,7 @@ import TimerManager from "./timers/TimerManager";
 import User from "./user/User";
 import { getGreaterRole } from "./utils/RoleUtils";
 import ObsManager from "./obs/ObsManager";
+import { HelixUser } from "@twurple/api/lib";
 
 export const canUseSqlBase: boolean = !sqlLightTesting;
 export const canUseObsWebsocket: boolean = !obsLightTesting;
@@ -41,36 +41,73 @@ export const botApp: Bot = new Bot({
   channels: [channel],
 });
 
-const discordClient: DiscordClient = new DiscordClient();
-discordClient.start();
-export const obsManager = ObsManager.getInstanceAndInit();
-const commandsManager: CommandsManager = CommandsManager.getInstanceAndInit();
-const channelPointsListener: ChannelPointsListener =
-  ChannelPointsListener.getInstanceAndInit(broadcasterApp);
-const timerManager: TimerManager = TimerManager.getInstanceAndInit();
-timerManager.startAllTimers();
+export class MainApp {
+  static broadcaster: HelixUser;
 
-console.log("### Bot started ###");
+  static discordClient: DiscordClient = new DiscordClient();
+  static obsManager: ObsManager;
+  static commandsManager: CommandsManager =
+    CommandsManager.getInstanceAndInit();
+  static channelPointsListener: ChannelPointsListener;
+  static timerManager: TimerManager = TimerManager.getInstanceAndInit();
 
-botApp.onMessage((event) => {
-  const message: string = event.text;
-  const username: string = event.userName;
-  // Do we really need it to be a number ?
-  const userId: number = parseInt(event.userId);
+  public static async start(): Promise<void> {
+    MainApp.broadcaster = await botApp.api.users.getUserByName(channel);
 
-  console.log(`Message received from [${userId}] ${username}: ${message}`);
-  timerManager.updateAllTimersOnMessage();
-  const user = new User(username, userId);
+    await MainApp.discordClient.start();
+    MainApp.obsManager = await ObsManager.getInstanceAndInit();
+    MainApp.channelPointsListener =
+      await ChannelPointsListener.getInstanceAndInit(broadcasterApp);
+    await MainApp.timerManager.startAllTimers();
 
-  var triggeredCommand = commandsManager.getTriggeredCommand(message);
-  triggeredCommand
-    ?.canExecute(user, getGreaterRole(event.getUser(), broadcasterApp))
-    .then((canExecute) => {
-      if (canExecute) {
-        triggeredCommand.execute(user, event);
-      }
+    console.log("### Bot started ###");
+
+    botApp.onMessage((event) => {
+      const message: string = event.text;
+      const username: string = event.userName;
+      // Do we really need it to be a number ?
+      const userId: number = parseInt(event.userId);
+
+      console.log(`Message received from [${userId}] ${username}: ${message}`);
+      MainApp.timerManager.updateAllTimersOnMessage();
+      const user = new User(username, userId);
+
+      var triggeredCommand =
+        MainApp.commandsManager.getTriggeredCommand(message);
+      triggeredCommand
+        ?.canExecute(user, getGreaterRole(event.getUser(), broadcasterApp))
+        .then((canExecute) => {
+          if (canExecute) {
+            triggeredCommand.execute(user, event);
+          }
+        });
     });
-});
+  }
+
+  public static getBroadcaster(): HelixUser {
+    return MainApp.broadcaster;
+  }
+
+  public static getDiscordClient(): DiscordClient {
+    return MainApp.discordClient;
+  }
+
+  public static getObsManager(): ObsManager {
+    return MainApp.obsManager;
+  }
+
+  public static getCommandsManager(): CommandsManager {
+    return MainApp.commandsManager;
+  }
+
+  public static getChannelPointsListener(): ChannelPointsListener {
+    return MainApp.channelPointsListener;
+  }
+
+  public static getTimerManager(): TimerManager {
+    return MainApp.timerManager;
+  }
+}
 
 export function send(message: String) {
   botApp.say(channel, message.toString());
@@ -80,3 +117,5 @@ export function reply(message: String, event: MessageEvent) {
   // use bot.reply instead ? How ?
   event.reply(message.toString());
 }
+
+MainApp.start();

@@ -1,6 +1,6 @@
 import { HelixUser } from "@twurple/api/lib";
 import { Bot } from "@twurple/easy-bot/lib";
-import { broadcasterId } from "../config/ConfigLoader";
+import { MainApp } from "../app";
 
 export type Role = symbol;
 
@@ -22,16 +22,27 @@ export const ALL_ROLES: Role[] = [
   Roles.NO_ROLE,
 ];
 
-export function isBroadcaster(user: HelixUser): boolean {
-  return user.id === broadcasterId;
+export function isBroadcaster(
+  broadcaster: HelixUser,
+  user: HelixUser,
+): boolean {
+  return user.id === broadcaster.id;
 }
 
-export async function isMod(user: HelixUser, bot: Bot): Promise<boolean> {
-  return bot.api.moderation.checkUserMod(broadcasterId, user.id);
+export async function isMod(
+  broadcaster: HelixUser,
+  user: HelixUser,
+  bot: Bot,
+): Promise<boolean> {
+  return bot.api.moderation.checkUserMod(broadcaster.id, user.id);
 }
 
-export async function isVip(user: HelixUser, bot: Bot): Promise<boolean> {
-  return bot.api.channels.checkVipForUser(broadcasterId, user.id);
+export async function isVip(
+  broadcaster: HelixUser,
+  user: HelixUser,
+  bot: Bot,
+): Promise<boolean> {
+  return bot.api.channels.checkVipForUser(broadcaster.id, user.id);
 }
 
 export async function getGreaterRole(
@@ -40,16 +51,17 @@ export async function getGreaterRole(
 ): Promise<Role> {
   var role: Role;
   const user = await promisedUser;
+  const broadcasterUser = await MainApp.getBroadcaster();
 
-  if (isBroadcaster(user)) {
+  if (isBroadcaster(broadcasterUser, user)) {
     role = Roles.BROADCASTER;
-  } else if (isMod(user, bot)) {
+  } else if (isMod(broadcasterUser, user, bot)) {
     role = Roles.MOD;
-  } else if (isVip(user, bot)) {
+  } else if (isVip(broadcasterUser, user, bot)) {
     role = Roles.VIP;
-  } else if (user.isSubscribedTo(broadcasterId)) {
+  } else if (user.isSubscribedTo(broadcasterUser.id)) {
     role = Roles.SUB;
-  } else if (user.follows(broadcasterId)) {
+  } else if (user.follows(broadcasterUser.id)) {
     role = Roles.FOLLOWER;
   } else {
     role = Roles.NO_ROLE;

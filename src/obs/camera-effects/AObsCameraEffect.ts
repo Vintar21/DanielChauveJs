@@ -1,4 +1,4 @@
-import { obsManager } from "../../app";
+import { MainApp } from "../../app";
 import { _ } from "../../utils/ImportConstants";
 import {
   CAMERA_SOURCE_FILTER_NAME,
@@ -35,10 +35,10 @@ export default abstract class AObsCameraEffect {
   }
 
   private enableSourceFilter(source: string, filter: string): void {
-    obsManager.setSourceFilter(source, filter, true);
+    MainApp.getObsManager().setSourceFilter(source, filter, true);
   }
 
   private disableSourceFilter(source: string, filter: string): void {
-    obsManager.setSourceFilter(source, filter, false);
+    MainApp.getObsManager().setSourceFilter(source, filter, false);
   }
 }

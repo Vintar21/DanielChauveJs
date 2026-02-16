@@ -13,12 +13,12 @@ import { EMPTY, SPACE } from "../../utils/StringConstants";
 import ACommand from "../ACommand";
 import CommandOptions from "../CommandOptions";
 import { FOLLOWER_COUNT_MESSAGE, NO_MSG } from "../CommandsUtils";
-import { broadcasterId } from "../../config/ConfigLoader";
-import { broadcasterApp, obsManager } from "../../app";
+import { broadcasterApp, MainApp } from "../../app";
 
 const options: CommandOptions = new CommandOptions([/roll/i]).setMaxUsePerUser(
   1,
 );
+//.setPrefix("/");
 
 class Mvp {
   public user: User = undefinedUser;
@@ -48,7 +48,7 @@ export default class RollCommand extends ACommand {
 
   private updateMvp(user: User, value: number): void {
     // On OBS
-    obsManager.updateObsMvpSource(user.username, value);
+    MainApp.getObsManager().updateObsMvpSource(user.username, value);
 
     // Update currentMVP
     this.currentMVP = new Mvp(user, value);
@@ -57,7 +57,7 @@ export default class RollCommand extends ACommand {
   public resetMvp() {
     console.log("Reset MVP");
     this.currentMVP = new Mvp(undefinedUser, 0);
-    obsManager.resetObsMvpSource();
+    MainApp.getObsManager().resetObsMvpSource();
   }
 
   private async insertValue(
@@ -77,7 +77,9 @@ export default class RollCommand extends ACommand {
   ): Promise<String> {
     // Not sure if we should have direct access to bot, and not this way
     var followerCount: number =
-      await broadcasterApp.api.channels.getChannelFollowerCount(broadcasterId);
+      await broadcasterApp.api.channels.getChannelFollowerCount(
+        MainApp.getBroadcaster().id,
+      );
     if (value === followerCount) {
       return SPACE + FOLLOWER_COUNT_MESSAGE;
     }

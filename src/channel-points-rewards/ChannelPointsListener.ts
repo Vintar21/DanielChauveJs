@@ -1,7 +1,7 @@
 import { Bot } from "@twurple/easy-bot";
 import { EventSubChannelRedemptionAddEvent } from "@twurple/eventsub-base/lib/events/EventSubChannelRedemptionAddEvent";
 import { EventSubWsListener } from "@twurple/eventsub-ws";
-import { obsManager, send } from "../app";
+import { MainApp, send } from "../app";
 import { rollCommand } from "../commands/misc/AllMiscCommands";
 import { allObsCameraEffects } from "../obs/camera-effects/AllObsCameraEffects";
 import AObsCameraEffect from "../obs/camera-effects/AObsCameraEffect";
@@ -22,7 +22,6 @@ import {
   TIKTOK_REWARD_ID,
   TOCTOC_REWARD_ID,
 } from "./ChannelPointsConstants";
-import { broadcasterId } from "../config/ConfigLoader";
 
 export default class ChannelPointsListener {
   private static listener: EventSubWsListener;
@@ -30,23 +29,25 @@ export default class ChannelPointsListener {
 
   constructor() {}
 
-  public static getInstanceAndInit(bot: Bot): ChannelPointsListener {
+  public static async getInstanceAndInit(
+    bot: Bot,
+  ): Promise<ChannelPointsListener> {
     var instance = ChannelPointsListener.instance;
     if (instance === undefined) {
       instance = new ChannelPointsListener();
       ChannelPointsListener.listener = new EventSubWsListener({
         apiClient: bot.api,
       });
-      instance.init();
+      await instance.init();
     }
     return instance;
   }
 
   // Use getInstanceAndInit instead
-  protected init(): void {
+  protected async init(): Promise<void> {
     ChannelPointsListener.listener.start();
     ChannelPointsListener.listener.onChannelRedemptionAdd(
-      broadcasterId,
+      MainApp.getBroadcaster().id,
       this.onRedemptionRedeemed,
     );
   }
@@ -65,27 +66,32 @@ export default class ChannelPointsListener {
   private static onTikTokSceneRedeemed(
     event: EventSubChannelRedemptionAddEvent,
   ): void {
-    obsManager.getCurrentScene().then((scene) => {
-      const sceneName = scene.currentProgramSceneName;
-      if (noCamScenes.includes(sceneName)) {
-        send(
-          `@${event.userName} espèce de voyeureuse ! Non on ne change pas la scène s'il y a pas la caméra affichée !`,
-        );
-        // TODO: refund if possible
-      } else if (sceneName === TIKTOK_SCENE_NAME) {
-        send(
-          `Mais ${event.userName}... On est déjà sur la scène... Les brainrots ont fait des dommages...`,
-        );
-        // TODO: refund if possible
-      } else {
-        obsManager.changeScene(TIKTOK_SCENE_NAME);
-        var randomCooldown =
-          Math.floor(
-            Math.random() * (MAX_TIME_TIKTOK_SCENE - MIN_TIME_TIKTOK_SCENE),
-          ) + MIN_TIME_TIKTOK_SCENE;
-        setTimeout(() => obsManager.changeScene(sceneName), randomCooldown);
-      }
-    });
+    MainApp.getObsManager()
+      .getCurrentScene()
+      .then((scene) => {
+        const sceneName = scene.currentProgramSceneName;
+        if (noCamScenes.includes(sceneName)) {
+          send(
+            `@${event.userName} espèce de voyeureuse ! Non on ne change pas la scène s'il y a pas la caméra affichée !`,
+          );
+          // TODO: refund if possible
+        } else if (sceneName === TIKTOK_SCENE_NAME) {
+          send(
+            `Mais ${event.userName}... On est déjà sur la scène... Les brainrots ont fait des dommages...`,
+          );
+          // TODO: refund if possible
+        } else {
+          MainApp.getObsManager().changeScene(TIKTOK_SCENE_NAME);
+          var randomCooldown =
+            Math.floor(
+              Math.random() * (MAX_TIME_TIKTOK_SCENE - MIN_TIME_TIKTOK_SCENE),
+            ) + MIN_TIME_TIKTOK_SCENE;
+          setTimeout(
+            () => MainApp.getObsManager().changeScene(sceneName),
+            randomCooldown,
+          );
+        }
+      });
   }
 
   private onRedemptionRedeemed(event: EventSubChannelRedemptionAddEvent): void {
