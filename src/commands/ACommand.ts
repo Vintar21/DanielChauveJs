@@ -40,6 +40,8 @@ export default abstract class ACommand implements ICommand {
   ) {
     if (this.canReplyToUser(event)) {
       reply(message, event);
+    } else if (this.options.sendAsAnnounce) {
+      send(message, true);
     } else if (isNotAUser(user)) {
       send(message);
     } else {
@@ -148,6 +150,7 @@ export default abstract class ACommand implements ICommand {
   public canReplyToUser(event: MessageEvent): boolean {
     return (
       this.options.replyToUser &&
+      this.options.sendAsAnnounce === false &&
       event?.text !== undefined &&
       event?.text !== null &&
       event?.text.length > 0

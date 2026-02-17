@@ -1,0 +1,204 @@
+import { HelixPrediction } from "@twurple/api/lib";
+import { MessageEvent } from "@twurple/easy-bot";
+import { broadcasterApp, MainApp } from "../../app";
+import User from "../../user/User";
+import { minutes } from "../../utils/CommonUtils";
+import { Roles } from "../../utils/RoleUtils";
+import { SPACE } from "../../utils/StringConstants";
+import CommandOptions from "../CommandOptions";
+import AArgumentsCommand from "../templates/AArgumentsCommand";
+
+const CANCEL_PREDICTION = "cancel";
+const LOCK_PREDICTION = "stop";
+
+const options: CommandOptions = new CommandOptions([
+  /pr[eéèê]di(ction)?s?/i,
+  /bets?/i,
+  /paris?/i,
+]).unallowAllRolesExcept([Roles.BROADCASTER, Roles.MOD]);
+
+export default class PredictionCommand extends AArgumentsCommand {
+  private autoLockTime: number = 300; // <= 1800
+  private defaultOutcomes: string[] = ["Oui", "Non"];
+  private title: string = "Est-ce que ça va arriver ?";
+
+  constructor() {
+    super(options, true);
+  }
+
+  private createPrediction(
+    predictionTitle: string,
+    autoLockTime: number,
+    outcomes: string[],
+    user: User,
+    event: MessageEvent,
+    ignoreCooldowns: boolean,
+  ) {
+    broadcasterApp.api.predictions
+      .createPrediction(MainApp.getBroadcaster().id, {
+        autoLockAfter: autoLockTime,
+        title: predictionTitle,
+        outcomes: outcomes,
+      })
+      .then(() => {
+        this.replyOrSend(
+          user,
+          event,
+          ignoreCooldowns,
+          "Prédiction créée, à vos votes !",
+        );
+      });
+  }
+
+  private async getLastPrediction(): Promise<HelixPrediction> {
+    const predictions = await broadcasterApp.api.predictions.getPredictions(
+      MainApp.getBroadcaster().id,
+    );
+    return predictions?.data?.length > 0 ? predictions?.data[0] : undefined;
+  }
+
+  private isLastPredictionFinished(lastPrediction: HelixPrediction): boolean {
+    const status = lastPrediction?.status;
+    return (lastPrediction && status === "RESOLVED") || status === "CANCELED";
+  }
+
+  private isLastPredictionActive(lastPrediction: HelixPrediction): boolean {
+    const status = lastPrediction?.status;
+    return lastPrediction && status === "ACTIVE";
+  }
+
+  private isLastPredictionLocked(lastPrediction: HelixPrediction): boolean {
+    const status = lastPrediction?.status;
+    return lastPrediction && status === "LOCKED";
+  }
+
+  // TODO: add more logging info
+  // Return true if we've locked or cancelled the current prediction, false otherwise
+  protected handleCurrentPrediction(
+    args: String[],
+    lastPrediction: HelixPrediction,
+    user: User,
+    event: MessageEvent,
+    ignoreCooldowns: boolean,
+  ): boolean {
+    if (args.length > 0) {
+      switch (args[0].toLowerCase()) {
+        case CANCEL_PREDICTION:
+          if (!this.isLastPredictionFinished(lastPrediction)) {
+            broadcasterApp.api.predictions
+              .cancelPrediction(MainApp.getBroadcaster().id, lastPrediction.id)
+              .then(() => {
+                this.replyOrSend(
+                  user,
+                  event,
+                  ignoreCooldowns,
+                  "Prédiction annulée !",
+                );
+              });
+          }
+          return true;
+        case LOCK_PREDICTION:
+          this.getLastPrediction()?.then((lastPrediction) => {
+            if (this.isLastPredictionActive(lastPrediction)) {
+              broadcasterApp.api.predictions
+                .lockPrediction(MainApp.getBroadcaster().id, lastPrediction.id)
+                .then(() => {
+                  this.replyOrSend(
+                    user,
+                    event,
+                    ignoreCooldowns,
+                    "Votes terminés !",
+                  );
+                });
+            }
+          });
+          return true;
+      }
+    }
+    return false;
+  }
+
+  protected executeWithArgs(
+    user: User,
+    event: MessageEvent,
+    args: String[],
+    ignoreCooldowns: boolean,
+  ): void {
+    console.log(user);
+
+    // TODO:
+    // Résultats dans un chan discord dédié
+    // Pouvoir donner le résultat de la prédi ?
+    this.getLastPrediction()?.then((lastPrediction) => {
+      // If we have a current prediction, check if we want to cancel or lock it
+      if (!this.isLastPredictionFinished(lastPrediction)) {
+        // Check for particular parameters (cancel, lock, etc.)
+        // If we've cancelled or locked it, we stop here
+        if (
+          !this.handleCurrentPrediction(
+            args,
+            lastPrediction,
+            user,
+            event,
+            ignoreCooldowns,
+          )
+        ) {
+          this.replyOrSend(
+            user,
+            event,
+            ignoreCooldowns,
+            "Il y a déjà une prédiction en cours Sadge",
+          );
+        }
+        return;
+      }
+
+      // Default, params from last prediction
+      var autoLockTime = lastPrediction?.autoLockAfter ?? this.autoLockTime;
+      var title = lastPrediction?.title ?? this.title;
+      var outcomes =
+        lastPrediction?.outcomes?.map((o) => o.title) ?? this.defaultOutcomes;
+
+      // No args => take the same parameter than the last prediction
+      if (args.length > 0) {
+        // Check if the first parameter is the time of the prediction
+        var timeArg = Number(args[0]);
+        if (!isNaN(timeArg) && timeArg > 0) {
+          timeArg = timeArg > 1800 ? 1800 : timeArg; // Twitch max autoLockAfter is 1800s (30min)
+          timeArg = timeArg <= 30 ? timeArg * 60 : timeArg; // If the given time is less or equal than 30, we consider it's in minutes and convert it to seconds
+          console.log("timeArg: " + timeArg);
+          autoLockTime = timeArg;
+          args = args.slice(1);
+        } else {
+          autoLockTime = this.autoLockTime;
+        }
+
+        // If we have more args, we consider it's the title of the prediction and we take the default outcomes
+        if (args.length > 0) {
+          title = args.join(SPACE);
+          outcomes = this.defaultOutcomes;
+        }
+      }
+
+      if (title.length > 45) {
+        this.replyOrSend(
+          user,
+          event,
+          ignoreCooldowns,
+          "Le titre de la prédiction est trop long (max 45 caractères) Sadge",
+        );
+        return;
+      }
+
+      // Create the prediction
+      this.createPrediction(
+        title,
+        autoLockTime,
+        outcomes,
+        user,
+        event,
+        ignoreCooldowns,
+      );
+    });
+  }
+}

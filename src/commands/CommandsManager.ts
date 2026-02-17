@@ -1,9 +1,8 @@
+import ICommand from "./ICommand";
 import { allMiscCommands, lastAddedCommands } from "./misc/AllMiscCommands";
+import { allMultipleAnswersCommands } from "./multiple-answers/AllMultipleAnswersCommands";
 import { allSimpleCommands } from "./simple/AllSimpleCommands";
 import { allNoPrefixSimpleCommands } from "./simple/no-prefix/AllNoPrefixSimpleCommands";
-import { commands } from "./CommandCreation";
-
-import ICommand from "./ICommand";
 
 export default class CommandsManager {
   private static commands: Array<ICommand> = new Array<ICommand>();
@@ -49,6 +48,9 @@ export default class CommandsManager {
 
     // Simple Commands
     this.addCommands(allSimpleCommands);
+
+    // Multiple Answers Commands
+    this.addCommands(allMultipleAnswersCommands);
 
     // this.addCommands(commands);
 

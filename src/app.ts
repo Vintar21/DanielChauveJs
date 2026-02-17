@@ -109,8 +109,12 @@ export class MainApp {
   }
 }
 
-export function send(message: String) {
-  botApp.say(channel, message.toString());
+export function send(message: String, isAnnounce: boolean = false) {
+  if (isAnnounce) {
+    botApp.announce(channel, message.toString());
+  } else {
+    botApp.say(channel, message.toString());
+  }
 }
 
 export function reply(message: String, event: MessageEvent) {

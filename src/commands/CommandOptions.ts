@@ -14,6 +14,7 @@ export default class CommandOptions {
 
   private triggers: Array<RegExp> = [];
   replyToUser: boolean = true;
+  sendAsAnnounce: boolean = false;
 
   globalCooldown: number = 1000; // In miliseconds
   userCooldown: number = 3000; // In miliseconds
@@ -44,6 +45,7 @@ export default class CommandOptions {
     const newOptions = new CommandOptions(commandOptions.triggers);
     newOptions.prefix = commandOptions.prefix;
     newOptions.replyToUser = commandOptions.replyToUser;
+    newOptions.sendAsAnnounce = commandOptions.sendAsAnnounce;
     newOptions.globalCooldown = commandOptions.globalCooldown;
     newOptions.userCooldown = commandOptions.userCooldown;
     newOptions.maxUseGlobal = commandOptions.maxUseGlobal;
@@ -108,6 +110,11 @@ export default class CommandOptions {
 
   public setReplyToUser(replyToUser: boolean): CommandOptions {
     this.replyToUser = replyToUser;
+    return this;
+  }
+
+  public sendAnnounce(): CommandOptions {
+    this.sendAsAnnounce = true;
     return this;
   }
 

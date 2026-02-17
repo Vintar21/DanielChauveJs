@@ -5,7 +5,7 @@ import ACommand from "../ACommand";
 import CommandOptions from "../CommandOptions";
 
 export default class MultipleAnswersCommand extends ACommand {
-  private responses: String[];
+  protected responses: String[];
 
   constructor(
     options: CommandOptions,
