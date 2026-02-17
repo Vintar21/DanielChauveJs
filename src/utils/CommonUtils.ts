@@ -23,3 +23,7 @@ export function minutes(minutes: number): number {
 export function seconds(seconds: number): number {
   return seconds * 1000;
 }
+
+export function pluralize(name: string, count: number): string {
+  return count > 1 ? name + "s" : name;
+}

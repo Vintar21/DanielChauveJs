@@ -57,9 +57,12 @@ const discordConfig = loadSpecificConfig("Discord");
 export const discordServerId = discordConfig["server-id"] ?? undefined;
 export const discordToken = discordConfig.token ?? undefined;
 export const cron = discordConfig.cron ?? undefined;
-export const discordChannelId = discordConfig?.testing
+export const discordAnnounceChannelId = discordConfig?.testing
   ? discordConfig["channel-id-test"]
-  : (discordConfig["channel-id"] ?? undefined);
+  : (discordConfig["live-announce-channel-id"] ?? undefined);
+export const discordPollsChannelId = discordConfig?.testing
+  ? discordConfig["channel-id-test"]
+  : (discordConfig["poll-channel-id"] ?? undefined);
 export const discordRoleId = discordConfig["role-id"] ?? undefined;
 
 function loadSpecificConfig(configKind: string): any {

@@ -41,6 +41,9 @@ export default class PredictionCommand extends AArgumentsCommand {
         outcomes: outcomes,
       })
       .then(() => {
+        console.log(
+          `Prediction: ${predictionTitle} [${outcomes}] | duration: ${autoLockTime}s`,
+        );
         this.replyOrSend(
           user,
           event,
@@ -81,7 +84,7 @@ export default class PredictionCommand extends AArgumentsCommand {
     event: MessageEvent,
     ignoreCooldowns: boolean,
   ): boolean {
-    if (args.length > 0) {
+    if (args.length === 1) {
       switch (args[0].toLowerCase()) {
         case CANCEL_PREDICTION:
           if (!this.isLastPredictionFinished(lastPrediction)) {
@@ -124,8 +127,6 @@ export default class PredictionCommand extends AArgumentsCommand {
     args: String[],
     ignoreCooldowns: boolean,
   ): void {
-    console.log(user);
-
     // TODO:
     // Résultats dans un chan discord dédié
     // Pouvoir donner le résultat de la prédi ?
@@ -166,7 +167,6 @@ export default class PredictionCommand extends AArgumentsCommand {
         if (!isNaN(timeArg) && timeArg > 0) {
           timeArg = timeArg > 1800 ? 1800 : timeArg; // Twitch max autoLockAfter is 1800s (30min)
           timeArg = timeArg <= 30 ? timeArg * 60 : timeArg; // If the given time is less or equal than 30, we consider it's in minutes and convert it to seconds
-          console.log("timeArg: " + timeArg);
           autoLockTime = timeArg;
           args = args.slice(1);
         } else {

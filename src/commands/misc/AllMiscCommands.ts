@@ -5,6 +5,7 @@ import RollCommand from "./RollCommand";
 import ResetMvpCommand from "./ResetMvpCommand";
 import MarkerCommand from "./MarkerCommand";
 import PredictionCommand from "./PredictionCommand";
+import PollCommand from "./PollCommand";
 
 // Commands
 export const rollCommand: RollCommand = new RollCommand();
@@ -12,6 +13,7 @@ export const multiCommand: MultiCommand = new MultiCommand();
 export const resetMvpCommand: ResetMvpCommand = new ResetMvpCommand();
 export const markerCommand: MarkerCommand = new MarkerCommand();
 export const predictionCommand: PredictionCommand = new PredictionCommand();
+export const pollCommand: PollCommand = new PollCommand();
 
 // In a separate array because it should be added in last !
 export const answerRandomMessage: AnswerRandomMessage =
@@ -22,6 +24,7 @@ export const allMiscCommands: Array<ICommand> = [
   rollCommand,
   markerCommand,
   multiCommand,
+  pollCommand,
   predictionCommand,
   resetMvpCommand,
 ];

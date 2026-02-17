@@ -1,5 +1,9 @@
 import ICommand from "./ICommand";
-import { allMiscCommands, lastAddedCommands } from "./misc/AllMiscCommands";
+import {
+  allMiscCommands,
+  lastAddedCommands,
+  pollCommand,
+} from "./misc/AllMiscCommands";
 import { allMultipleAnswersCommands } from "./multiple-answers/AllMultipleAnswersCommands";
 import { allSimpleCommands } from "./simple/AllSimpleCommands";
 import { allNoPrefixSimpleCommands } from "./simple/no-prefix/AllNoPrefixSimpleCommands";
@@ -42,6 +46,9 @@ export default class CommandsManager {
     if (CommandsManager.commands.length > 0) {
       return;
     }
+
+    // Init commands Listeners here FIXME: not a good practice
+    pollCommand.initListener();
 
     // Misc Commands (more used, so they're better first)
     this.addCommands(allMiscCommands);

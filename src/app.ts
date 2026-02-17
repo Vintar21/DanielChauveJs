@@ -46,14 +46,14 @@ export class MainApp {
 
   static discordClient: DiscordClient = new DiscordClient();
   static obsManager: ObsManager;
-  static commandsManager: CommandsManager =
-    CommandsManager.getInstanceAndInit();
+  static commandsManager: CommandsManager;
   static channelPointsListener: ChannelPointsListener;
   static timerManager: TimerManager = TimerManager.getInstanceAndInit();
 
   public static async start(): Promise<void> {
     MainApp.broadcaster = await botApp.api.users.getUserByName(channel);
 
+    MainApp.commandsManager = CommandsManager.getInstanceAndInit();
     await MainApp.discordClient.start();
     MainApp.obsManager = await ObsManager.getInstanceAndInit();
     MainApp.channelPointsListener =
