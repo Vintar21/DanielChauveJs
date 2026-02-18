@@ -7,6 +7,7 @@ import {
 import { allMultipleAnswersCommands } from "./multiple-answers/AllMultipleAnswersCommands";
 import { allSimpleCommands } from "./simple/AllSimpleCommands";
 import { allNoPrefixSimpleCommands } from "./simple/no-prefix/AllNoPrefixSimpleCommands";
+import { allCounterCommands } from "../commands/counters/AllCounterCommands";
 
 export default class CommandsManager {
   private static commands: Array<ICommand> = new Array<ICommand>();
@@ -24,10 +25,19 @@ export default class CommandsManager {
     return CommandsManager.instance;
   }
 
-  public getTriggeredCommand(message: string): ICommand | undefined {
+  public async getTriggeredCommand(
+    message: string,
+  ): Promise<ICommand | undefined> {
+    // Check all commands, that's not OK
+    const matchResults = await Promise.all(
+      CommandsManager.commands.map((command) => command.match(message)),
+    );
+    const index = matchResults.findIndex((result) => result);
+    return CommandsManager.commands[index];
+    /*
     return CommandsManager.commands.find((command) => {
       return command.match(message);
-    });
+    });*/
   }
 
   public addCommand(command: ICommand): void {
@@ -58,6 +68,9 @@ export default class CommandsManager {
 
     // Multiple Answers Commands
     this.addCommands(allMultipleAnswersCommands);
+
+    // Counters Commands
+    this.addCommands(allCounterCommands);
 
     // this.addCommands(commands);
 

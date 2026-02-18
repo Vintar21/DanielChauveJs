@@ -18,6 +18,7 @@ import User from "./user/User";
 import { getGreaterRole } from "./utils/RoleUtils";
 import ObsManager from "./obs/ObsManager";
 import { HelixUser } from "@twurple/api/lib";
+import CountersManager from "./counters/CountersManager";
 
 export const canUseSqlBase: boolean = !sqlLightTesting;
 export const canUseObsWebsocket: boolean = !obsLightTesting;
@@ -59,6 +60,7 @@ export class MainApp {
     MainApp.channelPointsListener =
       await ChannelPointsListener.getInstanceAndInit(broadcasterApp);
     await MainApp.timerManager.startAllTimers();
+    await CountersManager.initAllCounters();
 
     console.log("### Bot started ###");
 
@@ -72,20 +74,26 @@ export class MainApp {
       MainApp.timerManager.updateAllTimersOnMessage();
       const user = new User(username, userId);
 
-      var triggeredCommand =
-        MainApp.commandsManager.getTriggeredCommand(message);
-      triggeredCommand
-        ?.canExecute(user, getGreaterRole(event.getUser(), broadcasterApp))
-        .then((canExecute) => {
-          if (canExecute) {
-            triggeredCommand.execute(user, event);
-          }
+      MainApp.commandsManager
+        .getTriggeredCommand(message)
+        .then((triggeredCommand) => {
+          triggeredCommand
+            ?.canExecute(user, getGreaterRole(event.getUser(), broadcasterApp))
+            .then((canExecute) => {
+              if (canExecute) {
+                triggeredCommand.execute(user, event);
+              }
+            });
         });
     });
   }
 
   public static getBroadcaster(): HelixUser {
     return MainApp.broadcaster;
+  }
+
+  public static getBroadcasterId(): string {
+    return MainApp.broadcaster.id;
   }
 
   public static getDiscordClient(): DiscordClient {

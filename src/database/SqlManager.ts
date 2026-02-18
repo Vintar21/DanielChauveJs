@@ -5,6 +5,10 @@ import { sqlConnectionString } from "../config/ConfigLoader";
 import { UserId } from "../user/User";
 import {
   ANNOUNCE_COLUMN,
+  CATEGORY_NAME_COLUMN,
+  COUNTER_NAME_COLUMN,
+  COUNTER_VALUE_COLUMN,
+  COUNTERS_TABLE,
   DATE_ROLL_COLUMN,
   FIRST,
   GAME_ANNOUNCES_TABLE,
@@ -24,6 +28,7 @@ import {
 } from "./SqlConstants";
 import Connection = MsNodeSqlV8.Connection;
 import ConnectionPromises = MsNodeSqlV8.ConnectionPromises;
+import { EMPTY } from "../utils/StringConstants";
 
 export default class SqlManager {
   private static connection: Promise<Connection> =
@@ -128,6 +133,47 @@ export default class SqlManager {
       }
     });
     return availableMessages;
+  }
+
+  public static async updateCounter(
+    counterName: string,
+    counterValue: number,
+    categoryName: string | undefined,
+  ) {
+    categoryName = categoryName ?? EMPTY;
+    const whereCondition = `WHERE ${COUNTER_NAME_COLUMN}='${counterName}' AND ${CATEGORY_NAME_COLUMN}='${categoryName}'`;
+    const query = `
+    IF NOT EXISTS(SELECT * FROM ${COUNTERS_TABLE} ${whereCondition})
+	    BEGIN
+		    INSERT INTO ${COUNTERS_TABLE} (${COUNTER_NAME_COLUMN}, ${COUNTER_VALUE_COLUMN}, ${CATEGORY_NAME_COLUMN}) VALUES ('${counterName}', ${counterValue}, '${categoryName}')
+    	END;
+    ELSE
+	    BEGIN
+		    UPDATE ${COUNTERS_TABLE} SET ${COUNTER_VALUE_COLUMN} = ${counterValue} ${whereCondition}
+	    END;`;
+    const queryAgregator = await SqlManager.executeQuery(query);
+    console.log(
+      `Counter added/updated: ${counterName}:${categoryName} - ${counterValue}`,
+    );
+    return queryAgregator;
+  }
+
+  public static async getCounterValue(
+    counterName: string,
+    categoryName: string | undefined,
+  ): Promise<number | undefined> {
+    categoryName = categoryName ?? EMPTY;
+    const whereCondition = `WHERE ${COUNTER_NAME_COLUMN}='${counterName}' AND ${CATEGORY_NAME_COLUMN}='${categoryName}'`;
+    const query = `SELECT ${COUNTER_VALUE_COLUMN} FROM ${COUNTERS_TABLE} ${whereCondition}`;
+    const queryAgregator = await SqlManager.executeQuery(query);
+    const counterValueResult = SqlManager.isValideQueryAgregator(queryAgregator)
+      ? queryAgregator[FIRST]
+      : undefined;
+    if (counterValueResult?.length > 0) {
+      const counterValue = Number(counterValueResult[0]?.counter_value);
+      return isNaN(counterValue) ? undefined : counterValue;
+    }
+    return undefined;
   }
 
   private static async executeQuery(

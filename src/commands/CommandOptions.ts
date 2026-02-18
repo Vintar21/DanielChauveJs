@@ -16,8 +16,8 @@ export default class CommandOptions {
   replyToUser: boolean = true;
   sendAsAnnounce: boolean = false;
 
-  globalCooldown: number = 1000; // In miliseconds
-  userCooldown: number = 3000; // In miliseconds
+  globalCooldown: number = seconds(1); // In miliseconds
+  userCooldown: number = seconds(3); // In miliseconds
 
   maxUseGlobal: UseCount = UNLIMITED;
   maxUsePerUser: UseCount = UNLIMITED;

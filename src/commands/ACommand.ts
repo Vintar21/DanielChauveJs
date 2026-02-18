@@ -54,7 +54,10 @@ export default abstract class ACommand implements ICommand {
   }
 
   // By default we split and format the message, override this method to change this behavior
-  public match(input: string, formatMessage: boolean = true): boolean {
+  public async match(
+    input: string,
+    formatMessage: boolean = true,
+  ): Promise<boolean> {
     const formattedInput = formatMessage ? input.toLowerCase().trim() : input;
 
     if (this.options.useFullMessage) {

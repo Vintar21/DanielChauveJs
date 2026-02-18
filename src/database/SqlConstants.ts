@@ -6,6 +6,7 @@ export const USERS_TABLE = "users";
 export const ROLLS_MESSAGES_TABLE = "rolls_messages";
 export const GAME_ANNOUNCES_TABLE = "game_announces";
 export const GAMES_TABLE = "games";
+export const COUNTERS_TABLE = "counters";
 
 // Columns
 
@@ -30,3 +31,8 @@ export const ANNOUNCE_COLUMN = "announce";
 
 //-- Games table
 export const GAME_NAME_COLUMN = "game_name";
+
+//-- Counters table
+export const COUNTER_NAME_COLUMN = "counter_name";
+export const COUNTER_VALUE_COLUMN = "counter_value";
+export const CATEGORY_NAME_COLUMN = "category_name";

@@ -3,7 +3,7 @@ import User from "../user/User";
 import { Role } from "../utils/RoleUtils";
 
 export default interface ICommand {
-  match(input: string): boolean;
+  match(input: string): Promise<boolean>;
 
   execute(user: User, event: MessageEvent, ignoreCooldowns?: boolean): void;
 
