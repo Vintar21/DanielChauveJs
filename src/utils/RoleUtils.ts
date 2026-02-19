@@ -26,7 +26,6 @@ export const ALL_ROLES: Role[] = [
 // Broadcaster = BYPASS | Others = ALLOWED | Default = ALLOWED
 export function getDefaultRolesPermissions(): Permissions<Role> {
   const defaultRolesPermissions: Permissions<Role> = new Permissions();
-  //defaultRolesPermissions.unallowAll();
   defaultRolesPermissions.allowDefault();
   defaultRolesPermissions.bypass(Roles.BROADCASTER);
   defaultRolesPermissions.allowEach([
