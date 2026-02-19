@@ -33,8 +33,9 @@ export default abstract class ACommand implements ICommand {
     event: MessageEvent,
     ignoreCooldowns: boolean,
     message: String,
+    formatMessage: boolean = false,
   ) {
-    message = formatCommandMessage(message, event);
+    message = formatMessage ? formatCommandMessage(message, event) : message;
     if (this.canReplyToUser(event)) {
       reply(message, event);
     } else if (this.options.sendAsAnnounce) {

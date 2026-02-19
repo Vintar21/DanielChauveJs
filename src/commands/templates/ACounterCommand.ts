@@ -215,6 +215,7 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
       event,
       ignoreCooldowns,
       formatCounterMessage(message, this.counter),
+      true,
     );
   }
 }
