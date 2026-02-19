@@ -48,6 +48,16 @@ export default class CounterBuilder {
     return this;
   }
 
+  public categoryRelated(): CounterBuilder {
+    this._categoryRelated = true;
+    return this;
+  }
+
+  public notCategoryRelated(): CounterBuilder {
+    this._categoryRelated = false;
+    return this;
+  }
+
   public category(categoryName: string): CounterBuilder {
     this._categoryRelated =
       categoryName !== undefined && categoryName !== EMPTY;

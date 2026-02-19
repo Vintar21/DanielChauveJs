@@ -86,6 +86,10 @@ export class MainApp {
             });
         });
     });
+
+    botApp.onRaid((event) =>
+      broadcasterApp.api.chat.shoutoutUser(event.broadcasterId, event.userId),
+    );
   }
 
   public static getBroadcaster(): HelixUser {

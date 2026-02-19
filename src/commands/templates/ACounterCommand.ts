@@ -1,15 +1,18 @@
 import { MessageEvent } from "@twurple/easy-bot";
-import User from "../../user/User";
-import AArgumentsCommand from "./AArgumentsCommand";
-import CounterCommandOptions from "../CounterCommanOptions";
 import { broadcasterApp, MainApp } from "../../app";
-import { getGreaterRole } from "../../utils/RoleUtils";
-import { UNALLOWED } from "../../utils/CommonUtils";
-import { MINUS, PLUS } from "../../utils/StringConstants";
-import { CATEGORY_VALUE, COUNTER_VALUE } from "../../counters/CounterUtils";
 import Counter from "../../counters/Counter";
 import CounterBuilder from "../../counters/CounterBuilder";
+import {
+  COUNTER_VALUE,
+  formatCounterMessage,
+} from "../../counters/CounterUtils";
 import SqlManager from "../../database/SqlManager";
+import User from "../../user/User";
+import { UNALLOWED } from "../../utils/CommonUtils";
+import { getGreaterRole } from "../../utils/RoleUtils";
+import { MINUS, PLUS } from "../../utils/StringConstants";
+import CounterCommandOptions from "../CounterCommanOptions";
+import AArgumentsCommand from "./AArgumentsCommand";
 
 const RESET_COUNTER_ARG = "reset";
 const FREEZE_COUNTER_ARG = "freeze";
@@ -215,9 +218,7 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
       user,
       event,
       ignoreCooldowns,
-      message
-        .replaceAll(COUNTER_VALUE, this.counter.getValue().toString())
-        .replaceAll(CATEGORY_VALUE, this.counter.getCategory().toString()),
+      formatCounterMessage(message, this.counter),
     );
   }
 }

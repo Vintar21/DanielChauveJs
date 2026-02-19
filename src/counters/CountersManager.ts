@@ -4,7 +4,7 @@ import { COUNTER_VALUE } from "./CounterUtils";
 
 export const deathCounterZeldaTP: Counter = CounterBuilder.getInstance()
   .name("mort")
-  .category("The Legend of Zelda: Twilight Princess")
+  .categoryRelated()
   .storedInDatabase()
   .obsSourceName("deathCount")
   .obsTextSourceTemplate(`Morts: ${COUNTER_VALUE}`)
