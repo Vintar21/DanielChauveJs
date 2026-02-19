@@ -1,21 +1,15 @@
-import { ALLOWED, BYPASS, Right, UNALLOWED } from "../utils/CommonUtils";
-import { Role, Roles } from "../utils/RoleUtils";
-import CommandOptions from "./CommandOptions";
 import { seconds } from "../utils/CommonUtils";
+import { Permissions } from "../utils/PermissionsUtils";
+import { getModOnlyRolesPermissions, Role } from "../utils/RoleUtils";
+import CommandOptions from "./CommandOptions";
 
 export default class CounterCommandOptions extends CommandOptions {
   shouldAlwaysTriggerBehavior: boolean = false;
   initIfNoCounterForCategory: boolean = false;
 
   // Roles which can modify the value of the counter
-  counterModificationPermissions: Map<Role, Right> = new Map([
-    [Roles.BROADCASTER, BYPASS],
-    [Roles.MOD, ALLOWED],
-    [Roles.VIP, UNALLOWED],
-    [Roles.SUB, UNALLOWED],
-    [Roles.FOLLOWER, UNALLOWED],
-    [Roles.NO_ROLE, UNALLOWED],
-  ]);
+  counterModificationPermissions: Permissions<Role> =
+    getModOnlyRolesPermissions();
 
   constructor(triggers: Array<RegExp>) {
     super(triggers);
@@ -40,5 +34,9 @@ export default class CounterCommandOptions extends CommandOptions {
     return this;
   }
 
-  //TODO: allow bypass unallowAllExcept etc
+  public setCounterModificationPermissions(
+    rolesPermissions: Permissions<Role>,
+  ) {
+    this.counterModificationPermissions = rolesPermissions;
+  }
 }

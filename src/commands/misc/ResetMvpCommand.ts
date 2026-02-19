@@ -1,15 +1,18 @@
 import { MessageEvent } from "@twurple/easy-bot/lib";
 import User from "../../user/User";
-import { Roles } from "../../utils/RoleUtils";
+import { undefinedUser } from "../../user/UserConstants";
+import { Permissions } from "../../utils/PermissionsUtils";
+import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import ACommand from "../ACommand";
 import CommandOptions from "../CommandOptions";
 import { rollCommand } from "./AllMiscCommands";
-import { undefinedUser } from "../../user/UserConstants";
+
+const rolesPermissions: Permissions<Role> = getModOnlyRolesPermissions();
 
 const options: CommandOptions = new CommandOptions([
   /reset/i,
   /reset-?mvp/i,
-]).unallowAllRolesExcept([Roles.BROADCASTER, Roles.MOD]);
+]).setRolesPermission(rolesPermissions);
 
 export default class ResetMvpCommand extends ACommand {
   constructor(enabled: boolean = true) {

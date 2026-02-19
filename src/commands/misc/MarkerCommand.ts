@@ -1,14 +1,17 @@
 import { MessageEvent } from "@twurple/easy-bot";
-import User from "../../user/User";
-import { Roles } from "../../utils/RoleUtils";
-import CommandOptions from "../CommandOptions";
-import ACommand from "../ACommand";
 import { botApp, MainApp } from "../../app";
+import User from "../../user/User";
+import { Permissions } from "../../utils/PermissionsUtils";
+import { getVipOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
+import ACommand from "../ACommand";
+import CommandOptions from "../CommandOptions";
+
+const rolesPermissions: Permissions<Role> = getVipOnlyRolesPermissions();
 
 const options: CommandOptions = new CommandOptions([
   /markers?/i,
   /marqueurs?/i,
-]).unallowAllRolesExcept([Roles.BROADCASTER, Roles.MOD, Roles.VIP]);
+]).setRolesPermission(rolesPermissions);
 
 export default class AnswerRandomMessage extends ACommand {
   constructor(enabled: boolean = true) {

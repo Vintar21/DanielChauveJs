@@ -1,14 +1,17 @@
 import { MessageEvent } from "@twurple/easy-bot";
 import { channel } from "../../config/ConfigLoader";
 import User from "../../user/User";
-import { Roles } from "../../utils/RoleUtils";
+import { Permissions } from "../../utils/PermissionsUtils";
+import { getVipOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import { SLASH, SPACE } from "../../utils/StringConstants";
 import ACommand from "../ACommand";
 import CommandOptions from "../CommandOptions";
 
+const rolesPermissions: Permissions<Role> = getVipOnlyRolesPermissions();
+
 const options: CommandOptions = new CommandOptions([
   /multi/i,
-]).unallowAllRolesExcept([Roles.BROADCASTER, Roles.MOD, Roles.VIP]);
+]).setRolesPermission(rolesPermissions);
 
 export default class MultiCommand extends ACommand {
   // The broadcaster channel is always in the link

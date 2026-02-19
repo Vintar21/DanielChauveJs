@@ -1,13 +1,12 @@
 import { MessageEvent } from "@twurple/easy-bot/lib";
 import { reply, send } from "../app";
 import User, { isNotAUser, UserId } from "../user/User";
-import { BYPASS, Right, UNALLOWED } from "../utils/CommonUtils";
 import { _ } from "../utils/ImportConstants";
 import { Role } from "../utils/RoleUtils";
 import { SPACE } from "../utils/StringConstants";
 import CommandOptions from "./CommandOptions";
-import ICommand from "./ICommand";
 import { UNLIMITED } from "./CommandsUtils";
+import ICommand from "./ICommand";
 
 export default abstract class ACommand implements ICommand {
   protected options: CommandOptions;
@@ -17,9 +16,6 @@ export default abstract class ACommand implements ICommand {
 
   protected usersUseCount: Map<UserId, number> = new Map();
   protected globalUseCount: number = 0;
-
-  protected rolesPermissions: Map<Role, Right>;
-  protected usersPermissions: Map<UserId, Right> = new Map();
 
   constructor(options: CommandOptions, enabled: boolean = true) {
     options.enabled = enabled;
@@ -86,16 +82,16 @@ export default abstract class ACommand implements ICommand {
     }
 
     // Specific user permissions
-    if (this.options.usersPermissions.get(user.userId) === UNALLOWED) {
+    if (this.options.usersPermissions.isUnallowed(user.userId)) {
       return false;
-    } else if (this.options.usersPermissions.get(user.userId) === BYPASS) {
+    } else if (this.options.usersPermissions.canBypass(user.userId)) {
       return true;
     }
 
     // Role permissions
-    if (this.options.rolesPermissions.get(role) === UNALLOWED) {
+    if (this.options.rolesPermissions.isUnallowed(role)) {
       return false;
-    } else if (this.options.rolesPermissions.get(role) === BYPASS) {
+    } else if (this.options.rolesPermissions.canBypass(role)) {
       return true;
     }
 

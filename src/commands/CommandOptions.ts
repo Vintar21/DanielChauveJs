@@ -1,12 +1,8 @@
-import {
-  ALLOWED,
-  BYPASS,
-  DEFAULT_RIGHT,
-  Right,
-  seconds,
-  UNALLOWED,
-} from "../utils/CommonUtils";
-import { ALL_ROLES, Role, Roles } from "../utils/RoleUtils";
+import { UserId } from "../user/User";
+import { getDefaultUsersPermissions } from "../user/UserUtils";
+import { seconds } from "../utils/CommonUtils";
+import { Permissions } from "../utils/PermissionsUtils";
+import { getDefaultRolesPermissions, Role } from "../utils/RoleUtils";
 import { COMMAND_PREFIX, UNLIMITED, UseCount } from "./CommandsUtils";
 
 export default class CommandOptions {
@@ -27,15 +23,8 @@ export default class CommandOptions {
   enabled: boolean = true;
   private usePrefix: boolean = true;
 
-  rolesPermissions: Map<Role, Right> = new Map([
-    [Roles.BROADCASTER, BYPASS],
-    [Roles.MOD, DEFAULT_RIGHT],
-    [Roles.VIP, DEFAULT_RIGHT],
-    [Roles.SUB, DEFAULT_RIGHT],
-    [Roles.FOLLOWER, DEFAULT_RIGHT],
-    [Roles.NO_ROLE, DEFAULT_RIGHT],
-  ]);
-  usersPermissions: Map<number, Right> = new Map();
+  rolesPermissions: Permissions<Role> = getDefaultRolesPermissions();
+  usersPermissions: Permissions<UserId> = getDefaultUsersPermissions();
 
   constructor(triggers: Array<RegExp>) {
     this.triggers = triggers;
@@ -138,98 +127,17 @@ export default class CommandOptions {
     return this;
   }
 
-  public setByPassRole(role: Role): CommandOptions {
-    if (!Object.values(Roles).includes(role)) {
-      throw new Error("Role not recognized");
-    }
-    this.rolesPermissions.set(role, BYPASS);
+  public setRolesPermission(
+    rolesPermissions: Permissions<Role>,
+  ): CommandOptions {
+    this.rolesPermissions = rolesPermissions;
     return this;
   }
 
-  public setByPassRoles(roles: Role[]): CommandOptions {
-    roles.forEach((role) => this.setByPassRole(role));
-    return this;
-  }
-
-  // All roles can bypass limitations except the given ones
-  public byPassAllRolesExcept(roles: Role[]): CommandOptions {
-    const rolesToByPass: Role[] = ALL_ROLES.filter(
-      (role) => !roles.includes(role),
-    );
-    this.setByPassRoles(rolesToByPass);
-    return this;
-  }
-
-  public setAllowedRole(role: Role): CommandOptions {
-    if (!Object.values(Roles).includes(role)) {
-      throw new Error("Role not recognized");
-    }
-    this.rolesPermissions.set(role, ALLOWED);
-    return this;
-  }
-
-  public setAllowedRoles(roles: Role[]): CommandOptions {
-    roles.forEach((role) => this.setAllowedRole(role));
-    return this;
-  }
-
-  // Shouldn't use it, by default all roles are allowed, use unallowRoles
-  public allowAllRolesExcept(roles: Role[]): CommandOptions {
-    const rolesToAllow: Role[] = ALL_ROLES.filter(
-      (role) => !roles.includes(role),
-    );
-    this.setAllowedRoles(rolesToAllow);
-    return this;
-  }
-
-  public setUnallowedRole(role: Role): CommandOptions {
-    if (!Object.values(Roles).includes(role)) {
-      throw new Error("Role not recognized");
-    }
-    this.rolesPermissions.set(role, UNALLOWED);
-    return this;
-  }
-
-  public setUnallowedRoles(roles: Role[]): CommandOptions {
-    roles.forEach((role) => this.setUnallowedRole(role));
-    return this;
-  }
-
-  public unallowAllRolesExcept(roles: Role[]): CommandOptions {
-    const rolesToUnallow: Role[] = ALL_ROLES.filter(
-      (role) => !roles.includes(role),
-    );
-    this.setUnallowedRoles(rolesToUnallow);
-    return this;
-  }
-
-  public setByPassUser(userId: number): CommandOptions {
-    this.usersPermissions.set(userId, BYPASS);
-    return this;
-  }
-
-  public setByPassUsers(userIds: number[]): CommandOptions {
-    userIds.forEach((user) => this.setByPassUser(user));
-    return this;
-  }
-
-  public setAllowedUser(userId: number): CommandOptions {
-    this.usersPermissions.set(userId, ALLOWED);
-    return this;
-  }
-
-  public setAllowedUsers(userIds: number[]): CommandOptions {
-    userIds.forEach((user) => this.setAllowedUser(user));
-    return this;
-  }
-
-  public setUnallowedUser(userId: number): CommandOptions {
-    this.usersPermissions.set(userId, UNALLOWED);
-    return this;
-  }
-
-  public setUnallowedUsers(userIds: number[]): CommandOptions {
-    userIds.forEach((user) => this.setUnallowedUser(user));
+  public setUsersPermissions(
+    usersPermissions: Permissions<UserId>,
+  ): CommandOptions {
+    this.usersPermissions = usersPermissions;
     return this;
   }
 

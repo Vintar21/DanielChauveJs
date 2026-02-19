@@ -1,6 +1,7 @@
 import { HelixUser } from "@twurple/api/lib";
 import { Bot } from "@twurple/easy-bot/lib";
 import { MainApp } from "../app";
+import { Permissions } from "./PermissionsUtils";
 
 export type Role = symbol;
 
@@ -21,6 +22,50 @@ export const ALL_ROLES: Role[] = [
   Roles.FOLLOWER,
   Roles.NO_ROLE,
 ];
+
+// Broadcaster = BYPASS | Others = ALLOWED | Default = ALLOWED
+export function getDefaultRolesPermissions(): Permissions<Role> {
+  const defaultRolesPermissions: Permissions<Role> = new Permissions();
+  defaultRolesPermissions.allowDefault();
+  defaultRolesPermissions.bypass(Roles.BROADCASTER);
+  defaultRolesPermissions.allowEach([
+    Roles.MOD,
+    Roles.VIP,
+    Roles.SUB,
+    Roles.FOLLOWER,
+    Roles.NO_ROLE,
+  ]);
+  return defaultRolesPermissions;
+}
+
+// Broadcaster = BYPASS | Mod = ALLOWED | Others = UNALLOWED Default = UNALLOWED
+export function getModOnlyRolesPermissions(): Permissions<Role> {
+  const defaultRolesPermissions: Permissions<Role> = new Permissions();
+  defaultRolesPermissions.unallowDefault();
+  defaultRolesPermissions.bypass(Roles.BROADCASTER);
+  defaultRolesPermissions.allow(Roles.MOD);
+  defaultRolesPermissions.unallowEach([
+    Roles.VIP,
+    Roles.SUB,
+    Roles.FOLLOWER,
+    Roles.NO_ROLE,
+  ]);
+  return defaultRolesPermissions;
+}
+
+// Broadcaster = BYPASS | Mod & VIP = ALLOWED | Others = UNALLOWED Default = UNALLOWED
+export function getVipOnlyRolesPermissions(): Permissions<Role> {
+  const defaultRolesPermissions: Permissions<Role> = new Permissions();
+  defaultRolesPermissions.unallowDefault();
+  defaultRolesPermissions.bypass(Roles.BROADCASTER);
+  defaultRolesPermissions.allowEach([Roles.MOD, Roles.VIP]);
+  defaultRolesPermissions.unallowEach([
+    Roles.SUB,
+    Roles.FOLLOWER,
+    Roles.NO_ROLE,
+  ]);
+  return defaultRolesPermissions;
+}
 
 export function isBroadcaster(
   broadcaster: HelixUser,

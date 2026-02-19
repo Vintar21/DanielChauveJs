@@ -1,6 +1,11 @@
-import { Roles } from "../../utils/RoleUtils";
+import { Permissions } from "../../utils/PermissionsUtils";
+import { getDefaultRolesPermissions, Role, Roles } from "../../utils/RoleUtils";
 import CommandOptions from "../CommandOptions";
 import SimpleCommand from "../templates/SimpleCommand";
+
+const rolesPermissions: Permissions<Role> = getDefaultRolesPermissions();
+rolesPermissions.bypass(Roles.BROADCASTER);
+rolesPermissions.unallow(Roles.NO_ROLE);
 
 const options: CommandOptions = new CommandOptions([
   /s+a*l+u*t+/i,
@@ -11,8 +16,7 @@ const options: CommandOptions = new CommandOptions([
   /he+l{2,}o+/,
 ])
   .setMaxUsePerUser(1)
-  .setByPassRole(Roles.BROADCASTER)
-  .setUnallowedRole(Roles.NO_ROLE)
+  .setRolesPermission(rolesPermissions)
   .disable();
 
 const answer: String = "Salut le sang de la veine de l'artère aorte !";

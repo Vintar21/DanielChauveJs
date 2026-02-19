@@ -1,13 +1,14 @@
 import { HelixPoll } from "@twurple/api";
 import { MessageEvent } from "@twurple/easy-bot";
 import { EventSubChannelPollEndEvent } from "@twurple/eventsub-base/lib/events/EventSubChannelPollEndEvent";
+import { EventSubWsListener } from "@twurple/eventsub-ws";
 import { broadcasterApp, MainApp } from "../../app";
 import User from "../../user/User";
-import { Roles } from "../../utils/RoleUtils";
+import { Permissions } from "../../utils/PermissionsUtils";
+import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import { SPACE } from "../../utils/StringConstants";
 import CommandOptions from "../CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
-import { EventSubWsListener } from "@twurple/eventsub-ws";
 
 const CANCEL_POLL = "cancel";
 const END_POLL = "stop";
@@ -20,11 +21,13 @@ const ARCHIVED = "ARCHIVED";
 const MODERATED = "MODERATED";
 const INVALID = "INVALID";
 
+const rolesPermissions: Permissions<Role> = getModOnlyRolesPermissions();
+
 const options: CommandOptions = new CommandOptions([
   /polls?/i,
   /sondages?/i,
   /votes?/i,
-]).unallowAllRolesExcept([Roles.BROADCASTER, Roles.MOD]);
+]).setRolesPermission(rolesPermissions);
 
 export default class PollCommand extends AArgumentsCommand {
   private defaultDuration: number = 300; // <= 1800

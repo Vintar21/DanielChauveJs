@@ -8,7 +8,6 @@ import {
 } from "../../counters/CounterUtils";
 import SqlManager from "../../database/SqlManager";
 import User from "../../user/User";
-import { UNALLOWED } from "../../utils/CommonUtils";
 import { getGreaterRole } from "../../utils/RoleUtils";
 import { MINUS, PLUS } from "../../utils/StringConstants";
 import CounterCommandOptions from "../CounterCommanOptions";
@@ -179,10 +178,7 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
 
   private async canModifyCounter(event: MessageEvent): Promise<boolean> {
     const role = await getGreaterRole(event.getUser(), broadcasterApp);
-    return (
-      this.options.counterModificationPermissions.has(role) &&
-      this.options.counterModificationPermissions.get(role) !== UNALLOWED
-    );
+    return !this.options.counterModificationPermissions.isUnallowed(role);
   }
 
   public async match(input: string, formatMessage?: boolean): Promise<boolean> {

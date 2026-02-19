@@ -1,14 +1,16 @@
 import { MessageEvent } from "@twurple/easy-bot/lib";
 import User from "../../user/User";
-import { moobotUser } from "../../user/UserConstants";
-import { Roles } from "../../utils/RoleUtils";
+import { Permissions } from "../../utils/PermissionsUtils";
+import { getDefaultRolesPermissions, Role, Roles } from "../../utils/RoleUtils";
 import CommandOptions from "../CommandOptions";
 import MultipleAnswersCommand from "../templates/MultipleAnswersCommand";
 
+const rolesPermissions: Permissions<Role> = getDefaultRolesPermissions();
+rolesPermissions.unallow(Roles.BROADCASTER);
+
 const options: CommandOptions = new CommandOptions([/.+/i])
   .dontUsePrefix()
-  .setUnallowedRole(Roles.BROADCASTER)
-  .setUnallowedUser(moobotUser.userId);
+  .setRolesPermission(rolesPermissions);
 
 const answers: String[] = [
   "J'en ai vu des avis désastreux mais alors celui-ci...",

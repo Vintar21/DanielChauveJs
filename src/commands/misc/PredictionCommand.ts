@@ -2,8 +2,8 @@ import { HelixPrediction } from "@twurple/api/lib";
 import { MessageEvent } from "@twurple/easy-bot";
 import { broadcasterApp, MainApp } from "../../app";
 import User from "../../user/User";
-import { minutes } from "../../utils/CommonUtils";
-import { Roles } from "../../utils/RoleUtils";
+import { Permissions } from "../../utils/PermissionsUtils";
+import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import { SPACE } from "../../utils/StringConstants";
 import CommandOptions from "../CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
@@ -11,11 +11,13 @@ import AArgumentsCommand from "../templates/AArgumentsCommand";
 const CANCEL_PREDICTION = "cancel";
 const LOCK_PREDICTION = "stop";
 
+const rolesPermissions: Permissions<Role> = getModOnlyRolesPermissions();
+
 const options: CommandOptions = new CommandOptions([
   /pr[eéèê]di(ction)?s?/i,
   /bets?/i,
   /paris?/i,
-]).unallowAllRolesExcept([Roles.BROADCASTER, Roles.MOD]);
+]).setRolesPermission(rolesPermissions);
 
 export default class PredictionCommand extends AArgumentsCommand {
   private autoLockTime: number = 300; // <= 1800

@@ -2,7 +2,7 @@ import Counter from "./Counter";
 import CounterBuilder from "./CounterBuilder";
 import { COUNTER_VALUE } from "./CounterUtils";
 
-export const deathCounterZeldaTP: Counter = CounterBuilder.getInstance()
+export const deathCounter: Counter = CounterBuilder.getInstance()
   .name("mort")
   .categoryRelated()
   .storedInDatabase()
@@ -11,7 +11,7 @@ export const deathCounterZeldaTP: Counter = CounterBuilder.getInstance()
   .build();
 
 export default class CountersManager {
-  public static counters: Counter[] = [deathCounterZeldaTP];
+  public static counters: Counter[] = [deathCounter];
 
   public static async initAllCounters(): Promise<void> {
     Promise.all(CountersManager.counters.map((counter) => counter.init()));
