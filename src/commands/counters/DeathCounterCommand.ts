@@ -1,9 +1,5 @@
 import Counter from "../../counters/Counter";
-import {
-  BROADCASTER_VALUE,
-  CATEGORY_VALUE,
-  COUNTER_VALUE,
-} from "../../counters/CounterUtils";
+import { Placeholders } from "../../commands/CommandsUtils";
 import CounterCommandOptions from "../CounterCommanOptions";
 import ACounterCommand from "../templates/ACounterCommand";
 
@@ -13,7 +9,7 @@ const options: CounterCommandOptions = new CounterCommandOptions([
 ]).canInitIfNoCounterForCategory();
 
 export default class DeathCounterCommand extends ACounterCommand {
-  protected getCounterMessage: string = `${BROADCASTER_VALUE} est mort ${COUNTER_VALUE} fois dans ${CATEGORY_VALUE}`;
+  protected getCounterMessage: string = `${Placeholders.BROADCASTER} est mort ${Placeholders.COUNTER} fois dans ${Placeholders.CATEGORY}`;
   protected modifyCounterMessage: string = this.getCounterMessage;
 
   constructor(counter: Counter, enabled: boolean = true) {

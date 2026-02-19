@@ -2,7 +2,7 @@ import MultipleAnswersCommand from "./MultipleAnswersCommand";
 import CommandOptions from "../CommandOptions";
 import User from "../../utils/user/User";
 import { MessageEvent } from "@twurple/easy-bot";
-import { SPACE } from "../../utils/StringConstants";
+import { EMPTY, SPACE } from "../../utils/StringConstants";
 
 export type Position = "start" | "end";
 export const START_POS: Position = "start";
@@ -31,6 +31,15 @@ export default class DilemmaCommand extends MultipleAnswersCommand {
   ): void {
     this.responses = [];
     const text = event.text.trim().split(SPACE).slice(1).join(SPACE);
+    if (text === EMPTY) {
+      this.replyOrSend(
+        user,
+        event,
+        ignoreCooldowns,
+        "Il faut que tu précise quoi parce que sinon on comprend pas... Stare",
+      );
+      return;
+    }
     this.possibilities.forEach((possibility) => {
       if (this.position === START_POS) {
         this.responses.push(possibility + text);
@@ -41,6 +50,5 @@ export default class DilemmaCommand extends MultipleAnswersCommand {
       }
     });
     super.execute(user, event, ignoreCooldowns);
-    console.log(event.text);
   }
 }

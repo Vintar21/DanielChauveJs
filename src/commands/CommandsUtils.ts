@@ -1,3 +1,7 @@
+import { MessageEvent } from "@twurple/easy-bot/lib";
+import { MainApp } from "../app";
+import Counter from "../counters/Counter";
+
 export const COMMAND_PREFIX = "!";
 export const NO_MSG = undefined;
 
@@ -9,3 +13,28 @@ export const FOLLOWER_COUNT_MESSAGE =
 // Use count
 export type UseCount = number;
 export const UNLIMITED: UseCount = -1;
+
+export const Placeholders = Object.freeze({
+  BROADCASTER: "$BROADCASTER",
+  COUNTER: "$COUNTER",
+  CATEGORY: "$CATEGORY",
+  USER: "$USER",
+});
+
+export function formatCommandMessage(
+  message: String,
+  event: MessageEvent,
+): String {
+  return message
+    .replaceAll(Placeholders.BROADCASTER, MainApp.getBroadcaster().name)
+    .replaceAll(Placeholders.USER, event.userName);
+}
+
+export function formatCounterMessage(
+  message: String,
+  counter: Counter,
+): String {
+  return message
+    .replaceAll(Placeholders.COUNTER, counter.getValue().toString())
+    .replaceAll(Placeholders.CATEGORY, counter.getCategory()?.toString());
+}

@@ -3,9 +3,9 @@ import { broadcasterApp, MainApp } from "../../app";
 import Counter from "../../counters/Counter";
 import CounterBuilder from "../../counters/CounterBuilder";
 import {
-  COUNTER_VALUE,
+  Placeholders,
   formatCounterMessage,
-} from "../../counters/CounterUtils";
+} from "../../commands/CommandsUtils";
 import SqlManager from "../../database/SqlManager";
 import User from "../../utils/user/User";
 import { getGreaterRole } from "../../utils/RoleUtils";
@@ -26,10 +26,10 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
 
   protected abstract getCounterMessage: string;
   protected abstract modifyCounterMessage: string;
-  protected resetCounterMessage: string = `Le compteur a été reset à la valeur ${COUNTER_VALUE}`;
-  protected reachStopMessage: string = `Le compteur a atteint sa limite de ${COUNTER_VALUE}`;
-  protected freezeMessage: string = `Le compteur a été freeze à la valeur ${COUNTER_VALUE}`;
-  protected unfreezeMessage: string = `Le compteur n'est plus freeze, il vaut toujours ${COUNTER_VALUE}`;
+  protected resetCounterMessage: string = `Le compteur a été reset à la valeur ${Placeholders.COUNTER}`;
+  protected reachStopMessage: string = `Le compteur a atteint sa limite de ${Placeholders.COUNTER} :stop_sign:`;
+  protected freezeMessage: string = `Le compteur a été freeze à la valeur ${Placeholders.COUNTER} :ice_cube:`;
+  protected unfreezeMessage: string = `Le compteur n'est plus freeze, il vaut toujours ${Placeholders.COUNTER}`;
 
   constructor(
     counter: Counter,

@@ -29,7 +29,7 @@ export class Permissions<T> {
   public getRightOrDefault(element: T): Right {
     const right = this.permissionsMap.get(element);
     if (!right) {
-      console.warn(`No permission found for ${element} !`);
+      //console.warn(`No permission found for ${element} !`);
     }
     return right ?? this.defaultPermission;
   }
@@ -53,7 +53,7 @@ export class Permissions<T> {
   }
 
   public setPermissionForEach(elements: T[], permission: Right): void {
-    elements.forEach((e) => this.permissionsMap.set(e, permission));
+    elements.forEach((e) => this.setPermission(e, permission));
   }
 
   public setPermissionsForAllExcept(elements: T[], right: Right): void {

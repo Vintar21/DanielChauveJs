@@ -5,7 +5,7 @@ import { _ } from "../utils/ImportConstants";
 import { Role } from "../utils/RoleUtils";
 import { SPACE } from "../utils/StringConstants";
 import CommandOptions from "./CommandOptions";
-import { UNLIMITED } from "./CommandsUtils";
+import { formatCommandMessage, UNLIMITED } from "./CommandsUtils";
 import ICommand from "./ICommand";
 
 export default abstract class ACommand implements ICommand {
@@ -34,6 +34,7 @@ export default abstract class ACommand implements ICommand {
     ignoreCooldowns: boolean,
     message: String,
   ) {
+    message = formatCommandMessage(message, event);
     if (this.canReplyToUser(event)) {
       reply(message, event);
     } else if (this.options.sendAsAnnounce) {
@@ -74,8 +75,7 @@ export default abstract class ACommand implements ICommand {
     user: User,
     promisedRole: Promise<Role>,
   ): Promise<boolean> {
-    const role = await promisedRole;
-
+    const role: Role = await promisedRole;
     // Command enabled
     if (!this.options.enabled) {
       return false;
@@ -94,7 +94,6 @@ export default abstract class ACommand implements ICommand {
     } else if (this.options.rolesPermissions.canBypass(role)) {
       return true;
     }
-
     return (
       this.canUseGlobal() &&
       this.canUseForUser(user.userId) &&

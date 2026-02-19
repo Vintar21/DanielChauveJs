@@ -7,6 +7,7 @@ import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import { SPACE } from "../../utils/StringConstants";
 import CommandOptions from "../CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
+import { minutes } from "../../utils/CommonUtils";
 
 const CANCEL_PREDICTION = "cancel";
 const LOCK_PREDICTION = "stop";
@@ -20,7 +21,7 @@ const options: CommandOptions = new CommandOptions([
 ]).setRolesPermission(rolesPermissions);
 
 export default class PredictionCommand extends AArgumentsCommand {
-  private autoLockTime: number = 300; // <= 1800
+  private autoLockTime: number = minutes(5, true); // Max 1800s = 30min
   private defaultOutcomes: string[] = ["Oui", "Non"];
   private title: string = "Est-ce que ça va arriver ?";
 
@@ -167,8 +168,8 @@ export default class PredictionCommand extends AArgumentsCommand {
         // Check if the first parameter is the time of the prediction
         var timeArg = Number(args[0]);
         if (!isNaN(timeArg) && timeArg > 0) {
-          timeArg = timeArg > 1800 ? 1800 : timeArg; // Twitch max autoLockAfter is 1800s (30min)
-          timeArg = timeArg <= 30 ? timeArg * 60 : timeArg; // If the given time is less or equal than 30, we consider it's in minutes and convert it to seconds
+          timeArg = timeArg > minutes(30, true) ? minutes(30, true) : timeArg; // Twitch max duration is 1800s (30min)
+          timeArg = timeArg <= 30 ? minutes(timeArg, true) : timeArg; // If the given time is less or equal than 30, we consider it's in minutes and convert it to seconds
           autoLockTime = timeArg;
           args = args.slice(1);
         } else {

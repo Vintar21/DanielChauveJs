@@ -1,13 +1,13 @@
 import Counter from "./Counter";
 import CounterBuilder from "./CounterBuilder";
-import { COUNTER_VALUE } from "./CounterUtils";
+import { Placeholders } from "../commands/CommandsUtils";
 
 export const deathCounter: Counter = CounterBuilder.getInstance()
   .name("mort")
   .categoryRelated()
   .storedInDatabase()
   .obsSourceName("deathCount")
-  .obsTextSourceTemplate(`Morts: ${COUNTER_VALUE}`)
+  .obsTextSourceTemplate(`Morts: ${Placeholders.COUNTER}`)
   .build();
 
 export default class CountersManager {

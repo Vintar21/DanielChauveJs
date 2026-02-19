@@ -57,6 +57,10 @@ export default class RollCommand extends ACommand {
   public resetMvp() {
     console.log("Reset MVP");
     this.currentMVP = new Mvp(undefinedUser, 0);
+    this.usersUseCount = new Map();
+    this.userCooldowns = new Map();
+    this.globalUseCount = 0;
+    this.lastUsed = 0;
     MainApp.getObsManager().resetObsMvpSource();
   }
 

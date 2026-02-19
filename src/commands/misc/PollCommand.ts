@@ -9,6 +9,7 @@ import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import { SPACE } from "../../utils/StringConstants";
 import CommandOptions from "../CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
+import { minutes } from "../../utils/CommonUtils";
 
 const CANCEL_POLL = "cancel";
 const END_POLL = "stop";
@@ -30,7 +31,7 @@ const options: CommandOptions = new CommandOptions([
 ]).setRolesPermission(rolesPermissions);
 
 export default class PollCommand extends AArgumentsCommand {
-  private defaultDuration: number = 300; // <= 1800
+  private defaultDuration: number = minutes(5); // Max 1800s = 30min
   private defaultChoices: string[] = ["Pour", "Contre"];
   private title: string = "Plutôt pour ou contre ?";
   private channelPointsDefault: number = 0;
@@ -199,8 +200,8 @@ export default class PollCommand extends AArgumentsCommand {
         // Check if the first parameter is the time of the prediction
         var timeArg = Number(args[0]);
         if (!isNaN(timeArg) && timeArg > 0) {
-          timeArg = timeArg > 1800 ? 1800 : timeArg; // Twitch max duration is 1800s (30min)
-          timeArg = timeArg <= 30 ? timeArg * 60 : timeArg; // If the given time is less or equal than 30, we consider it's in minutes and convert it to seconds
+          timeArg = timeArg > minutes(30, true) ? minutes(30, true) : timeArg; // Twitch max duration is 1800s (30min)
+          timeArg = timeArg <= 30 ? minutes(timeArg, true) : timeArg; // If the given time is less or equal than 30, we consider it's in minutes and convert it to seconds
           duration = timeArg;
           args = args.slice(1);
         } else {

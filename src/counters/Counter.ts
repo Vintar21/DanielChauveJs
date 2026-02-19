@@ -1,10 +1,8 @@
 import { MainApp } from "../app";
 import SqlManager from "../database/SqlManager";
-import {
-  CounterBehavior,
-  CounterBehaviors,
-  COUNTER_VALUE,
-} from "./CounterUtils";
+import { CounterBehavior, CounterBehaviors } from "./CounterUtils";
+
+import { formatCounterMessage, Placeholders } from "../commands/CommandsUtils";
 
 export default class Counter {
   protected name: string;
@@ -53,7 +51,7 @@ export default class Counter {
     this.useObsSource = useObsSource;
     this.obsSourceName = obsSourceName;
     this.obsTextSourceTemplate =
-      obsTextSourceTemplate ?? `${this.name}: ${COUNTER_VALUE}`;
+      obsTextSourceTemplate ?? `${this.name}: ${Placeholders.COUNTER}`;
   }
 
   public freeze() {
@@ -194,10 +192,7 @@ export default class Counter {
     if (this.useObsSource && this.obsSourceName) {
       MainApp.getObsManager().updateObsTextSource(
         this.obsSourceName,
-        this.obsTextSourceTemplate.replace(
-          COUNTER_VALUE,
-          this.value.toString(),
-        ),
+        formatCounterMessage(this.obsTextSourceTemplate, this).toString(),
       );
     }
   }

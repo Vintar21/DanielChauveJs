@@ -6,12 +6,18 @@ export function days(days: number): number {
   return hours(days * 24);
 }
 
-export function hours(hours: number): number {
-  return minutes(hours * 60);
+export function hours(
+  hours: number,
+  inMinutes: boolean = false,
+  inSeconds: boolean = false,
+): number {
+  const mins = hours * 60;
+  return inMinutes ? mins : minutes(mins, inSeconds);
 }
 
-export function minutes(minutes: number): number {
-  return seconds(minutes * 60);
+export function minutes(minutes: number, inSeconds: boolean = false): number {
+  const secs = minutes * 60;
+  return inSeconds ? secs : seconds(secs);
 }
 
 export function seconds(seconds: number): number {

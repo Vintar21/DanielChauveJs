@@ -26,6 +26,7 @@ export const ALL_ROLES: Role[] = [
 // Broadcaster = BYPASS | Others = ALLOWED | Default = ALLOWED
 export function getDefaultRolesPermissions(): Permissions<Role> {
   const defaultRolesPermissions: Permissions<Role> = new Permissions();
+  //defaultRolesPermissions.unallowAll();
   defaultRolesPermissions.allowDefault();
   defaultRolesPermissions.bypass(Roles.BROADCASTER);
   defaultRolesPermissions.allowEach([
@@ -90,6 +91,26 @@ export async function isVip(
   return bot.api.channels.checkVipForUser(broadcaster.id, user.id);
 }
 
+export async function isSub(
+  broadcaster: HelixUser,
+  user: HelixUser,
+  bot: Bot,
+): Promise<boolean> {
+  return bot.api.subscriptions
+    .getSubscriptionForUser(broadcaster.id, user.id)
+    .then((r) => r !== null);
+}
+
+export async function isFollower(
+  broadcaster: HelixUser,
+  user: HelixUser,
+  bot: Bot,
+): Promise<boolean> {
+  return bot.api.channels
+    .getChannelFollowers(broadcaster.id, user.id)
+    .then((r) => r !== null && r?.data[0].followDate !== null);
+}
+
 export async function getGreaterRole(
   promisedUser: Promise<HelixUser>,
   bot: Bot,
@@ -100,13 +121,13 @@ export async function getGreaterRole(
 
   if (isBroadcaster(broadcasterUser, user)) {
     role = Roles.BROADCASTER;
-  } else if (isMod(broadcasterUser, user, bot)) {
+  } else if (await isMod(broadcasterUser, user, bot)) {
     role = Roles.MOD;
-  } else if (isVip(broadcasterUser, user, bot)) {
+  } else if (await isVip(broadcasterUser, user, bot)) {
     role = Roles.VIP;
-  } else if (user.isSubscribedTo(broadcasterUser.id)) {
+  } else if (await isSub(broadcasterUser, user, bot)) {
     role = Roles.SUB;
-  } else if (user.follows(broadcasterUser.id)) {
+  } else if (await broadcasterUser.isFollowedBy(user.id)) {
     role = Roles.FOLLOWER;
   } else {
     role = Roles.NO_ROLE;
