@@ -4,6 +4,7 @@ export const SLASH: string = "/";
 export const COMMA: string = ",";
 export const PLUS: string = "+";
 export const MINUS: string = "-";
+export const AT: string = "@";
 export const SPACED_COMMA: string = COMMA + SPACE;
 export const NEW_LINE: string = "\r\n";
 export const TWITCH_CHANNEL_PREFIX: string = "https://www.twitch.tv/";
