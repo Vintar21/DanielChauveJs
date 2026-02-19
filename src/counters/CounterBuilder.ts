@@ -43,7 +43,7 @@ export default class CounterBuilder {
     return this;
   }
 
-  public stop(stopValue: number): CounterBuilder {
+  public stop(stopValue: number | undefined): CounterBuilder {
     this._stopValue = stopValue;
     return this;
   }
@@ -65,19 +65,29 @@ export default class CounterBuilder {
     return this;
   }
 
+  public behavior(behavior: CounterBehavior): CounterBuilder {
+    this._behavior = behavior;
+    return this;
+  }
+
   public customBehavior(customBehavior: (c: number) => number): CounterBuilder {
     this._behavior = customBehavior;
     return this;
   }
 
-  public obsSourceName(sourceName: string): CounterBuilder {
+  public obsSourceName(sourceName: string | undefined): CounterBuilder {
     this._useObsSource = sourceName !== undefined && sourceName !== EMPTY;
     this._obsSourceName = sourceName;
     return this;
   }
 
-  public obsTextSourceTemplate(template: string): CounterBuilder {
+  public obsTextSourceTemplate(template: string | undefined): CounterBuilder {
     this._obsTextSourceTemplate = template;
+    return this;
+  }
+
+  public setStoredInDatabase(storedInDatabase: boolean): CounterBuilder {
+    this.isStoredInDatabase = storedInDatabase;
     return this;
   }
 
@@ -88,6 +98,22 @@ export default class CounterBuilder {
 
   public notStoredInDatabase(): CounterBuilder {
     this.isStoredInDatabase = false;
+    return this;
+  }
+
+  public from(counter: Counter): CounterBuilder {
+    this._name = counter.getName();
+    this._startValue = counter.getStartValue();
+    this._step = counter.getStep();
+    this._behavior = counter.getBehavior();
+    this.isStoredInDatabase = counter.getStoredInDatabase();
+    this._stopValue = counter.getStopValue();
+    this._categoryRelated = counter.isCategoryRelated();
+    this._categoryName = counter.getCategory();
+    this._useObsSource = counter.usingObsSource();
+    this._obsSourceName = counter.getObsSourceName();
+    this._obsTextSourceTemplate = counter.getObsTextSourceTemplate();
+
     return this;
   }
 

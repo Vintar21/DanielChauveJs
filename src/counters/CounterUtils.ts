@@ -6,3 +6,4 @@ export const CounterBehaviors = Object.freeze({
 });
 
 export const COUNTER_VALUE = "$COUNTER";
+export const CATEGORY_VALUE = "$CATEGORY";

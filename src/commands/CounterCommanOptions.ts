@@ -5,6 +5,7 @@ import { seconds } from "../utils/CommonUtils";
 
 export default class CounterCommandOptions extends CommandOptions {
   shouldAlwaysTriggerBehavior: boolean = false;
+  initIfNoCounterForCategory: boolean = false;
 
   // Roles which can modify the value of the counter
   counterModificationPermissions: Map<Role, Right> = new Map([
@@ -26,6 +27,16 @@ export default class CounterCommandOptions extends CommandOptions {
     alwaysTriggerBehavior: boolean,
   ): CounterCommandOptions {
     this.shouldAlwaysTriggerBehavior = alwaysTriggerBehavior;
+    return this;
+  }
+
+  public canInitIfNoCounterForCategory(): CounterCommandOptions {
+    this.initIfNoCounterForCategory = true;
+    return this;
+  }
+
+  public cantInitIfNoCounterForCategory(): CounterCommandOptions {
+    this.initIfNoCounterForCategory = false;
     return this;
   }
 

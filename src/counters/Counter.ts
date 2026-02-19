@@ -7,26 +7,26 @@ import {
 } from "./CounterUtils";
 
 export default class Counter {
-  private name: string;
-  private value: number;
+  protected name: string;
+  protected value: number;
 
-  private startValue: number;
-  private step: number;
+  protected startValue: number;
+  protected step: number;
   private stopValue: number | undefined;
 
   // TODO: several categories
-  private categoryRelated: boolean;
-  private categoryName: string | undefined;
+  protected categoryRelated: boolean;
+  protected categoryName: string | undefined;
 
-  private behavior: CounterBehavior;
+  protected behavior: CounterBehavior;
 
-  private useObsSource: boolean;
-  private obsSourceName: string | undefined;
-  private obsTextSourceTemplate: string;
+  protected useObsSource: boolean;
+  protected obsSourceName: string | undefined;
+  protected obsTextSourceTemplate: string;
 
-  private isStoredInDatabase: boolean;
+  protected isStoredInDatabase: boolean;
 
-  private freezed: boolean = false;
+  protected freezed: boolean = false;
 
   constructor(
     name: string,
@@ -54,20 +54,6 @@ export default class Counter {
     this.obsSourceName = obsSourceName;
     this.obsTextSourceTemplate =
       obsTextSourceTemplate ?? `${this.name}: ${COUNTER_VALUE}`;
-  }
-
-  public getId(): string {
-    return this.categoryRelated
-      ? `${this.name}:${this.categoryName}`
-      : `${this.name}`;
-  }
-
-  public getName(): string {
-    return this.name;
-  }
-
-  public getValue(): number {
-    return this.value;
   }
 
   public freeze() {
@@ -142,12 +128,30 @@ export default class Counter {
     return this.value;
   }
 
-  public usingObsSource(): boolean {
-    return this.useObsSource;
+  public getId(): string {
+    return this.categoryRelated
+      ? `${this.name}:${this.categoryName}`
+      : `${this.name}`;
   }
 
-  public getObsSourceName(): string | undefined {
-    return this.obsSourceName;
+  public getName(): string {
+    return this.name;
+  }
+
+  public getValue(): number {
+    return this.value;
+  }
+
+  public getStartValue(): number {
+    return this.startValue;
+  }
+
+  public getStopValue(): number {
+    return this.stopValue;
+  }
+
+  public getStep(): number {
+    return this.step;
   }
 
   public isCategoryRelated(): boolean {
@@ -156,6 +160,26 @@ export default class Counter {
 
   public getCategory(): string | undefined {
     return this.categoryName;
+  }
+
+  public getBehavior(): CounterBehavior {
+    return this.behavior;
+  }
+
+  public usingObsSource(): boolean {
+    return this.useObsSource;
+  }
+
+  public getObsSourceName(): string | undefined {
+    return this.obsSourceName;
+  }
+
+  public getObsTextSourceTemplate(): string {
+    return this.obsTextSourceTemplate;
+  }
+
+  public getStoredInDatabase(): boolean {
+    return this.isStoredInDatabase;
   }
 
   public saveCounter() {

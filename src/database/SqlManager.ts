@@ -176,6 +176,26 @@ export default class SqlManager {
     return undefined;
   }
 
+  public static async getAllCounterValues(
+    counterName: string,
+  ): Promise<Map<string, number> | undefined> {
+    const whereCondition = `WHERE ${COUNTER_NAME_COLUMN}='${counterName}'`;
+    const query = `SELECT ${CATEGORY_NAME_COLUMN}, ${COUNTER_VALUE_COLUMN} FROM ${COUNTERS_TABLE} ${whereCondition}`;
+    const queryAgregator = await SqlManager.executeQuery(query);
+    const rows = SqlManager.isValideQueryAgregator(queryAgregator)
+      ? queryAgregator[FIRST]
+      : undefined;
+    // [{category_name: string, counter_value: number}, {category_name: string, counter_value: number},...]
+    if (rows?.length > 0) {
+      const categoriesValuesMap: Map<string, number> = new Map();
+      rows.forEach((row) =>
+        categoriesValuesMap.set(row.category_name, row.counter_value),
+      );
+      return categoriesValuesMap;
+    }
+    return undefined;
+  }
+
   private static async executeQuery(
     query: string,
   ): Promise<QueryAggregatorResults> {

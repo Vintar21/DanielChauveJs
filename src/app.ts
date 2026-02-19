@@ -115,6 +115,12 @@ export class MainApp {
   public static getTimerManager(): TimerManager {
     return MainApp.timerManager;
   }
+
+  public static async getCurrentGame(): Promise<string | undefined> {
+    return broadcasterApp.api.channels
+      .getChannelInfoById(MainApp.getBroadcasterId())
+      .then((channel) => channel?.gameName);
+  }
 }
 
 export function send(message: String, isAnnounce: boolean = false) {

@@ -6,8 +6,10 @@ import { broadcasterApp, MainApp } from "../../app";
 import { getGreaterRole } from "../../utils/RoleUtils";
 import { UNALLOWED } from "../../utils/CommonUtils";
 import { MINUS, PLUS } from "../../utils/StringConstants";
-import { COUNTER_VALUE } from "../../counters/CounterUtils";
+import { CATEGORY_VALUE, COUNTER_VALUE } from "../../counters/CounterUtils";
 import Counter from "../../counters/Counter";
+import CounterBuilder from "../../counters/CounterBuilder";
+import SqlManager from "../../database/SqlManager";
 
 const RESET_COUNTER_ARG = "reset";
 const FREEZE_COUNTER_ARG = "freeze";
@@ -17,6 +19,8 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
   // undefined by default otherwise VSCode is mad
   protected options: CounterCommandOptions = undefined;
   protected counter: Counter;
+
+  protected countersMap: Map<string, Counter> = new Map();
 
   protected abstract getCounterMessage: string;
   protected abstract modifyCounterMessage: string;
@@ -32,8 +36,31 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
   ) {
     super(options, enabled);
     this.counter = counter;
-    // load the real value if it exists afterwards
     this.options = options;
+  }
+
+  public async initCountersMapIfEmpty(): Promise<void> {
+    if (this.countersMap.size === 0) {
+      this.countersMap.set(this.counter.getCategory(), this.counter);
+      await SqlManager.getAllCounterValues(this.counter.getName()).then(
+        (categoriesValuesMap) => {
+          if (categoriesValuesMap) {
+            categoriesValuesMap.forEach((value: number, key: string) => {
+              if (this.countersMap.has(key)) {
+                this.countersMap.get(key).setValue(value);
+              } else {
+                const newCounter = CounterBuilder.getInstance()
+                  .from(this.counter)
+                  .category(key)
+                  .build();
+                newCounter.setValue(value);
+                this.countersMap.set(key, newCounter);
+              }
+            });
+          }
+        },
+      );
+    }
   }
 
   protected executeWithArgs(
@@ -156,14 +183,26 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
   }
 
   public async match(input: string, formatMessage?: boolean): Promise<boolean> {
-    return broadcasterApp.api.channels
-      .getChannelInfoById(MainApp.getBroadcaster().id)
-      .then((channel) => {
-        if (channel?.gameName === this.counter.getCategory()) {
+    if (this.counter.isCategoryRelated()) {
+      await this.initCountersMapIfEmpty();
+      return MainApp.getCurrentGame().then((game) => {
+        if (game === this.counter.getCategory()) {
+          return super.match(input, formatMessage);
+        } else if (this.countersMap.has(game)) {
+          this.counter = this.countersMap.get(game);
+          return super.match(input, formatMessage);
+        } else if (game && this.options.initIfNoCounterForCategory) {
+          this.counter = CounterBuilder.getInstance()
+            .from(this.counter)
+            .category(game)
+            .build();
+          this.countersMap.set(game, this.counter);
           return super.match(input, formatMessage);
         }
         return false;
       });
+    }
+    return super.match(input, formatMessage);
   }
 
   public replyOrSend(
@@ -176,7 +215,9 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
       user,
       event,
       ignoreCooldowns,
-      message.replaceAll(COUNTER_VALUE, this.counter.getValue().toString()),
+      message
+        .replaceAll(COUNTER_VALUE, this.counter.getValue().toString())
+        .replaceAll(CATEGORY_VALUE, this.counter.getCategory().toString()),
     );
   }
 }
