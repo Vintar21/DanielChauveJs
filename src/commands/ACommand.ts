@@ -1,6 +1,6 @@
 import { MessageEvent } from "@twurple/easy-bot/lib";
 import { reply, send } from "../app";
-import User, { isNotAUser, UserId } from "../user/User";
+import User, { isNotAUser, UserId } from "../utils/user/User";
 import { _ } from "../utils/ImportConstants";
 import { Role } from "../utils/RoleUtils";
 import { SPACE } from "../utils/StringConstants";

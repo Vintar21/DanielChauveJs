@@ -1,8 +1,8 @@
 import { HelixPrediction } from "@twurple/api/lib";
 import { MessageEvent } from "@twurple/easy-bot";
 import { broadcasterApp, MainApp } from "../../app";
-import User from "../../user/User";
-import { Permissions } from "../../utils/PermissionsUtils";
+import User from "../../utils/user/User";
+import { Permissions } from "../../utils/permissions/Permissions";
 import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import { SPACE } from "../../utils/StringConstants";
 import CommandOptions from "../CommandOptions";

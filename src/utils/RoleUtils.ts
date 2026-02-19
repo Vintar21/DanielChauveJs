@@ -1,7 +1,7 @@
 import { HelixUser } from "@twurple/api/lib";
 import { Bot } from "@twurple/easy-bot/lib";
 import { MainApp } from "../app";
-import { Permissions } from "./PermissionsUtils";
+import { Permissions } from "./permissions/Permissions";
 
 export type Role = symbol;
 

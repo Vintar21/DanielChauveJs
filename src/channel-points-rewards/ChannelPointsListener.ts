@@ -8,7 +8,7 @@ import AObsCameraEffect from "../obs/camera-effects/AObsCameraEffect";
 import { COOLDOWN_CAMERA_EFFECT } from "../obs/ObsCameraFilterEffect";
 import { noCamScenes, TIKTOK_SCENE_NAME } from "../obs/ObsConstants";
 import ObsManager from "../obs/ObsManager";
-import User from "../user/User";
+import User from "../utils/user/User";
 import { choose } from "../utils/CommonUtils";
 import { CHILD_LAUGH_SOUND, playSound } from "../utils/MediaUtils";
 import {

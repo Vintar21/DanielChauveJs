@@ -1,6 +1,6 @@
 import MultipleAnswersCommand from "./MultipleAnswersCommand";
 import CommandOptions from "../CommandOptions";
-import User from "../../user/User";
+import User from "../../utils/user/User";
 import { MessageEvent } from "@twurple/easy-bot";
 import { SPACE } from "../../utils/StringConstants";
 

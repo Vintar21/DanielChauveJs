@@ -1,4 +1,4 @@
-import { Permissions } from "../utils/PermissionsUtils";
+import { Permissions } from "../permissions/Permissions";
 import { UserId } from "./User";
 import { botsUser } from "./UserConstants";
 

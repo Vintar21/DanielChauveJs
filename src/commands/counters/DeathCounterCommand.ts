@@ -17,6 +17,6 @@ export default class DeathCounterCommand extends ACounterCommand {
   protected modifyCounterMessage: string = this.getCounterMessage;
 
   constructor(counter: Counter, enabled: boolean = true) {
-    super(counter, options);
+    super(counter, options, enabled);
   }
 }

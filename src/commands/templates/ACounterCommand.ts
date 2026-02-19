@@ -7,7 +7,7 @@ import {
   formatCounterMessage,
 } from "../../counters/CounterUtils";
 import SqlManager from "../../database/SqlManager";
-import User from "../../user/User";
+import User from "../../utils/user/User";
 import { getGreaterRole } from "../../utils/RoleUtils";
 import { MINUS, PLUS } from "../../utils/StringConstants";
 import CounterCommandOptions from "../CounterCommanOptions";

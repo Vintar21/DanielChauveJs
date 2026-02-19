@@ -1,7 +1,7 @@
 import { send } from "../app";
 import ACommand from "../commands/ACommand";
 import { NO_MSG } from "../commands/CommandsUtils";
-import { timerUser } from "../user/UserConstants";
+import { timerUser } from "../utils/user/UserConstants";
 import { EMPTY } from "../utils/StringConstants";
 import { TimerMessage } from "./TimerMessage";
 import TimerOptions from "./TimerOptions";

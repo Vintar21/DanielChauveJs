@@ -2,7 +2,7 @@ import sql from "msnodesqlv8";
 import { QueryAggregatorResults } from "msnodesqlv8/types";
 import { canUseSqlBase } from "../app";
 import { sqlConnectionString } from "../config/ConfigLoader";
-import { UserId } from "../user/User";
+import { UserId } from "../utils/user/User";
 import {
   ANNOUNCE_COLUMN,
   CATEGORY_NAME_COLUMN,

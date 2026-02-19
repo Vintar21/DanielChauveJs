@@ -1,7 +1,7 @@
 import { MessageEvent } from "@twurple/easy-bot";
 import { botApp, MainApp } from "../../app";
-import User from "../../user/User";
-import { Permissions } from "../../utils/PermissionsUtils";
+import User from "../../utils/user/User";
+import { Permissions } from "../../utils/permissions/Permissions";
 import { getVipOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import ACommand from "../ACommand";
 import CommandOptions from "../CommandOptions";

@@ -14,7 +14,7 @@ import {
 } from "./config/ConfigLoader";
 import DiscordClient from "./discord/DiscordClient";
 import TimerManager from "./timers/TimerManager";
-import User from "./user/User";
+import User from "./utils/user/User";
 import { getGreaterRole } from "./utils/RoleUtils";
 import ObsManager from "./obs/ObsManager";
 import { HelixUser } from "@twurple/api/lib";
@@ -87,6 +87,7 @@ export class MainApp {
         });
     });
 
+    // Waiting list if last shoutout too early
     botApp.onRaid((event) =>
       broadcasterApp.api.chat.shoutoutUser(event.broadcasterId, event.userId),
     );

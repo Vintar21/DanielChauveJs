@@ -1,8 +1,8 @@
 import { MessageEvent } from "@twurple/easy-bot";
 import SqlManager from "../../database/SqlManager";
 import ObsManager from "../../obs/ObsManager";
-import User, { isNotAUser, UserId } from "../../user/User";
-import { undefinedUser } from "../../user/UserConstants";
+import User, { isNotAUser, UserId } from "../../utils/user/User";
+import { undefinedUser } from "../../utils/user/UserConstants";
 import { choose } from "../../utils/CommonUtils";
 import {
   playSound,

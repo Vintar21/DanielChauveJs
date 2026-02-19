@@ -1,4 +1,4 @@
-import { Permissions } from "../../utils/PermissionsUtils";
+import { Permissions } from "../../utils/permissions/Permissions";
 import { getDefaultRolesPermissions, Role, Roles } from "../../utils/RoleUtils";
 import CommandOptions from "../CommandOptions";
 import SimpleCommand from "../templates/SimpleCommand";

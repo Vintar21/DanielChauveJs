@@ -1,5 +1,5 @@
 import { seconds } from "../utils/CommonUtils";
-import { Permissions } from "../utils/PermissionsUtils";
+import { Permissions } from "../utils/permissions/Permissions";
 import { getModOnlyRolesPermissions, Role } from "../utils/RoleUtils";
 import CommandOptions from "./CommandOptions";
 

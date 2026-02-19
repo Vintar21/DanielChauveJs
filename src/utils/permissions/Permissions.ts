@@ -1,13 +1,11 @@
 export type Right = number;
-export const BYPASS: Right = 1;
-export const ALLOWED: Right = 0;
-export const UNALLOWED: Right = -1;
-// TODO: delete it
-export const DEFAULT_RIGHT: Right = ALLOWED;
-
 export class Permissions<T> {
+  static BYPASS: Right = 1;
+  static ALLOWED: Right = 0;
+  static UNALLOWED: Right = -1;
+
   private permissionsMap: Map<T, Right>;
-  private defaultPermission: Right = ALLOWED;
+  private defaultPermission: Right = Permissions.ALLOWED;
 
   constructor(defaultPermissions?: [T, Right][]) {
     this.permissionsMap = defaultPermissions
@@ -37,17 +35,17 @@ export class Permissions<T> {
   }
 
   public canBypass(element: T): boolean {
-    return this.getRightOrDefault(element) === BYPASS;
+    return this.getRightOrDefault(element) === Permissions.BYPASS;
   }
 
   // If it can bypass, he's allowed too
   public isAllowed(element: T): boolean {
     const right = this.getRightOrDefault(element);
-    return right === ALLOWED || right === BYPASS;
+    return right === Permissions.ALLOWED || right === Permissions.BYPASS;
   }
 
   public isUnallowed(element: T): boolean {
-    return this.getRightOrDefault(element) === UNALLOWED;
+    return this.getRightOrDefault(element) === Permissions.UNALLOWED;
   }
 
   public setPermission(element: T, permission: Right): void {
@@ -80,62 +78,62 @@ export class Permissions<T> {
   }
 
   public bypassDefault(): void {
-    this.defaultPermission = BYPASS;
+    this.defaultPermission = Permissions.BYPASS;
   }
 
   public bypass(element: T): void {
-    this.setPermission(element, BYPASS);
+    this.setPermission(element, Permissions.BYPASS);
   }
 
   public bypassEach(elements: T[]): void {
-    this.setPermissionForEach(elements, BYPASS);
+    this.setPermissionForEach(elements, Permissions.BYPASS);
   }
 
   public bypassAllExcept(elements: T[]): void {
-    this.setPermissionsForAllExcept(elements, BYPASS);
+    this.setPermissionsForAllExcept(elements, Permissions.BYPASS);
   }
 
   public bypassAll(): void {
-    this.setPermissionsForAll(BYPASS);
+    this.setPermissionsForAll(Permissions.BYPASS);
   }
 
   public allowDefault(): void {
-    this.defaultPermission = ALLOWED;
+    this.defaultPermission = Permissions.ALLOWED;
   }
 
   public allow(element: T): void {
-    this.setPermission(element, ALLOWED);
+    this.setPermission(element, Permissions.ALLOWED);
   }
 
   public allowEach(elements: T[]): void {
-    this.setPermissionForEach(elements, ALLOWED);
+    this.setPermissionForEach(elements, Permissions.ALLOWED);
   }
 
   public allowAllExcept(elements: T[]): void {
-    this.setPermissionsForAllExcept(elements, ALLOWED);
+    this.setPermissionsForAllExcept(elements, Permissions.ALLOWED);
   }
 
   public allowAll(): void {
-    this.setPermissionsForAll(ALLOWED);
+    this.setPermissionsForAll(Permissions.ALLOWED);
   }
 
   public unallowDefault(): void {
-    this.defaultPermission = UNALLOWED;
+    this.defaultPermission = Permissions.UNALLOWED;
   }
 
   public unallow(element: T): void {
-    this.setPermission(element, UNALLOWED);
+    this.setPermission(element, Permissions.UNALLOWED);
   }
 
   public unallowEach(elements: T[]): void {
-    this.setPermissionForEach(elements, UNALLOWED);
+    this.setPermissionForEach(elements, Permissions.UNALLOWED);
   }
 
   public unallowAllExcept(elements: T[]): void {
-    this.setPermissionsForAllExcept(elements, UNALLOWED);
+    this.setPermissionsForAllExcept(elements, Permissions.UNALLOWED);
   }
 
   public unallowAll(): void {
-    this.setPermissionsForAll(UNALLOWED);
+    this.setPermissionsForAll(Permissions.UNALLOWED);
   }
 }

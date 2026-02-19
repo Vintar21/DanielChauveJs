@@ -1,5 +1,5 @@
 import { MessageEvent } from "@twurple/easy-bot";
-import User from "../../user/User";
+import User from "../../utils/user/User";
 import { choose } from "../../utils/CommonUtils";
 import ACommand from "../ACommand";
 import CommandOptions from "../CommandOptions";

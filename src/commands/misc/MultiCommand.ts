@@ -1,7 +1,7 @@
 import { MessageEvent } from "@twurple/easy-bot";
 import { channel } from "../../config/ConfigLoader";
-import User from "../../user/User";
-import { Permissions } from "../../utils/PermissionsUtils";
+import User from "../../utils/user/User";
+import { Permissions } from "../../utils/permissions/Permissions";
 import { getVipOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import { SLASH, SPACE } from "../../utils/StringConstants";
 import ACommand from "../ACommand";

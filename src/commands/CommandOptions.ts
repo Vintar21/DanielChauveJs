@@ -1,7 +1,7 @@
-import { UserId } from "../user/User";
-import { getDefaultUsersPermissions } from "../user/UserUtils";
+import { UserId } from "../utils/user/User";
+import { getDefaultUsersPermissions } from "../utils/user/UserUtils";
 import { seconds } from "../utils/CommonUtils";
-import { Permissions } from "../utils/PermissionsUtils";
+import { Permissions } from "../utils/permissions/Permissions";
 import { getDefaultRolesPermissions, Role } from "../utils/RoleUtils";
 import { COMMAND_PREFIX, UNLIMITED, UseCount } from "./CommandsUtils";
 
