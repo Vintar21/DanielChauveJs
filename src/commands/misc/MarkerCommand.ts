@@ -24,7 +24,8 @@ export default class AnswerRandomMessage extends ACommand {
     ignoreCooldowns: boolean,
   ): void {
     // Check if stream is online first
-    botApp.api.streams.createStreamMarker(MainApp.getBroadcaster().id);
+    // TODO add title
+    botApp.api.streams.createStreamMarker(MainApp.getBroadcasterId());
     this.replyOrSend(user, event, ignoreCooldowns, "Marker créé chef !");
   }
 }

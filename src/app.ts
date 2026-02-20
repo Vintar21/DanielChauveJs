@@ -41,7 +41,6 @@ export const botApp: Bot = new Bot({
   authProvider: botAuthProvider,
   channels: [channel],
 });
-
 export class MainApp {
   static broadcaster: HelixUser;
 

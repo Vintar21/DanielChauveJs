@@ -58,6 +58,10 @@ export default class Counter {
     this.freezed = true;
   }
 
+  public unfreeze() {
+    this.freezed = false;
+  }
+
   public isFreezed() {
     return this.freezed;
   }

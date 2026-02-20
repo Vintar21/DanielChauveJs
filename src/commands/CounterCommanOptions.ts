@@ -36,7 +36,8 @@ export default class CounterCommandOptions extends CommandOptions {
 
   public setCounterModificationPermissions(
     rolesPermissions: Permissions<Role>,
-  ) {
+  ): CounterCommandOptions {
     this.counterModificationPermissions = rolesPermissions;
+    return this;
   }
 }

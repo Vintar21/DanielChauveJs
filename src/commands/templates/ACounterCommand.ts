@@ -65,6 +65,63 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
     }
   }
 
+  protected plusArg(
+    user: User,
+    event: MessageEvent,
+    ignoreCooldowns: boolean,
+    step: number = this.counter.getStep(),
+  ) {
+    this.counter.add(step);
+    this.replyOrSend(user, event, ignoreCooldowns, this.modifyCounterMessage);
+  }
+
+  protected minusArg(
+    user: User,
+    event: MessageEvent,
+    ignoreCooldowns: boolean,
+    step: number = this.counter.getStep(),
+  ) {
+    this.counter.substract(step);
+    this.replyOrSend(user, event, ignoreCooldowns, this.modifyCounterMessage);
+  }
+
+  protected setArg(
+    user: User,
+    event: MessageEvent,
+    ignoreCooldowns: boolean,
+    value: number,
+  ) {
+    this.counter.setValue(value);
+    this.replyOrSend(user, event, ignoreCooldowns, this.modifyCounterMessage);
+  }
+
+  protected resetArg(
+    user: User,
+    event: MessageEvent,
+    ignoreCooldowns: boolean,
+  ) {
+    this.counter.resetValue();
+    this.replyOrSend(user, event, ignoreCooldowns, this.resetCounterMessage);
+  }
+
+  protected freezeArg(
+    user: User,
+    event: MessageEvent,
+    ignoreCooldowns: boolean,
+  ) {
+    this.counter.freeze();
+    this.replyOrSend(user, event, ignoreCooldowns, this.freezeMessage);
+  }
+
+  protected unfreezeArg(
+    user: User,
+    event: MessageEvent,
+    ignoreCooldowns: boolean,
+  ) {
+    this.counter.unfreeze();
+    this.replyOrSend(user, event, ignoreCooldowns, this.unfreezeMessage);
+  }
+
   protected executeWithArgs(
     user: User,
     event: MessageEvent,
@@ -96,44 +153,19 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
         // Simple cases !counter +, !counter -, !counter reset
         switch (arg) {
           case PLUS:
-            this.counter.addStep();
-            this.replyOrSend(
-              user,
-              event,
-              ignoreCooldowns,
-              this.modifyCounterMessage,
-            );
+            this.plusArg(user, event, ignoreCooldowns);
             return;
           case MINUS:
-            this.counter.substractStep();
-            this.replyOrSend(
-              user,
-              event,
-              ignoreCooldowns,
-              this.modifyCounterMessage,
-            );
+            this.minusArg(user, event, ignoreCooldowns);
             return;
           case RESET_COUNTER_ARG:
-            this.counter.resetValue();
-            this.replyOrSend(
-              user,
-              event,
-              ignoreCooldowns,
-              this.resetCounterMessage,
-            );
+            this.resetArg(user, event, ignoreCooldowns);
             return;
           case FREEZE_COUNTER_ARG:
-            this.counter.freeze();
-            this.replyOrSend(user, event, ignoreCooldowns, this.freezeMessage);
+            this.freezeArg(user, event, ignoreCooldowns);
             return;
           case UNFREEZE_COUNTER_ARG:
-            this.counter.freeze();
-            this.replyOrSend(
-              user,
-              event,
-              ignoreCooldowns,
-              this.unfreezeMessage,
-            );
+            this.unfreezeArg(user, event, ignoreCooldowns);
             return;
         }
 
@@ -141,22 +173,10 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
         const customStep = Number(arg.substring(1));
         if (!isNaN(customStep)) {
           if (arg.startsWith(PLUS)) {
-            this.counter.add(customStep);
-            this.replyOrSend(
-              user,
-              event,
-              ignoreCooldowns,
-              this.modifyCounterMessage,
-            );
+            this.plusArg(user, event, ignoreCooldowns, customStep);
             return;
           } else if (arg.startsWith(MINUS)) {
-            this.counter.substract(customStep);
-            this.replyOrSend(
-              user,
-              event,
-              ignoreCooldowns,
-              this.modifyCounterMessage,
-            );
+            this.minusArg(user, event, ignoreCooldowns, customStep);
             return;
           }
         }
@@ -164,13 +184,7 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
         // Set value directly
         const newValue = Number(arg);
         if (!isNaN(newValue)) {
-          this.counter.setValue(newValue);
-          this.replyOrSend(
-            user,
-            event,
-            ignoreCooldowns,
-            this.modifyCounterMessage,
-          );
+          this.setArg(user, event, ignoreCooldowns, newValue);
         }
       }
     });
