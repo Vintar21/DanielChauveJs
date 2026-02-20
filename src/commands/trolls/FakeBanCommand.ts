@@ -1,5 +1,5 @@
 import { MessageEvent } from "@twurple/easy-bot";
-import { botApp, broadcasterApp, MainApp } from "../../app";
+import { MainApp } from "../../app";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getDefaultRolesPermissions, Role, Roles } from "../../utils/RoleUtils";
 import { AT } from "../../utils/StringConstants";
@@ -28,7 +28,7 @@ export default class FakeBanCommand extends AArgumentsCommand {
     ignoreCooldowns: boolean,
   ): void {
     if (args.length > 0 && user.userId && args[0].length > 1) {
-      botApp.api.moderation.warnUser(
+      MainApp.botApp.api.moderation.warnUser(
         MainApp.getBroadcasterId(),
         user.userId,
         `On a tous très envie de ban ${args[0].startsWith(AT) ? args[0].substring(1) : args[0]} mais tu comprends que je ne peux pas te laisser faire ça...`,

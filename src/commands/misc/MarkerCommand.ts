@@ -1,8 +1,8 @@
 import { MessageEvent } from "@twurple/easy-bot";
-import { botApp, MainApp } from "../../app";
-import User from "../../utils/user/User";
+import { MainApp } from "../../app";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getVipOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
+import User from "../../utils/user/User";
 import ACommand from "../ACommand";
 import CommandOptions from "../CommandOptions";
 
@@ -25,7 +25,7 @@ export default class AnswerRandomMessage extends ACommand {
   ): void {
     // Check if stream is online first
     // TODO add title
-    botApp.api.streams.createStreamMarker(MainApp.getBroadcasterId());
+    MainApp.botApp.api.streams.createStreamMarker(MainApp.getBroadcasterId());
     this.replyOrSend(user, event, ignoreCooldowns, "Marker créé chef !");
   }
 }

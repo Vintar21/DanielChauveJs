@@ -2,7 +2,7 @@ import { HelixPoll } from "@twurple/api";
 import { MessageEvent } from "@twurple/easy-bot";
 import { EventSubChannelPollEndEvent } from "@twurple/eventsub-base/lib/events/EventSubChannelPollEndEvent";
 import { EventSubWsListener } from "@twurple/eventsub-ws";
-import { broadcasterApp, MainApp } from "../../app";
+import { MainApp } from "../../app";
 import User from "../../utils/user/User";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
@@ -45,7 +45,7 @@ export default class PollCommand extends AArgumentsCommand {
   public initListener() {
     if (!this.pollListener) {
       this.pollListener = new EventSubWsListener({
-        apiClient: broadcasterApp.api,
+        apiClient: MainApp.broadcasterApp.api,
       });
       this.pollListener.start();
       this.pollListener.onChannelPollEnd(
@@ -93,7 +93,7 @@ export default class PollCommand extends AArgumentsCommand {
         duration,
       };
     }
-    broadcasterApp.api.polls
+    MainApp.broadcasterApp.api.polls
       .createPoll(MainApp.getBroadcaster().id, pollData)
       .then(() => {
         console.log(`Poll: ${title} [${choices}] | duration: ${duration}s`);
@@ -107,7 +107,7 @@ export default class PollCommand extends AArgumentsCommand {
   }
 
   private async getLastPoll(): Promise<HelixPoll | undefined> {
-    const polls = await broadcasterApp.api.polls.getPolls(
+    const polls = await MainApp.broadcasterApp.api.polls.getPolls(
       MainApp.getBroadcaster().id,
     );
     return polls?.data?.length > 0 ? polls?.data[0] : undefined;
@@ -143,7 +143,7 @@ export default class PollCommand extends AArgumentsCommand {
         case CANCEL_POLL:
         case END_POLL:
           if (!this.isLastPollFinished(lastPoll)) {
-            broadcasterApp.api.polls
+            MainApp.broadcasterApp.api.polls
               .endPoll(MainApp.getBroadcaster().id, lastPoll.id)
               .then(() => {
                 this.replyOrSend(

@@ -1,7 +1,8 @@
 {
   "channel": "Your Twitch channel the bot will connect to",
   "broadcaster-client-id": "Your Twitch Client ID from your acccount",
-  "broadcaster-access-token": "Your OAuth token from your account",
+  "broadcaster-secret": "Your Twitch Client Secret token from your account",
+  "broadcaster-refresh-token": "Your Twitch Refresh token from your account",
   "bot-client-id": "Your Twitch Client ID from your bot acccount",
   "bot-access-token": "Your OAuth token from your bot account"
 }

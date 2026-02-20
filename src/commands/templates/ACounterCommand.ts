@@ -1,5 +1,5 @@
 import { MessageEvent } from "@twurple/easy-bot";
-import { broadcasterApp, MainApp } from "../../app";
+import { MainApp } from "../../app";
 import Counter from "../../counters/Counter";
 import CounterBuilder from "../../counters/CounterBuilder";
 import {
@@ -191,7 +191,7 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
   }
 
   private async canModifyCounter(event: MessageEvent): Promise<boolean> {
-    const role = await getGreaterRole(event.getUser(), broadcasterApp);
+    const role = await getGreaterRole(event.getUser(), MainApp.broadcasterApp);
     return !this.options.counterModificationPermissions.isUnallowed(role);
   }
 

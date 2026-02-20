@@ -1,6 +1,6 @@
 import { HelixPrediction } from "@twurple/api/lib";
 import { MessageEvent } from "@twurple/easy-bot";
-import { broadcasterApp, MainApp } from "../../app";
+import { MainApp } from "../../app";
 import User from "../../utils/user/User";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
@@ -37,7 +37,7 @@ export default class PredictionCommand extends AArgumentsCommand {
     event: MessageEvent,
     ignoreCooldowns: boolean,
   ) {
-    broadcasterApp.api.predictions
+    MainApp.broadcasterApp.api.predictions
       .createPrediction(MainApp.getBroadcaster().id, {
         autoLockAfter: autoLockTime,
         title: predictionTitle,
@@ -57,9 +57,10 @@ export default class PredictionCommand extends AArgumentsCommand {
   }
 
   private async getLastPrediction(): Promise<HelixPrediction> {
-    const predictions = await broadcasterApp.api.predictions.getPredictions(
-      MainApp.getBroadcaster().id,
-    );
+    const predictions =
+      await MainApp.broadcasterApp.api.predictions.getPredictions(
+        MainApp.getBroadcaster().id,
+      );
     return predictions?.data?.length > 0 ? predictions?.data[0] : undefined;
   }
 
@@ -91,7 +92,7 @@ export default class PredictionCommand extends AArgumentsCommand {
       switch (args[0].toLowerCase()) {
         case CANCEL_PREDICTION:
           if (!this.isLastPredictionFinished(lastPrediction)) {
-            broadcasterApp.api.predictions
+            MainApp.broadcasterApp.api.predictions
               .cancelPrediction(MainApp.getBroadcaster().id, lastPrediction.id)
               .then(() => {
                 this.replyOrSend(
@@ -106,7 +107,7 @@ export default class PredictionCommand extends AArgumentsCommand {
         case LOCK_PREDICTION:
           this.getLastPrediction()?.then((lastPrediction) => {
             if (this.isLastPredictionActive(lastPrediction)) {
-              broadcasterApp.api.predictions
+              MainApp.broadcasterApp.api.predictions
                 .lockPrediction(MainApp.getBroadcaster().id, lastPrediction.id)
                 .then(() => {
                   this.replyOrSend(

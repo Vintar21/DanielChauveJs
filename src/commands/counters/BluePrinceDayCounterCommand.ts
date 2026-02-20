@@ -6,8 +6,7 @@ import { minutes } from "../../utils/CommonUtils";
 import { getDefaultRolesPermissions } from "../../utils/RoleUtils";
 import { MessageEvent } from "@twurple/easy-bot/lib";
 import User from "../../utils/user/User";
-import { botApp, broadcasterApp, MainApp } from "../../app";
-import { broadCasterAccessToken } from "../../config/ConfigLoader";
+import { MainApp } from "../../app";
 
 const rolesModificationPermissions = getDefaultRolesPermissions();
 
@@ -53,7 +52,7 @@ export default class BluePrinceDayCounterCommand extends ACounterCommand {
       .getStream()
       .then((stream) => {
         if (stream && stream !== null) {
-          botApp.api.streams.createStreamMarker(
+          MainApp.botApp.api.streams.createStreamMarker(
             MainApp.getBroadcasterId(),
             `Jour ${this.counter.getValue()}`,
           );

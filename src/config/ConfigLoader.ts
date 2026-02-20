@@ -5,10 +5,12 @@ const CONFIGS_FOLDER = "../../configs/";
 // Twitch
 const twitchConfig = loadSpecificConfig("Twitch");
 export const broadcasterClientId = twitchConfig["broadcaster-client-id"];
-export const broadCasterAccessToken = twitchConfig["broadcaster-access-token"];
-export const botClientId = twitchConfig["bot-client-id"] ?? broadcasterClientId;
-export const botAccessToken =
-  twitchConfig["bot-access-token"] ?? broadCasterAccessToken;
+export const broadcasterClientSecret = twitchConfig["broadcaster-secret"];
+export const broadcasterRefreshToken =
+  twitchConfig["broadcaster-refresh-token"];
+// If no bot ID/tokens => we will take the broadcaster's ones
+export const botClientId = twitchConfig["bot-client-id"];
+export const botAccessToken = twitchConfig["bot-access-token"];
 export const channel = twitchConfig.channel;
 
 // Links

@@ -1,4 +1,4 @@
-import { StaticAuthProvider } from "@twurple/auth";
+import { refreshUserToken, StaticAuthProvider } from "@twurple/auth";
 import { Bot } from "@twurple/easy-bot";
 import { MessageEvent } from "@twurple/easy-bot/lib";
 import ChannelPointsListener from "./channel-points-rewards/ChannelPointsListener";
@@ -6,8 +6,9 @@ import CommandsManager from "./commands/CommandsManager";
 import {
   botAccessToken,
   botClientId,
-  broadCasterAccessToken,
   broadcasterClientId,
+  broadcasterClientSecret,
+  broadcasterRefreshToken,
   channel,
   obsLightTesting,
   sqlLightTesting,
@@ -23,24 +24,6 @@ import CountersManager from "./counters/CountersManager";
 export const canUseSqlBase: boolean = !sqlLightTesting;
 export const canUseObsWebsocket: boolean = !obsLightTesting;
 
-const broadcasterAuthProvider: StaticAuthProvider = new StaticAuthProvider(
-  broadcasterClientId,
-  broadCasterAccessToken,
-);
-export const broadcasterApp: Bot = new Bot({
-  authProvider: broadcasterAuthProvider,
-  channels: [channel],
-});
-
-// TODO: Limit bot rights ? Just need to send message as broadcaster has all other rights ?
-const botAuthProvider: StaticAuthProvider = new StaticAuthProvider(
-  botClientId,
-  botAccessToken,
-);
-export const botApp: Bot = new Bot({
-  authProvider: botAuthProvider,
-  channels: [channel],
-});
 export class MainApp {
   static broadcaster: HelixUser;
 
@@ -50,20 +33,51 @@ export class MainApp {
   static channelPointsListener: ChannelPointsListener;
   static timerManager: TimerManager = TimerManager.getInstanceAndInit();
 
+  static broadcasterApp: Bot;
+  static botApp: Bot;
+
   public static async start(): Promise<void> {
-    MainApp.broadcaster = await botApp.api.users.getUserByName(channel);
+    const broadcasterAccessToken = await refreshUserToken(
+      broadcasterClientId,
+      broadcasterClientSecret,
+      broadcasterRefreshToken,
+    );
+
+    const broadcasterAuthProvider: StaticAuthProvider = new StaticAuthProvider(
+      broadcasterClientId,
+      broadcasterAccessToken,
+    );
+    MainApp.broadcasterApp = new Bot({
+      authProvider: broadcasterAuthProvider,
+      channels: [channel],
+    });
+
+    MainApp.botApp = MainApp.broadcasterApp;
+    if (botClientId && botAccessToken) {
+      // TODO: Limit bot rights ? Just need to send message as broadcaster has all other rights ?
+      const botAuthProvider: StaticAuthProvider = new StaticAuthProvider(
+        botClientId,
+        botAccessToken,
+      );
+      MainApp.botApp = new Bot({
+        authProvider: botAuthProvider,
+        channels: [channel],
+      });
+    }
+
+    MainApp.broadcaster = await MainApp.botApp.api.users.getUserByName(channel);
 
     MainApp.commandsManager = CommandsManager.getInstanceAndInit();
     await MainApp.discordClient.start();
     MainApp.obsManager = await ObsManager.getInstanceAndInit();
     MainApp.channelPointsListener =
-      await ChannelPointsListener.getInstanceAndInit(broadcasterApp);
+      await ChannelPointsListener.getInstanceAndInit(MainApp.broadcasterApp);
     await MainApp.timerManager.startAllTimers();
     await CountersManager.initAllCounters();
 
     console.log("### Bot started ###");
 
-    botApp.onMessage((event) => {
+    MainApp.botApp.onMessage((event) => {
       const message: string = event.text;
       const username: string = event.userName;
       // Do we really need it to be a number ?
@@ -77,7 +91,10 @@ export class MainApp {
         .getTriggeredCommand(message)
         .then((triggeredCommand) => {
           triggeredCommand
-            ?.canExecute(user, getGreaterRole(event.getUser(), broadcasterApp))
+            ?.canExecute(
+              user,
+              getGreaterRole(event.getUser(), MainApp.broadcasterApp),
+            )
             .then((canExecute) => {
               if (canExecute) {
                 triggeredCommand.execute(user, event);
@@ -87,8 +104,11 @@ export class MainApp {
     });
 
     // Waiting list if last shoutout too early
-    botApp.onRaid((event) =>
-      broadcasterApp.api.chat.shoutoutUser(event.broadcasterId, event.userId),
+    MainApp.botApp.onRaid((event) =>
+      MainApp.broadcasterApp.api.chat.shoutoutUser(
+        event.broadcasterId,
+        event.userId,
+      ),
     );
   }
 
@@ -121,7 +141,7 @@ export class MainApp {
   }
 
   public static async getCurrentGame(): Promise<string | undefined> {
-    return broadcasterApp.api.channels
+    return MainApp.broadcasterApp.api.channels
       .getChannelInfoById(MainApp.getBroadcasterId())
       .then((channel) => channel?.gameName);
   }
@@ -129,9 +149,9 @@ export class MainApp {
 
 export function send(message: String, isAnnounce: boolean = false) {
   if (isAnnounce) {
-    botApp.announce(channel, message.toString());
+    MainApp.botApp.announce(channel, message.toString());
   } else {
-    botApp.say(channel, message.toString());
+    MainApp.botApp.say(channel, message.toString());
   }
 }
 
