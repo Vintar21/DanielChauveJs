@@ -1,9 +1,7 @@
 import { MessageEvent } from "@twurple/easy-bot/lib";
 import { reply, send } from "../app";
+import { AT, SPACE } from "../utils/StringConstants";
 import User, { isNotAUser, UserId } from "../utils/user/User";
-import { _ } from "../utils/ImportConstants";
-import { Role } from "../utils/RoleUtils";
-import { SPACE } from "../utils/StringConstants";
 import CommandOptions from "./CommandOptions";
 import { formatCommandMessage, UNLIMITED } from "./CommandsUtils";
 import ICommand from "./ICommand";
@@ -43,7 +41,7 @@ export default abstract class ACommand implements ICommand {
     } else if (isNotAUser(user)) {
       send(message);
     } else {
-      send(`@${user.username} ${message}`);
+      send(`${AT}${user.username} ${message}`);
     }
 
     if (!ignoreCooldowns) {
@@ -52,11 +50,12 @@ export default abstract class ACommand implements ICommand {
   }
 
   // By default we split and format the message, override this method to change this behavior
-  public async match(
+  public match(
     input: string,
+    game: string,
     formatMessage: boolean = true,
-  ): Promise<boolean> {
-    const formattedInput = formatMessage ? input.toLowerCase().trim() : input;
+  ): boolean {
+    const formattedInput = formatMessage ? input.trim() : input;
 
     if (this.options.useFullMessage) {
       return this.internalMatch(formattedInput, this.options.getTriggers());
@@ -67,16 +66,12 @@ export default abstract class ACommand implements ICommand {
   }
 
   protected internalMatch(input: string, triggers: Array<RegExp>): boolean {
-    return (
-      _.find(triggers, (trigger: RegExp) => trigger.test(input)) !== undefined
-    );
+    return triggers.find((trigger) => trigger.test(input)) !== undefined;
+    /*_.find(triggers, (trigger: RegExp) => trigger.test(input)) !== undefined
+    );*/
   }
 
-  public async canExecute(
-    user: User,
-    promisedRole: Promise<Role>,
-  ): Promise<boolean> {
-    const role: Role = await promisedRole;
+  public async canExecute(user: User): Promise<boolean> {
     // Command enabled
     if (!this.options.enabled) {
       return false;
@@ -89,18 +84,20 @@ export default abstract class ACommand implements ICommand {
       return true;
     }
 
-    // Role permissions
-    if (this.options.rolesPermissions.isUnallowed(role)) {
-      return false;
-    } else if (this.options.rolesPermissions.canBypass(role)) {
-      return true;
-    }
-    return (
-      this.canUseGlobal() &&
-      this.canUseForUser(user.userId) &&
-      this.isGlobalCooldownFinished() &&
-      this.isUserCooldownFinished(user.userId)
-    );
+    return user.getGreaterRole().then((role) => {
+      // Role permissions
+      if (this.options.rolesPermissions.isUnallowed(role)) {
+        return false;
+      } else if (this.options.rolesPermissions.canBypass(role)) {
+        return true;
+      }
+      return (
+        this.canUseGlobal() &&
+        this.canUseForUser(user.userId) &&
+        this.isGlobalCooldownFinished() &&
+        this.isUserCooldownFinished(user.userId)
+      );
+    });
   }
 
   protected updateCooldowns(userId: UserId): void {

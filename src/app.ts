@@ -1,3 +1,4 @@
+import { HelixUser } from "@twurple/api/lib";
 import { refreshUserToken, StaticAuthProvider } from "@twurple/auth";
 import { Bot } from "@twurple/easy-bot";
 import { MessageEvent } from "@twurple/easy-bot/lib";
@@ -13,13 +14,12 @@ import {
   obsLightTesting,
   sqlLightTesting,
 } from "./config/ConfigLoader";
-import DiscordClient from "./discord/DiscordClient";
-import TimerManager from "./timers/TimerManager";
-import User from "./utils/user/User";
-import { getGreaterRole } from "./utils/RoleUtils";
-import ObsManager from "./obs/ObsManager";
-import { HelixUser } from "@twurple/api/lib";
 import CountersManager from "./counters/CountersManager";
+import DiscordClient from "./discord/DiscordClient";
+import ObsManager from "./obs/ObsManager";
+import TimerManager from "./timers/TimerManager";
+import { onMessage, onRaid } from "./twitch/TwitchEventHandlers";
+import { allCounterCommands } from "./commands/counters/AllCounterCommands";
 
 export const canUseSqlBase: boolean = !sqlLightTesting;
 export const canUseObsWebsocket: boolean = !obsLightTesting;
@@ -75,41 +75,14 @@ export class MainApp {
     await MainApp.timerManager.startAllTimers();
     await CountersManager.initAllCounters();
 
+    // wait dans le doute quand même
+    allCounterCommands.forEach((command) => command.initCountersMapIfEmpty());
+
     console.log("### Bot started ###");
 
-    MainApp.botApp.onMessage((event) => {
-      const message: string = event.text;
-      const username: string = event.userName;
-      // Do we really need it to be a number ?
-      const userId: number = parseInt(event.userId);
+    MainApp.botApp.onMessage(onMessage);
 
-      console.log(`Message received from [${userId}] ${username}: ${message}`);
-      MainApp.timerManager.updateAllTimersOnMessage();
-      const user = new User(username, userId);
-
-      MainApp.commandsManager
-        .getTriggeredCommand(message)
-        .then((triggeredCommand) => {
-          triggeredCommand
-            ?.canExecute(
-              user,
-              getGreaterRole(event.getUser(), MainApp.broadcasterApp),
-            )
-            .then((canExecute) => {
-              if (canExecute) {
-                triggeredCommand.execute(user, event);
-              }
-            });
-        });
-    });
-
-    // Waiting list if last shoutout too early
-    MainApp.botApp.onRaid((event) =>
-      MainApp.broadcasterApp.api.chat.shoutoutUser(
-        event.broadcasterId,
-        event.userId,
-      ),
-    );
+    MainApp.botApp.onRaid(onRaid);
   }
 
   public static getBroadcaster(): HelixUser {

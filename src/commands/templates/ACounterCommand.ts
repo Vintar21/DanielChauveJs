@@ -43,6 +43,7 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
 
   public async initCountersMapIfEmpty(): Promise<void> {
     if (this.countersMap.size === 0) {
+      console.log("Init counters");
       this.countersMap.set(this.counter.getCategory(), this.counter);
       await SqlManager.getAllCounterValues(this.counter.getName()).then(
         (categoriesValuesMap) => {
@@ -195,27 +196,24 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
     return !this.options.counterModificationPermissions.isUnallowed(role);
   }
 
-  public async match(input: string, formatMessage?: boolean): Promise<boolean> {
+  public match(input: string, game: string, formatMessage?: boolean): boolean {
     if (this.counter.isCategoryRelated()) {
-      await this.initCountersMapIfEmpty();
-      return MainApp.getCurrentGame().then((game) => {
-        if (game === this.counter.getCategory()) {
-          return super.match(input, formatMessage);
-        } else if (this.countersMap.has(game)) {
-          this.counter = this.countersMap.get(game);
-          return super.match(input, formatMessage);
-        } else if (game && this.options.initIfNoCounterForCategory) {
-          this.counter = CounterBuilder.getInstance()
-            .from(this.counter)
-            .category(game)
-            .build();
-          this.countersMap.set(game, this.counter);
-          return super.match(input, formatMessage);
-        }
-        return false;
-      });
+      if (game === this.counter.getCategory()) {
+        return super.match(input, game, formatMessage);
+      } else if (this.countersMap.has(game)) {
+        this.counter = this.countersMap.get(game);
+        return super.match(input, game, formatMessage);
+      } else if (game && this.options.initIfNoCounterForCategory) {
+        this.counter = CounterBuilder.getInstance()
+          .from(this.counter)
+          .category(game)
+          .build();
+        this.countersMap.set(game, this.counter);
+        return super.match(input, game, formatMessage);
+      }
+      return false;
     }
-    return super.match(input, formatMessage);
+    return super.match(input, game, formatMessage);
   }
 
   public replyOrSend(

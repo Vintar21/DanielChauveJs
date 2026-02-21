@@ -3,15 +3,15 @@ import { Bot } from "@twurple/easy-bot/lib";
 import { MainApp } from "../app";
 import { Permissions } from "./permissions/Permissions";
 
-export type Role = symbol;
+export type Role = number;
 
 export const Roles = Object.freeze({
-  BROADCASTER: Symbol("broadcaster"),
-  MOD: Symbol("moderator"),
-  VIP: Symbol("vip"),
-  SUB: Symbol("subscriber"),
-  FOLLOWER: Symbol("follower"),
-  NO_ROLE: Symbol("noRole"),
+  BROADCASTER: 5,
+  MOD: 4,
+  VIP: 3,
+  SUB: 2,
+  FOLLOWER: 1,
+  NO_ROLE: 0,
 });
 
 export const ALL_ROLES: Role[] = [
@@ -132,4 +132,34 @@ export async function getGreaterRole(
     role = Roles.NO_ROLE;
   }
   return role;
+}
+
+// Too long because of all awaits
+export async function getUserRoles(
+  promisedUser: Promise<HelixUser>,
+  bot: Bot,
+): Promise<Role[]> {
+  const roles: Role[] = [];
+  const user = await promisedUser;
+  const broadcasterUser = await MainApp.getBroadcaster();
+
+  if (isBroadcaster(broadcasterUser, user)) {
+    roles.push(Roles.BROADCASTER);
+  }
+  if (await isMod(broadcasterUser, user, bot)) {
+    roles.push(Roles.MOD);
+  }
+  if (await isVip(broadcasterUser, user, bot)) {
+    roles.push(Roles.VIP);
+  }
+  if (await isSub(broadcasterUser, user, bot)) {
+    roles.push(Roles.SUB);
+  }
+  if (await broadcasterUser.isFollowedBy(user.id)) {
+    roles.push(Roles.FOLLOWER);
+  }
+  if (roles.length === 0) {
+    roles.push(Roles.NO_ROLE);
+  }
+  return roles;
 }

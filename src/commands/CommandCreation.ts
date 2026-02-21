@@ -28,3 +28,9 @@ const myCommand: ICommand = new SimpleCommand(
   true,
 );
 commands.push(myCommand);
+
+// TODO: MultipleAnswersCommand
+
+// TODO: CountersCommand
+
+// TODO: MiscCommand

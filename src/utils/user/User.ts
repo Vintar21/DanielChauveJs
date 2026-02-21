@@ -1,12 +1,19 @@
-import { undefinedUser, timerUser } from "./UserConstants";
+import { Role } from "../RoleUtils";
+import { timerUser, undefinedUser } from "./UserConstants";
 
 export default class User {
   public username: string;
   public userId: UserId;
+  public role: Promise<Role>;
 
-  constructor(username: string, userId: UserId) {
+  constructor(username: string, userId: UserId, role: Promise<Role>) {
     this.username = username;
     this.userId = userId;
+    this.role = role;
+  }
+
+  public getGreaterRole(): Promise<Role> {
+    return this.role;
   }
 }
 

@@ -8,9 +8,10 @@ import AObsCameraEffect from "../obs/camera-effects/AObsCameraEffect";
 import { COOLDOWN_CAMERA_EFFECT } from "../obs/ObsCameraFilterEffect";
 import { noCamScenes, TIKTOK_SCENE_NAME } from "../obs/ObsConstants";
 import ObsManager from "../obs/ObsManager";
-import User from "../utils/user/User";
 import { choose } from "../utils/CommonUtils";
 import { CHILD_LAUGH_SOUND, playSound } from "../utils/MediaUtils";
+import { getGreaterRole, Role } from "../utils/RoleUtils";
+import User from "../utils/user/User";
 import {
   CAMERA_EFFECT_REWARD_ID,
   CHILD_LAUGH_REWARD_ID,
@@ -94,20 +95,25 @@ export default class ChannelPointsListener {
       });
   }
 
-  private onRedemptionRedeemed(event: EventSubChannelRedemptionAddEvent): void {
+  private async onRedemptionRedeemed(
+    event: EventSubChannelRedemptionAddEvent,
+  ): Promise<void> {
     const username: string = event.userName;
     const userId: number = parseInt(event.userId);
     const input: string = event.input;
-
+    const role: Promise<Role> = getGreaterRole(
+      event.getUser(),
+      MainApp.broadcasterApp,
+    );
     console.log(
       `Redemption event received: ${event.id} by ${username} (${userId})`,
     );
     switch (event.rewardId) {
       case REROLL_REWARD_ID:
-        rollCommand.executeNoMessage(new User(username, userId));
+        rollCommand.executeNoMessage(new User(username, userId, role));
         break;
       case TEST_REWARD_ID:
-        rollCommand.executeNoMessage(new User(username, userId));
+        rollCommand.executeNoMessage(new User(username, userId, role));
         break;
       case CAMERA_EFFECT_REWARD_ID:
         // Can't be a method, need to be a function

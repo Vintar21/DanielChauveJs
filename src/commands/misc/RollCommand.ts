@@ -1,8 +1,6 @@
 import { MessageEvent } from "@twurple/easy-bot";
+import { MainApp } from "../../app";
 import SqlManager from "../../database/SqlManager";
-import ObsManager from "../../obs/ObsManager";
-import User, { isNotAUser, UserId } from "../../utils/user/User";
-import { undefinedUser } from "../../utils/user/UserConstants";
 import { choose } from "../../utils/CommonUtils";
 import {
   playSound,
@@ -10,10 +8,11 @@ import {
   ROLLED_1_SOUND,
 } from "../../utils/MediaUtils";
 import { EMPTY, SPACE } from "../../utils/StringConstants";
+import User, { isNotAUser, UserId } from "../../utils/user/User";
+import { undefinedUser } from "../../utils/user/UserConstants";
 import ACommand from "../ACommand";
 import CommandOptions from "../CommandOptions";
 import { FOLLOWER_COUNT_MESSAGE, NO_MSG } from "../CommandsUtils";
-import { MainApp } from "../../app";
 
 const options: CommandOptions = new CommandOptions([/roll/i]).setMaxUsePerUser(
   1,
@@ -107,11 +106,8 @@ export default class RollCommand extends ACommand {
   }
 
   // @Override need to be a real user
-  public async canExecute(
-    user: User,
-    promisedRole: Promise<symbol>,
-  ): Promise<boolean> {
-    return !isNotAUser(user) && super.canExecute(user, promisedRole);
+  public async canExecute(user: User): Promise<boolean> {
+    return !isNotAUser(user) && super.canExecute(user);
   }
 
   // TODO: MesssageUtils avec les parties de message

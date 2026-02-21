@@ -27,11 +27,13 @@ export default class CommandsManager {
 
   public async getTriggeredCommand(
     message: string,
+    game: string,
   ): Promise<ICommand | undefined> {
     // Check all commands, that's not OK
     const matchResults = await Promise.all(
-      CommandsManager.commands.map((command) => command.match(message)),
+      CommandsManager.commands.map((command) => command.match(message, game)),
     );
+
     const index = matchResults.findIndex((result) => result);
     return CommandsManager.commands[index];
     /*

@@ -1,12 +1,12 @@
-import Counter from "../../counters/Counter";
+import { MessageEvent } from "@twurple/easy-bot/lib";
+import { MainApp } from "../../app";
 import { Placeholders } from "../../commands/CommandsUtils";
-import CounterCommandOptions from "../CounterCommanOptions";
-import ACounterCommand from "../templates/ACounterCommand";
+import Counter from "../../counters/Counter";
 import { minutes } from "../../utils/CommonUtils";
 import { getDefaultRolesPermissions } from "../../utils/RoleUtils";
-import { MessageEvent } from "@twurple/easy-bot/lib";
 import User from "../../utils/user/User";
-import { MainApp } from "../../app";
+import CounterCommandOptions from "../CounterCommanOptions";
+import ACounterCommand from "../templates/ACounterCommand";
 
 const rolesModificationPermissions = getDefaultRolesPermissions();
 
@@ -35,6 +35,7 @@ export default class BluePrinceDayCounterCommand extends ACounterCommand {
   ): void {
     super.plusArg(user, event, ignoreCooldowns, step);
     this.addMarker();
+    this.updateTitle();
   }
 
   protected setArg(
@@ -45,6 +46,7 @@ export default class BluePrinceDayCounterCommand extends ACounterCommand {
   ): void {
     super.setArg(user, event, ignoreCooldowns, value);
     this.addMarker();
+    this.updateTitle();
   }
 
   private addMarker(): void {
@@ -55,6 +57,24 @@ export default class BluePrinceDayCounterCommand extends ACounterCommand {
           MainApp.botApp.api.streams.createStreamMarker(
             MainApp.getBroadcasterId(),
             `Jour ${this.counter.getValue()}`,
+          );
+        }
+      });
+  }
+
+  private updateTitle(): void {
+    MainApp.broadcasterApp.api.channels
+      .getChannelInfoById(MainApp.getBroadcasterId())
+      .then((channelInfo) => {
+        if (channelInfo && channelInfo !== null) {
+          MainApp.broadcasterApp.api.channels.updateChannelInfo(
+            MainApp.getBroadcasterId(),
+            {
+              title: channelInfo.title.replaceAll(
+                /\bJour \d+/gi,
+                `Jour ${this.counter.getValue()}`,
+              ),
+            },
           );
         }
       });
