@@ -3,12 +3,14 @@ import { MainApp } from "../../app";
 import { Placeholders } from "../../commands/CommandsUtils";
 import Counter from "../../counters/Counter";
 import { minutes } from "../../utils/CommonUtils";
-import { getDefaultRolesPermissions } from "../../utils/RoleUtils";
+import { getDefaultRolesPermissions, Roles } from "../../utils/RoleUtils";
 import User from "../../utils/user/User";
 import CounterCommandOptions from "../CounterCommanOptions";
 import ACounterCommand from "../templates/ACounterCommand";
 
+// TODO: FollowerOnlyPermissions
 const rolesModificationPermissions = getDefaultRolesPermissions();
+rolesModificationPermissions.unallow(Roles.NO_ROLE);
 
 const options: CounterCommandOptions = new CounterCommandOptions([
   /jours?/i,
