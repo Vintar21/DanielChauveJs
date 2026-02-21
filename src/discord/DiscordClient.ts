@@ -23,6 +23,7 @@ import {
   DEFAULT_MESSAGE,
   DISCORD_COMMAND_PREFIX,
   TAG_EVERYONE,
+  TWITCH_ARGUMENT,
   twitchEmbedTemplate,
 } from "./DiscordConstants";
 
@@ -100,7 +101,7 @@ export default class DiscordClient extends Client {
         if (args.length > 1) {
           const channelId = args[0].toLowerCase().replaceAll(/[<>#]/g, EMPTY);
           const message = args.slice(1).join(SPACE);
-          if (channelId === "twitch") {
+          if (channelId === TWITCH_ARGUMENT) {
             send(message);
           } else {
             const channel = this.getChannel(channelId);
@@ -159,10 +160,10 @@ export default class DiscordClient extends Client {
     choices: EventSubChannelPollChoice[],
   ) {
     if (this.twitchPollResultsChannel.isSendable()) {
-      var message = `# ${title}\r\n`;
+      var message = `# ${title}${NEW_LINE}`;
       var winners: EventSubChannelPollChoice[] = [];
       choices.forEach((choice) => {
-        message += `- ${choice.title}: **${choice.totalVotes}**\r\n`;
+        message += `- ${choice.title}: **${choice.totalVotes}**${NEW_LINE}`;
         if (
           winners.length === 0 ||
           choice.totalVotes >= winners[0].totalVotes

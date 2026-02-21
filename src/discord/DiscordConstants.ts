@@ -7,6 +7,7 @@ import {
 } from "../utils/StringConstants";
 
 export const DISCORD_COMMAND_PREFIX = SLASH;
+export const TWITCH_ARGUMENT = "twitch";
 
 export const CATEGORY_PLACEHOLDER = "%category%";
 export const TITLE_PLACEHOLDER = "%title%";
