@@ -65,6 +65,8 @@ export const discordAnnounceChannelId = discordConfig?.testing
 export const discordPollsChannelId = discordConfig?.testing
   ? discordConfig["channel-id-test"]
   : (discordConfig["poll-channel-id"] ?? undefined);
+export const discordCommandsChannelId =
+  discordConfig["commands-channel-id"] ?? undefined;
 export const discordRoleId = discordConfig["role-id"] ?? undefined;
 
 function loadSpecificConfig(configKind: string): any {

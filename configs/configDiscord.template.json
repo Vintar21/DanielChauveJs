@@ -4,6 +4,7 @@
   "token": "Your Discord Token",
   "live-announce-channel-id": "The channel ID where the live announces will be send",
   "poll-channel-id": "The channel ID where the poll results will be send",
+  "commands-channel-id": "The channel ID where you can write reserved commands in Discord",
   "channel-id-test": "The channel ID to send messages to when testing is enabled",
   "role-id": "Role ID to tag"
 }

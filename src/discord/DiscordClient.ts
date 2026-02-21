@@ -6,20 +6,22 @@ import {
   GatewayIntentBits,
   GuildBasedChannel,
 } from "discord.js";
-import { MainApp } from "../app";
+import { MainApp, send } from "../app";
 import {
   channel,
   discordAnnounceChannelId,
+  discordCommandsChannelId,
   discordPollsChannelId,
   discordServerId,
   discordToken,
 } from "../config/ConfigLoader";
 import SqlManager from "../database/SqlManager";
 import { choose, hours, minutes, pluralize } from "../utils/CommonUtils";
-import { NEW_LINE } from "../utils/StringConstants";
+import { EMPTY, NEW_LINE, SPACE } from "../utils/StringConstants";
 import {
   CATEGORY_PLACEHOLDER,
   DEFAULT_MESSAGE,
+  DISCORD_COMMAND_PREFIX,
   TAG_EVERYONE,
   twitchEmbedTemplate,
 } from "./DiscordConstants";
@@ -35,7 +37,13 @@ export default class DiscordClient extends Client {
   private checkInterval: number = minutes(5);
 
   constructor() {
-    super({ intents: [GatewayIntentBits.Guilds] });
+    super({
+      intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+      ],
+    });
   }
 
   private async getStreamCategoryName(): Promise<string> {
@@ -45,6 +53,10 @@ export default class DiscordClient extends Client {
       .then((channel) => channel.gameName);
   }
 
+  private getChannel(channelId: string): GuildBasedChannel {
+    return this.guilds.cache.get(discordServerId).channels.cache.get(channelId);
+  }
+
   public async start() {
     this.once(Events.ClientReady, (readyClient) => {
       console.log(
@@ -52,19 +64,52 @@ export default class DiscordClient extends Client {
       );
 
       // Load the needed channels
-      this.twitchAnnouncesChannel = this.guilds.cache
-        .get(discordServerId)
-        .channels.cache.get(discordAnnounceChannelId);
+      this.twitchAnnouncesChannel = this.getChannel(discordAnnounceChannelId);
+      this.twitchPollResultsChannel = this.getChannel(discordPollsChannelId);
 
-      this.twitchPollResultsChannel = this.guilds.cache
-        .get(discordServerId)
-        .channels.cache.get(discordPollsChannelId);
+      readyClient.on("messageCreate", (message) => {
+        console.log(
+          `Message received on Discord: [${message.author.id}] ${message.author.username} in ${message.channel}: ${message.content}`,
+        );
+        if (message.author.bot) return;
+        if (
+          message.channelId === discordCommandsChannelId &&
+          message.content.startsWith(DISCORD_COMMAND_PREFIX)
+        ) {
+          const parts = message.content.trim().split(SPACE);
+          if (parts.length > 0) {
+            const command = parts[0]
+              .substring(DISCORD_COMMAND_PREFIX.length)
+              .toLowerCase();
+            this.onCommandMessage(command, parts.slice(1));
+          }
+        }
+      });
     });
 
     // Log in to Discord with your client's token
     await this.login(discordToken);
 
     setInterval(() => this.check(), this.checkInterval);
+  }
+
+  // TODO: create DiscordCommands objects
+  private onCommandMessage(command: string, args: string[]) {
+    switch (command) {
+      case "say":
+        if (args.length > 1) {
+          const channelId = args[0].toLowerCase().replaceAll(/[<>#]/g, EMPTY);
+          const message = args.slice(1).join(SPACE);
+          if (channelId === "twitch") {
+            send(message);
+          } else {
+            const channel = this.getChannel(channelId);
+            if (channel && channel?.isSendable()) {
+              channel.send(message);
+            }
+          }
+        }
+    }
   }
 
   // TODO: move it in a dedicated class or Utils
