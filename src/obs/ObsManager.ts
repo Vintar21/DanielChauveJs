@@ -11,6 +11,7 @@ import {
   UPDATE_SOURCE_FILTER_CALL,
   UPDATE_TEXT_SOURCE_CALL,
 } from "./ObsConstants";
+import { log } from "../utils/CommonUtils";
 
 export default class ObsManager {
   private ready: boolean;
@@ -44,10 +45,10 @@ export default class ObsManager {
         .then(() => {
           this.ready = true;
           this.resetObsMvpSource();
-          console.log("Connected to OBS Websocket");
+          log("Connected to OBS Websocket");
         })
         .catch((err) =>
-          console.log(
+          log(
             `Couldn't connect to OBS Websocket, some features won't work : ${err}`,
           ),
         );
@@ -66,8 +67,8 @@ export default class ObsManager {
           },
         });
       } catch (e) {
-        console.log(`OBS source ${name} couldn't be updated`);
-        console.log(e);
+        log(`OBS source ${name} couldn't be updated`);
+        log(e);
       }
     }
   }
@@ -85,10 +86,10 @@ export default class ObsManager {
           filterEnabled: enabled,
         });
       } catch (e) {
-        console.log(
+        log(
           `OBS filter ${filter} status couldn't be changed on source ${source}`,
         );
-        console.log(e);
+        log(e);
       }
     }
   }
@@ -100,8 +101,8 @@ export default class ObsManager {
           sceneName: scene,
         });
       } catch (e) {
-        console.log(`Can't switch to OBS scene ${scene}`);
-        console.log(e);
+        log(`Can't switch to OBS scene ${scene}`);
+        log(e);
       }
     }
   }
@@ -111,8 +112,8 @@ export default class ObsManager {
       try {
         return ObsManager.obs.call(GET_SCENE_CALL);
       } catch (e) {
-        console.log(`Can't get OBS current scene`);
-        console.log(e);
+        log(`Can't get OBS current scene`);
+        log(e);
       }
     }
   }

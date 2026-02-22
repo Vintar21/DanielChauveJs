@@ -28,7 +28,7 @@ export default class FakeBanCommand extends AArgumentsCommand {
     ignoreCooldowns: boolean,
   ): void {
     if (args.length > 0 && user.userId && args[0].length > 1) {
-      MainApp.botApp.api.moderation.warnUser(
+      MainApp.broadcasterApp.api.moderation.warnUser(
         MainApp.getBroadcasterId(),
         user.userId,
         `On a tous très envie de ban ${args[0].startsWith(AT) ? args[0].substring(1) : args[0]} mais tu comprends que je ne peux pas te laisser faire ça...`,

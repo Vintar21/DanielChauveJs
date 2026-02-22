@@ -9,7 +9,7 @@ import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import { SPACE } from "../../utils/StringConstants";
 import CommandOptions from "../CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
-import { minutes } from "../../utils/CommonUtils";
+import { log, minutes } from "../../utils/CommonUtils";
 
 const CANCEL_POLL = "cancel";
 const END_POLL = "stop";
@@ -96,7 +96,7 @@ export default class PollCommand extends AArgumentsCommand {
     MainApp.broadcasterApp.api.polls
       .createPoll(MainApp.getBroadcaster().id, pollData)
       .then(() => {
-        console.log(`Poll: ${title} [${choices}] | duration: ${duration}s`);
+        log(`Poll: ${title} [${choices}] | duration: ${duration}s`);
         this.replyOrSend(
           user,
           event,

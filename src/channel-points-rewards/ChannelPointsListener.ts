@@ -8,7 +8,7 @@ import AObsCameraEffect from "../obs/camera-effects/AObsCameraEffect";
 import { COOLDOWN_CAMERA_EFFECT } from "../obs/ObsCameraFilterEffect";
 import { noCamScenes, TIKTOK_SCENE_NAME } from "../obs/ObsConstants";
 import ObsManager from "../obs/ObsManager";
-import { choose } from "../utils/CommonUtils";
+import { choose, log } from "../utils/CommonUtils";
 import { CHILD_LAUGH_SOUND, playSound } from "../utils/MediaUtils";
 import { getGreaterRole, Role } from "../utils/RoleUtils";
 import User from "../utils/user/User";
@@ -70,8 +70,8 @@ export default class ChannelPointsListener {
     MainApp.getObsManager()
       .getCurrentScene()
       .then((scene) => {
-        const sceneName = scene.currentProgramSceneName;
-        if (noCamScenes.includes(sceneName)) {
+        const sceneName = scene?.currentProgramSceneName;
+        if (sceneName && noCamScenes.includes(sceneName)) {
           send(
             `@${event.userName} espèce de voyeureuse ! Non on ne change pas la scène s'il y a pas la caméra affichée !`,
           );
@@ -105,9 +105,7 @@ export default class ChannelPointsListener {
       event.getUser(),
       MainApp.broadcasterApp,
     );
-    console.log(
-      `Redemption event received: ${event.id} by ${username} (${userId})`,
-    );
+    log(`Redemption event received: ${event.id} by ${username} (${userId})`);
     switch (event.rewardId) {
       case REROLL_REWARD_ID:
         rollCommand.executeNoMessage(new User(username, userId, role));

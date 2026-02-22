@@ -12,6 +12,7 @@ import { getGreaterRole } from "../../utils/RoleUtils";
 import { MINUS, PLUS } from "../../utils/StringConstants";
 import CounterCommandOptions from "../CounterCommanOptions";
 import AArgumentsCommand from "./AArgumentsCommand";
+import { log } from "../../utils/CommonUtils";
 
 const RESET_COUNTER_ARG = "reset";
 const FREEZE_COUNTER_ARG = "freeze";
@@ -43,7 +44,7 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
 
   public async initCountersMapIfEmpty(): Promise<void> {
     if (this.countersMap.size === 0) {
-      console.log("Init counters");
+      log("Init counters");
       this.countersMap.set(this.counter.getCategory(), this.counter);
       await SqlManager.getAllCounterValues(this.counter.getName()).then(
         (categoriesValuesMap) => {

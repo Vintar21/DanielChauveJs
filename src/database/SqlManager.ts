@@ -29,6 +29,7 @@ import {
 import Connection = MsNodeSqlV8.Connection;
 import ConnectionPromises = MsNodeSqlV8.ConnectionPromises;
 import { EMPTY } from "../utils/StringConstants";
+import { log } from "../utils/CommonUtils";
 
 export default class SqlManager {
   private static connection: Promise<Connection> =
@@ -49,7 +50,7 @@ export default class SqlManager {
       SqlManager.isValideQueryAgregator(queryAgregator) &&
       queryAgregator[FIRST].length > 0;
     if (inserted) {
-      console.log(`New user inserted: {${userId} | ${username}}`);
+      log(`New user inserted: {${userId} | ${username}}`);
     }
     return inserted;
   }
@@ -61,7 +62,7 @@ export default class SqlManager {
     const queryAgregator = await SqlManager.executeQuery(
       `INSERT INTO ${ROLLS_TABLE} (${USER_ID_COLUMN}, ${SCORE_COLUMN}, ${DATE_ROLL_COLUMN}) VALUES (${userId}, ${value}, GETDATE());`,
     );
-    console.log(`Roll added: ${userId} - ${value}`);
+    log(`Roll added: ${userId} - ${value}`);
     return queryAgregator;
   }
 
@@ -152,7 +153,7 @@ export default class SqlManager {
 		    UPDATE ${COUNTERS_TABLE} SET ${COUNTER_VALUE_COLUMN} = ${counterValue} ${whereCondition}
 	    END;`;
     const queryAgregator = await SqlManager.executeQuery(query);
-    console.log(
+    log(
       `Counter added/updated: ${counterName}:${categoryName} - ${counterValue}`,
     );
     return queryAgregator;
@@ -206,7 +207,7 @@ export default class SqlManager {
         return await promises.query(query);
       } catch (err) {
         // TODO: handle error properly
-        console.log("SQL ERROR: " + err.message);
+        log("SQL ERROR: " + err.message);
       }
     }
   }

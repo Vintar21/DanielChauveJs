@@ -7,7 +7,7 @@ import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import { SPACE } from "../../utils/StringConstants";
 import CommandOptions from "../CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
-import { minutes } from "../../utils/CommonUtils";
+import { log, minutes } from "../../utils/CommonUtils";
 
 const CANCEL_PREDICTION = "cancel";
 const LOCK_PREDICTION = "stop";
@@ -44,7 +44,7 @@ export default class PredictionCommand extends AArgumentsCommand {
         outcomes: outcomes,
       })
       .then(() => {
-        console.log(
+        log(
           `Prediction: ${predictionTitle} [${outcomes}] | duration: ${autoLockTime}s`,
         );
         this.replyOrSend(

@@ -1,7 +1,7 @@
 import { MessageEvent } from "@twurple/easy-bot";
 import { MainApp } from "../../app";
 import SqlManager from "../../database/SqlManager";
-import { choose } from "../../utils/CommonUtils";
+import { choose, log } from "../../utils/CommonUtils";
 import {
   playSound,
   ROLLED_1000_SOUND,
@@ -54,7 +54,7 @@ export default class RollCommand extends ACommand {
   }
 
   public resetMvp() {
-    console.log("Reset MVP");
+    log("Reset MVP");
     this.currentMVP = new Mvp(undefinedUser, 0);
     this.usersUseCount = new Map();
     this.userCooldowns = new Map();
@@ -91,10 +91,10 @@ export default class RollCommand extends ACommand {
       await SqlManager.getCustomMessagesQuery(value);
 
     if (availableMessages.length === 0) {
-      console.log(`No custom message for ${value}`);
+      log(`No custom message for ${value}`);
       return EMPTY;
     }
-    console.log(`Available messages: [${availableMessages}]`);
+    log(`Available messages: [${availableMessages}]`);
     return SPACE + choose(availableMessages);
   }
 

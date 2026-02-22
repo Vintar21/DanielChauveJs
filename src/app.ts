@@ -1,9 +1,14 @@
 import { HelixUser } from "@twurple/api/lib";
-import { refreshUserToken, StaticAuthProvider } from "@twurple/auth";
+import {
+  RefreshingAuthProvider,
+  refreshUserToken,
+  StaticAuthProvider,
+} from "@twurple/auth";
 import { Bot } from "@twurple/easy-bot";
 import { MessageEvent } from "@twurple/easy-bot/lib";
 import ChannelPointsListener from "./channel-points-rewards/ChannelPointsListener";
 import CommandsManager from "./commands/CommandsManager";
+import { allCounterCommands } from "./commands/counters/AllCounterCommands";
 import {
   botAccessToken,
   botClientId,
@@ -19,10 +24,29 @@ import DiscordClient from "./discord/DiscordClient";
 import ObsManager from "./obs/ObsManager";
 import TimerManager from "./timers/TimerManager";
 import { onMessage, onRaid } from "./twitch/TwitchEventHandlers";
-import { allCounterCommands } from "./commands/counters/AllCounterCommands";
+
+import * as fs from "fs";
+import { log } from "./utils/CommonUtils";
 
 export const canUseSqlBase: boolean = !sqlLightTesting;
 export const canUseObsWebsocket: boolean = !obsLightTesting;
+
+async function getTwitchConfigJson() {
+  // Ici votre fonction pour récupérer le token initial.
+  return JSON.parse(
+    await fs.readFileSync("./configs/configTwitch.json", "utf-8"),
+  );
+}
+async function updateTokenData(userId, newTokenData) {
+  // Ici votre fonction pour modifier le token.
+  var jsonData = getTwitchConfigJson();
+  jsonData["broadcaster-access-token"] = newTokenData;
+  await fs.writeFileSync(
+    "./configs/configTwitch.json",
+    JSON.stringify(jsonData, null, 4),
+    "utf-8",
+  );
+}
 
 export class MainApp {
   static broadcaster: HelixUser;
@@ -43,10 +67,32 @@ export class MainApp {
       broadcasterRefreshToken,
     );
 
-    const broadcasterAuthProvider: StaticAuthProvider = new StaticAuthProvider(
+    const broadcasterAuthProvider: RefreshingAuthProvider =
+      new RefreshingAuthProvider({
+        clientId: broadcasterClientId,
+        clientSecret: broadcasterClientSecret,
+      });
+
+    broadcasterAuthProvider.onRefresh(updateTokenData);
+    broadcasterAuthProvider.addUserForToken(broadcasterAccessToken, ["chat"]);
+    /*broadcasterAuthProvider.addUser(
       broadcasterClientId,
       broadcasterAccessToken,
-    );
+    );*/
+    /*
+    var jsonData = await getTwitchConfigJson();
+    console.log(jsonData);
+    console.log(jsonData["broadcaster-access-token"]);
+    jsonData["broadcaster-access-token"] = { "access-token": "123456" };
+    console.log("jsonData modified");
+    console.log(jsonData);
+    console.log(JSON.stringify(jsonData, null, 4));
+    await fs.writeFileSync(
+      "./configs/configTwitch.json",
+      JSON.stringify(jsonData, null, 4),
+      "utf-8",
+    );*/
+
     MainApp.broadcasterApp = new Bot({
       authProvider: broadcasterAuthProvider,
       channels: [channel],
@@ -69,6 +115,7 @@ export class MainApp {
 
     MainApp.commandsManager = CommandsManager.getInstanceAndInit();
     await MainApp.discordClient.start();
+    // TODO: retry on stream launched
     MainApp.obsManager = await ObsManager.getInstanceAndInit();
     MainApp.channelPointsListener =
       await ChannelPointsListener.getInstanceAndInit(MainApp.broadcasterApp);
@@ -78,7 +125,7 @@ export class MainApp {
     // wait dans le doute quand même
     allCounterCommands.forEach((command) => command.initCountersMapIfEmpty());
 
-    console.log("### Bot started ###");
+    log(`### Bot started ###`);
 
     MainApp.botApp.onMessage(onMessage);
 

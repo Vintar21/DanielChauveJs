@@ -16,7 +16,7 @@ import {
   discordToken,
 } from "../config/ConfigLoader";
 import SqlManager from "../database/SqlManager";
-import { choose, hours, minutes, pluralize } from "../utils/CommonUtils";
+import { choose, hours, log, minutes, pluralize } from "../utils/CommonUtils";
 import { EMPTY, NEW_LINE, SPACE } from "../utils/StringConstants";
 import {
   CATEGORY_PLACEHOLDER,
@@ -60,16 +60,25 @@ export default class DiscordClient extends Client {
 
   public async start() {
     this.once(Events.ClientReady, (readyClient) => {
-      console.log(
-        `Discord client ready ! Logged in as ${readyClient.user.tag}`,
-      );
+      log(`Discord client ready ! Logged in as ${readyClient.user.tag}`);
 
       // Load the needed channels
       this.twitchAnnouncesChannel = this.getChannel(discordAnnounceChannelId);
       this.twitchPollResultsChannel = this.getChannel(discordPollsChannelId);
 
+      if (this.twitchAnnouncesChannel.isTextBased()) {
+        this.twitchAnnouncesChannel.messages
+          .fetch({ limit: 1 })
+          .then(
+            (messages) =>
+              (this.lastLiveAnnounce = messages
+                .last()
+                .createdAt.getMilliseconds()),
+          );
+      }
+
       readyClient.on("messageCreate", (message) => {
-        console.log(
+        log(
           `Message received on Discord: [${message.author.id}] ${message.author.username} in ${message.channel}: ${message.content}`,
         );
         if (message.author.bot) return;
@@ -122,7 +131,7 @@ export default class DiscordClient extends Client {
     return (
       this.isReady() &&
       stream !== null &&
-      stream !== undefined &&
+      stream &&
       stream.startDate.getDate() !== this.currentStreamStart &&
       Date.now() - this.lastLiveAnnounce > this.cooldownBetweenLiveAnnounces
     );
@@ -203,6 +212,7 @@ export default class DiscordClient extends Client {
       embed.setThumbnail(broadcaster.profilePictureUrl);
 
       this.twitchAnnouncesChannel.send({ content, embeds: [embed] });
+      this.lastLiveAnnounce = Date.now();
     }
   }
 }

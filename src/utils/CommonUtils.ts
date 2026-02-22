@@ -27,3 +27,12 @@ export function seconds(seconds: number): number {
 export function pluralize(name: string, count: number): string {
   return count > 1 ? name + "s" : name;
 }
+
+export function getFormattedDate(): string {
+  const date = new Date();
+  return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}.${date.getMilliseconds()}`;
+}
+
+export function log(message: any): void {
+  console.log(`[${getFormattedDate()}] ${message.toString()}`);
+}

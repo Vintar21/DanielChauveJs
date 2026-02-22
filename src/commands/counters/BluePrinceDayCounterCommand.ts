@@ -64,7 +64,7 @@ export default class BluePrinceDayCounterCommand extends ACounterCommand {
       });
   }
 
-  private updateTitle(): void {
+  public updateTitle(): void {
     MainApp.broadcasterApp.api.channels
       .getChannelInfoById(MainApp.getBroadcasterId())
       .then((channelInfo) => {

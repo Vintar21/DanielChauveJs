@@ -7,12 +7,13 @@ export const TOCTOC_SOUND = AUDIO_PATH + "toctoc.mp3";
 
 // open VLC to play the sound, check if possible it's possible avoiding it
 import Play from "play-sound";
+import { log } from "./CommonUtils";
 const player = Play();
 
 export function playSound(sound: string) {
   player.play(sound, function (err) {
     if (err) {
-      console.log(err);
+      log(err);
     }
   });
 }
