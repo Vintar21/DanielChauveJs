@@ -13,6 +13,7 @@ const options: CommandOptions = new CommandOptions([
   /multi/i,
 ]).setRolesPermission(rolesPermissions);
 
+// TODO: extends AArgumentsCommand
 export default class MultiCommand extends ACommand {
   // The broadcaster channel is always in the link
   private channels: string[] = [channel];

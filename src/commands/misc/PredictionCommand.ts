@@ -130,7 +130,7 @@ export default class PredictionCommand extends AArgumentsCommand {
     event: MessageEvent,
     args: String[],
     ignoreCooldowns: boolean,
-  ): void {
+  ): Promise<void> {
     // TODO:
     // Résultats dans un chan discord dédié
     // Pouvoir donner le résultat de la prédi ?
@@ -204,5 +204,6 @@ export default class PredictionCommand extends AArgumentsCommand {
         ignoreCooldowns,
       );
     });
+    return;
   }
 }

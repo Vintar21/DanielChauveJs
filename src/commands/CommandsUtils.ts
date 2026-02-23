@@ -1,8 +1,10 @@
 import { MessageEvent } from "@twurple/easy-bot/lib";
 import { MainApp } from "../app";
 import Counter from "../counters/Counter";
+import { EXCLAMATION_POINT, SLASH } from "../utils/StringConstants";
 
-export const COMMAND_PREFIX = "!";
+export const COMMAND_PREFIX = EXCLAMATION_POINT;
+export const TWITCH_UNAUTHORIZED_PREFIXES = [SLASH];
 export const NO_MSG = undefined;
 
 // Messages or parts of messages
@@ -14,11 +16,14 @@ export const FOLLOWER_COUNT_MESSAGE =
 export type UseCount = number;
 export const UNLIMITED: UseCount = -1;
 
+export type Trigger = RegExp | string;
+
 export const Placeholders = Object.freeze({
   BROADCASTER: "$BROADCASTER",
   COUNTER: "$COUNTER",
   CATEGORY: "$CATEGORY",
   USER: "$USER",
+  INPUT: "$INPUT",
 });
 
 export function formatCommandMessage(

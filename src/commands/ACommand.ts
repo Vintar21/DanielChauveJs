@@ -3,7 +3,7 @@ import { reply, send } from "../app";
 import { AT, SPACE } from "../utils/StringConstants";
 import User, { isNotAUser, UserId } from "../utils/user/User";
 import CommandOptions from "./CommandOptions";
-import { formatCommandMessage, UNLIMITED } from "./CommandsUtils";
+import { formatCommandMessage, Trigger, UNLIMITED } from "./CommandsUtils";
 import ICommand from "./ICommand";
 
 export default abstract class ACommand implements ICommand {
@@ -49,6 +49,13 @@ export default abstract class ACommand implements ICommand {
     }
   }
 
+  public reset() {
+    this.globalUseCount = 0;
+    this.usersUseCount.clear();
+    this.userCooldowns.clear();
+    this.lastUsed = undefined;
+  }
+
   // By default we split and format the message, override this method to change this behavior
   public match(
     input: string,
@@ -65,8 +72,16 @@ export default abstract class ACommand implements ICommand {
     return this.internalMatch(parts[0], this.options.getTriggers());
   }
 
-  protected internalMatch(input: string, triggers: Array<RegExp>): boolean {
-    return triggers.find((trigger) => trigger.test(input)) !== undefined;
+  protected internalMatch(input: string, triggers: Array<Trigger>): boolean {
+    return (
+      triggers.find((trigger) => {
+        if (trigger instanceof RegExp) {
+          return trigger.test(input);
+        } else {
+          return trigger === input;
+        }
+      }) !== undefined
+    );
     /*_.find(triggers, (trigger: RegExp) => trigger.test(input)) !== undefined
     );*/
   }

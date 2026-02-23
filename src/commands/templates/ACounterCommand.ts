@@ -129,7 +129,7 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
     event: MessageEvent,
     args: String[],
     ignoreCooldowns: boolean,
-  ): void {
+  ): Promise<void> {
     this.canModifyCounter(event).then((canModifyCounter) => {
       if (args.length === 0) {
         // If the behavior is always triggers, do it otherwise, just send the message containing the current counter value
@@ -190,6 +190,7 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
         }
       }
     });
+    return;
   }
 
   private async canModifyCounter(event: MessageEvent): Promise<boolean> {

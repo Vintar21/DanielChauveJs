@@ -5,6 +5,7 @@ import { sqlConnectionString } from "../config/ConfigLoader";
 import { UserId } from "../utils/user/User";
 import {
   ANNOUNCE_COLUMN,
+  AVG_COLUMN_NAME,
   CATEGORY_NAME_COLUMN,
   COUNTER_NAME_COLUMN,
   COUNTER_VALUE_COLUMN,
@@ -193,6 +194,35 @@ export default class SqlManager {
         categoriesValuesMap.set(row.category_name, row.counter_value),
       );
       return categoriesValuesMap;
+    }
+    return undefined;
+  }
+
+  public static async averageRollForUsername(username: string) {
+    const query = `SELECT AVG(${SCORE_COLUMN}) AS ${AVG_COLUMN_NAME} FROM 
+    ${ROLLS_TABLE} JOIN ${USERS_TABLE} ON ${ROLLS_TABLE}.${USER_ID_COLUMN}=${USERS_TABLE}.${ID_COLUMN}
+    WHERE ${USERS_TABLE}.${USERNAME_COLUMN}='${username}'`;
+    const queryAgregator = await SqlManager.executeQuery(query);
+    const averageValueResult = SqlManager.isValideQueryAgregator(queryAgregator)
+      ? queryAgregator[FIRST]
+      : undefined;
+    if (averageValueResult?.length > 0) {
+      const averageValue = Number(averageValueResult[0]?.average);
+      return isNaN(averageValue) ? undefined : averageValue;
+    }
+    return undefined;
+  }
+
+  public static async averageRollForUserId(userId: number) {
+    const query = `SELECT AVG(${SCORE_COLUMN}) AS ${AVG_COLUMN_NAME} FROM 
+    ${ROLLS_TABLE} WHERE ${USER_ID_COLUMN}=${userId}`;
+    const queryAgregator = await SqlManager.executeQuery(query);
+    const averageValueResult = SqlManager.isValideQueryAgregator(queryAgregator)
+      ? queryAgregator[FIRST]
+      : undefined;
+    if (averageValueResult?.length > 0) {
+      const averageValue = Number(averageValueResult[0]?.average);
+      return isNaN(averageValue) ? undefined : averageValue;
     }
     return undefined;
   }

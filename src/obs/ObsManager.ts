@@ -1,6 +1,7 @@
 import OBSWebSocket from "obs-websocket-js";
 import { canUseObsWebsocket } from "../app";
 import { obsWebSocketPassword, obsWebSocketUrl } from "../config/ConfigLoader";
+import { log, warn } from "../utils/CommonUtils";
 import { allObsCameraEffects } from "./camera-effects/AllObsCameraEffects";
 import AObsCameraEffect from "./camera-effects/AObsCameraEffect";
 import {
@@ -11,10 +12,9 @@ import {
   UPDATE_SOURCE_FILTER_CALL,
   UPDATE_TEXT_SOURCE_CALL,
 } from "./ObsConstants";
-import { log } from "../utils/CommonUtils";
 
 export default class ObsManager {
-  private ready: boolean;
+  private ready: boolean = false;
   private static obs: OBSWebSocket = new OBSWebSocket();
 
   private static instance: ObsManager;
@@ -38,7 +38,7 @@ export default class ObsManager {
     this.updateObsTextSource(MVP_SOURCE, INITIAL_MVP_VALUE);
   }
 
-  private async connect(): Promise<boolean> {
+  public async connect(): Promise<boolean> {
     if (canUseObsWebsocket) {
       await ObsManager.obs
         .connect(obsWebSocketUrl, obsWebSocketPassword)
@@ -48,7 +48,7 @@ export default class ObsManager {
           log("Connected to OBS Websocket");
         })
         .catch((err) =>
-          log(
+          warn(
             `Couldn't connect to OBS Websocket, some features won't work : ${err}`,
           ),
         );
@@ -67,7 +67,7 @@ export default class ObsManager {
           },
         });
       } catch (e) {
-        log(`OBS source ${name} couldn't be updated`);
+        warn(`OBS source ${name} couldn't be updated`);
         log(e);
       }
     }
@@ -86,12 +86,16 @@ export default class ObsManager {
           filterEnabled: enabled,
         });
       } catch (e) {
-        log(
+        warn(
           `OBS filter ${filter} status couldn't be changed on source ${source}`,
         );
         log(e);
       }
     }
+  }
+
+  public isReady(): boolean {
+    return this.ready;
   }
 
   public changeScene(scene: string): void {
@@ -101,7 +105,7 @@ export default class ObsManager {
           sceneName: scene,
         });
       } catch (e) {
-        log(`Can't switch to OBS scene ${scene}`);
+        warn(`Can't switch to OBS scene ${scene}`);
         log(e);
       }
     }
@@ -112,7 +116,7 @@ export default class ObsManager {
       try {
         return ObsManager.obs.call(GET_SCENE_CALL);
       } catch (e) {
-        log(`Can't get OBS current scene`);
+        warn(`Can't get OBS current scene`);
         log(e);
       }
     }

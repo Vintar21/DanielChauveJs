@@ -7,6 +7,8 @@ export default interface ICommand {
 
   execute(user: User, event: MessageEvent, ignoreCooldowns?: boolean): void;
 
+  reset(): void;
+
   canExecute(user: User): Promise<boolean>;
 
   canReplyToUser(event: MessageEvent): boolean;

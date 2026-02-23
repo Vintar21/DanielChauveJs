@@ -36,3 +36,6 @@ export const GAME_NAME_COLUMN = "game_name";
 export const COUNTER_NAME_COLUMN = "counter_name";
 export const COUNTER_VALUE_COLUMN = "counter_value";
 export const CATEGORY_NAME_COLUMN = "category_name";
+
+// Misc
+export const AVG_COLUMN_NAME = "average";

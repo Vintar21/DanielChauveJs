@@ -56,6 +56,7 @@ export default class CommandsManager {
   protected init(): void {
     // Init only once
     if (CommandsManager.commands.length > 0) {
+      CommandsManager.commands.forEach((command) => command.reset());
       return;
     }
 

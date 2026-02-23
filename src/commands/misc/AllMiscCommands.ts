@@ -11,7 +11,7 @@ import FakeBanCommand from "../trolls/FakeBanCommand";
 // Commands
 export const rollCommand: RollCommand = new RollCommand();
 export const multiCommand: MultiCommand = new MultiCommand();
-export const resetMvpCommand: ResetMvpCommand = new ResetMvpCommand();
+export const resetMvpCommand: ResetMvpCommand = new ResetMvpCommand(false);
 export const markerCommand: MarkerCommand = new MarkerCommand();
 export const predictionCommand: PredictionCommand = new PredictionCommand();
 export const pollCommand: PollCommand = new PollCommand();

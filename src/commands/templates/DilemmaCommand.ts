@@ -3,25 +3,20 @@ import CommandOptions from "../CommandOptions";
 import User from "../../utils/user/User";
 import { MessageEvent } from "@twurple/easy-bot";
 import { EMPTY, SPACE } from "../../utils/StringConstants";
-
-export type Position = "start" | "end";
-export const START_POS: Position = "start";
-export const END_POS: Position = "end";
+import { concatTextWithPunctuation } from "../../utils/CommonUtils";
+import { Placeholders } from "../CommandsUtils";
 
 export default class DilemmaCommand extends MultipleAnswersCommand {
   private possibilities: String[];
-  private position: Position;
 
   constructor(
     options: CommandOptions,
     possibilities: String[],
-    position: Position = END_POS,
     enabled: boolean = true,
   ) {
     options = options.canUseFullMessage();
     super(options, [], enabled);
     this.possibilities = possibilities;
-    this.position = position;
   }
 
   public execute(
@@ -41,13 +36,7 @@ export default class DilemmaCommand extends MultipleAnswersCommand {
       return;
     }
     this.possibilities.forEach((possibility) => {
-      if (this.position === START_POS) {
-        this.responses.push(possibility + text);
-      } else {
-        this.responses.push(
-          text.substring(0, 1).toUpperCase() + text.substring(1) + possibility,
-        );
-      }
+      this.responses.push(possibility.replaceAll(Placeholders.INPUT, text));
     });
     super.execute(user, event, ignoreCooldowns);
   }

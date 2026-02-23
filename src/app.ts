@@ -25,12 +25,14 @@ import ObsManager from "./obs/ObsManager";
 import TimerManager from "./timers/TimerManager";
 import { onMessage, onRaid } from "./twitch/TwitchEventHandlers";
 
+import { EventSubWsListener } from "@twurple/eventsub-ws";
 import * as fs from "fs";
-import { log } from "./utils/CommonUtils";
+import { log, minutes } from "./utils/CommonUtils";
+import { BackgroundColors } from "./utils/StringConstants";
 
 export const canUseSqlBase: boolean = !sqlLightTesting;
 export const canUseObsWebsocket: boolean = !obsLightTesting;
-
+/*
 async function getTwitchConfigJson() {
   // Ici votre fonction pour récupérer le token initial.
   return JSON.parse(
@@ -38,15 +40,16 @@ async function getTwitchConfigJson() {
   );
 }
 async function updateTokenData(userId, newTokenData) {
+  log("Token refreshed");
   // Ici votre fonction pour modifier le token.
-  var jsonData = getTwitchConfigJson();
+  /*var jsonData = await getTwitchConfigJson();
   jsonData["broadcaster-access-token"] = newTokenData;
   await fs.writeFileSync(
     "./configs/configTwitch.json",
     JSON.stringify(jsonData, null, 4),
     "utf-8",
   );
-}
+}*/
 
 export class MainApp {
   static broadcaster: HelixUser;
@@ -73,25 +76,9 @@ export class MainApp {
         clientSecret: broadcasterClientSecret,
       });
 
-    broadcasterAuthProvider.onRefresh(updateTokenData);
+    // TODO: remove useless things for OAuth
+    //broadcasterAuthProvider.onRefresh(updateTokenData);
     broadcasterAuthProvider.addUserForToken(broadcasterAccessToken, ["chat"]);
-    /*broadcasterAuthProvider.addUser(
-      broadcasterClientId,
-      broadcasterAccessToken,
-    );*/
-    /*
-    var jsonData = await getTwitchConfigJson();
-    console.log(jsonData);
-    console.log(jsonData["broadcaster-access-token"]);
-    jsonData["broadcaster-access-token"] = { "access-token": "123456" };
-    console.log("jsonData modified");
-    console.log(jsonData);
-    console.log(JSON.stringify(jsonData, null, 4));
-    await fs.writeFileSync(
-      "./configs/configTwitch.json",
-      JSON.stringify(jsonData, null, 4),
-      "utf-8",
-    );*/
 
     MainApp.broadcasterApp = new Bot({
       authProvider: broadcasterAuthProvider,
@@ -105,6 +92,7 @@ export class MainApp {
         botClientId,
         botAccessToken,
       );
+
       MainApp.botApp = new Bot({
         authProvider: botAuthProvider,
         channels: [channel],
@@ -125,11 +113,41 @@ export class MainApp {
     // wait dans le doute quand même
     allCounterCommands.forEach((command) => command.initCountersMapIfEmpty());
 
-    log(`### Bot started ###`);
+    log(`############## Bot started ##############`, BackgroundColors.GREEN);
 
     MainApp.botApp.onMessage(onMessage);
 
     MainApp.botApp.onRaid(onRaid);
+
+    const onStreamListener = new EventSubWsListener({
+      apiClient: MainApp.botApp.api,
+    });
+
+    onStreamListener.start();
+    onStreamListener.onStreamOnline(
+      MainApp.getBroadcasterId(),
+      async (event) => {
+        if (!this.obsManager.isReady()) {
+          await this.obsManager.connect();
+        }
+        // In fact, no need to reaffect CommandManager
+        this.commandsManager = CommandsManager.getInstanceAndInit();
+        const broadcaster = MainApp.getBroadcaster();
+        var stream = await event.getStream();
+        if (stream === null) {
+          setTimeout(
+            async () =>
+              this.discordClient.sendLiveAnounce(
+                await broadcaster.getStream(),
+                broadcaster,
+              ),
+            minutes(1),
+          );
+        } else {
+          this.discordClient.sendLiveAnounce(stream, broadcaster);
+        }
+      },
+    );
   }
 
   public static getBroadcaster(): HelixUser {

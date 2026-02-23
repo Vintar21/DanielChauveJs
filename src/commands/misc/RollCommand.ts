@@ -1,23 +1,29 @@
 import { MessageEvent } from "@twurple/easy-bot";
 import { MainApp } from "../../app";
 import SqlManager from "../../database/SqlManager";
-import { choose, log } from "../../utils/CommonUtils";
+import { choose, log, seconds } from "../../utils/CommonUtils";
 import {
   playSound,
   ROLLED_1000_SOUND,
   ROLLED_1_SOUND,
 } from "../../utils/MediaUtils";
-import { EMPTY, SPACE } from "../../utils/StringConstants";
+import { AT, EMPTY, SPACE } from "../../utils/StringConstants";
 import User, { isNotAUser, UserId } from "../../utils/user/User";
 import { undefinedUser } from "../../utils/user/UserConstants";
 import ACommand from "../ACommand";
 import CommandOptions from "../CommandOptions";
 import { FOLLOWER_COUNT_MESSAGE, NO_MSG } from "../CommandsUtils";
+import AArgumentsCommand from "../templates/AArgumentsCommand";
+import { getGreaterRole, Roles } from "../../utils/RoleUtils";
+import ObsManager from "../../obs/ObsManager";
+import { resetMvpCommand } from "./AllMiscCommands";
 
-const options: CommandOptions = new CommandOptions([/roll/i]).setMaxUsePerUser(
-  1,
-);
-//.setPrefix("/");
+const options: CommandOptions = new CommandOptions([/roll/i])
+  .setMaxUsePerUser(1)
+  .setUserCooldown(30);
+
+const RESET_ARG: string = "reset";
+const STATS_ARG: RegExp = /(stat(istique)?s?|moyennes?|means?|av(era)?ge?s?)/i;
 
 class Mvp {
   public user: User = undefinedUser;
@@ -32,7 +38,7 @@ class Mvp {
 /* Roll a number between 1 and 1000, store the role in database and update the OBS layout with the greatest number rolled
  * Reply with a custom message for each value if there is one
  */
-export default class RollCommand extends ACommand {
+export default class RollCommand extends AArgumentsCommand {
   private static RANGE_MAX: number = 1000;
 
   private currentMVP: Mvp = new Mvp(undefinedUser, 0);
@@ -53,13 +59,10 @@ export default class RollCommand extends ACommand {
     this.currentMVP = new Mvp(user, value);
   }
 
-  public resetMvp() {
+  public reset() {
     log("Reset MVP");
+    super.reset();
     this.currentMVP = new Mvp(undefinedUser, 0);
-    this.usersUseCount = new Map();
-    this.userCooldowns = new Map();
-    this.globalUseCount = 0;
-    this.lastUsed = 0;
     MainApp.getObsManager().resetObsMvpSource();
   }
 
@@ -74,10 +77,7 @@ export default class RollCommand extends ACommand {
     await SqlManager.insertRollValueQuery(userId, value);
   }
 
-  private async getCustomMessage(
-    value: number,
-    event: MessageEvent,
-  ): Promise<String> {
+  private async getCustomMessage(value: number, user: User): Promise<String> {
     // Not sure if we should have direct access to bot, and not this way
     var followerCount: number =
       await MainApp.broadcasterApp.api.channels.getChannelFollowerCount(
@@ -92,7 +92,21 @@ export default class RollCommand extends ACommand {
 
     if (availableMessages.length === 0) {
       log(`No custom message for ${value}`);
-      return EMPTY;
+      var averageMessage;
+      const average = await SqlManager.averageRollForUserId(user.userId);
+      if (average) {
+        if (value > average) {
+          averageMessage = "Bon bah au moins c'est mieux que d'habitude...";
+        } else if (value === average) {
+          averageMessage =
+            "Pile ta moyenne, c'est fou à quel point tu fais aucun effort.";
+        } else {
+          averageMessage =
+            "J'en attendais pas grand chose de toi et pourtant tu réussis à faire moins bien que d'habitude...";
+        }
+        return SPACE + averageMessage;
+      }
+      return "Même pour un premier roll c'est décevant...";
     }
     log(`Available messages: [${availableMessages}]`);
     return SPACE + choose(availableMessages);
@@ -110,11 +124,10 @@ export default class RollCommand extends ACommand {
     return !isNotAUser(user) && super.canExecute(user);
   }
 
-  // TODO: MesssageUtils avec les parties de message
-  public async execute(
+  protected async executeNoArg(
     user: User,
     event: MessageEvent,
-    ignoreCooldowns: boolean = false,
+    ignoreCooldowns: boolean,
   ): Promise<void> {
     var value: number = this.roll();
     var response: string = `${user.username} lance son dé et fait... ${value} !`;
@@ -144,7 +157,7 @@ export default class RollCommand extends ACommand {
       this.updateMvp(user, value);
     }
 
-    var customMessage = await this.getCustomMessage(value, event);
+    var customMessage = await this.getCustomMessage(value, user);
 
     switch (value) {
       case 1:
@@ -157,6 +170,88 @@ export default class RollCommand extends ACommand {
     response += customMessage;
 
     super.replyOrSend(user, event, ignoreCooldowns, response);
+    return;
+  }
+
+  // TODO: MesssageUtils avec les parties de message
+  protected async executeWithArgs(
+    user: User,
+    event: MessageEvent,
+    args: String[],
+    ignoreCooldowns: boolean,
+  ): Promise<void> {
+    if (args.length === 0) {
+      return this.executeNoArg(user, event, ignoreCooldowns);
+    } else {
+      if (args[0] === RESET_ARG) {
+        const role = await getGreaterRole(
+          MainApp.broadcasterApp.api.users.getUserById(user.userId),
+          MainApp.broadcasterApp,
+        );
+        if (role === Roles.BROADCASTER || role === Roles.MOD) {
+          return resetMvpCommand.execute(user, event, true);
+        } else {
+          this.replyOrSend(
+            user,
+            event,
+            ignoreCooldowns,
+            "Mdrr tu te prends pour qui à vouloir reset le MVP ? T'as pas les droits nullos.",
+          );
+        }
+      } else if (STATS_ARG.test(args[0].toString())) {
+        if (args.length > 1) {
+          const possibleUser =
+            await MainApp.broadcasterApp.api.users.getUserByName(
+              args[1].toString().replaceAll(AT, EMPTY),
+            );
+          if (!possibleUser || possibleUser === null) {
+            this.replyOrSend(
+              user,
+              event,
+              ignoreCooldowns,
+              "Je sais pas de qui tu parles, fais un effort.",
+            );
+          } else {
+            const average = await SqlManager.averageRollForUserId(
+              Number(possibleUser.id),
+            );
+            if (!average) {
+              this.replyOrSend(
+                user,
+                event,
+                ignoreCooldowns,
+                `Y a pas de stats pour ${possibleUser.name}, la honte LUL`,
+              );
+            } else {
+              this.replyOrSend(
+                user,
+                event,
+                ignoreCooldowns,
+                `${possibleUser.name} a une moyenne de ${average}... Comme on dit, c'est pas la moyenne qui compte mais la façon de !roll...`,
+              );
+            }
+          }
+        } else {
+          const average = await SqlManager.averageRollForUserId(user.userId);
+          if (!average) {
+            this.replyOrSend(
+              user,
+              event,
+              ignoreCooldowns,
+              `T'as pas de stats BG (pas le dé qui roule le plus loin vot' pote)`,
+            );
+          } else {
+            this.replyOrSend(
+              user,
+              event,
+              ignoreCooldowns,
+              `T'as une moyenne de ${average}... Comme on dit, c'est pas la moyenne qui compte mais ta façon de !roll...`,
+            );
+          }
+        }
+      }
+    }
+    return;
   }
 
   public getCurrentMvp(): Mvp {

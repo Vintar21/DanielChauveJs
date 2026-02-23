@@ -165,7 +165,7 @@ export default class PollCommand extends AArgumentsCommand {
     event: MessageEvent,
     args: String[],
     ignoreCooldowns: boolean,
-  ): void {
+  ): Promise<void> {
     // TODO:
     // Résultats dans un chan discord dédié
     // Pouvoir donner le résultat de la prédi ?
@@ -237,5 +237,6 @@ export default class PollCommand extends AArgumentsCommand {
         ignoreCooldowns,
       );
     });
+    return;
   }
 }

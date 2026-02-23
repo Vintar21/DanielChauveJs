@@ -1,14 +1,20 @@
 import { UserId } from "../utils/user/User";
 import { getDefaultUsersPermissions } from "../utils/user/UserUtils";
-import { seconds } from "../utils/CommonUtils";
+import { seconds, warn } from "../utils/CommonUtils";
 import { Permissions } from "../utils/permissions/Permissions";
 import { getDefaultRolesPermissions, Role } from "../utils/RoleUtils";
-import { COMMAND_PREFIX, UNLIMITED, UseCount } from "./CommandsUtils";
+import {
+  COMMAND_PREFIX,
+  Trigger,
+  TWITCH_UNAUTHORIZED_PREFIXES,
+  UNLIMITED,
+  UseCount,
+} from "./CommandsUtils";
 
 export default class CommandOptions {
   prefix: string = COMMAND_PREFIX;
 
-  private triggers: Array<RegExp> = [];
+  private triggers: Array<Trigger> = [];
   replyToUser: boolean = true;
   sendAsAnnounce: boolean = false;
 
@@ -26,7 +32,7 @@ export default class CommandOptions {
   rolesPermissions: Permissions<Role> = getDefaultRolesPermissions();
   usersPermissions: Permissions<UserId> = getDefaultUsersPermissions();
 
-  constructor(triggers: Array<RegExp>) {
+  constructor(triggers: Array<Trigger>) {
     this.triggers = triggers;
   }
 
@@ -48,6 +54,12 @@ export default class CommandOptions {
   }
 
   public setPrefix(prefix: string): CommandOptions {
+    if (TWITCH_UNAUTHORIZED_PREFIXES.includes(prefix)) {
+      warn(
+        `Can't use "${prefix}" as prefix for twitch commands. The prefix is still "${this.prefix}"`,
+      );
+      return this;
+    }
     this.prefix = prefix;
     return this;
   }
@@ -74,13 +86,17 @@ export default class CommandOptions {
     return this;
   }
 
-  public getTriggers(): Array<RegExp> {
+  public getTriggers(): Array<Trigger> {
     if (this.usePrefix) {
-      const prefixedTriggers: Array<RegExp> = [];
+      const prefixedTriggers: Array<Trigger> = [];
       this.triggers.forEach((trigger) => {
-        prefixedTriggers.push(
-          new RegExp(this.prefix + trigger.source, trigger.flags),
-        );
+        if (trigger instanceof RegExp) {
+          prefixedTriggers.push(
+            new RegExp(this.prefix + trigger.source, trigger.flags),
+          );
+        } else {
+          prefixedTriggers.push(this.prefix + trigger);
+        }
       });
       return prefixedTriggers;
     }

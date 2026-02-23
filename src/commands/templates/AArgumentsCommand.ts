@@ -28,5 +28,5 @@ export default abstract class AArgumentsCommand extends ACommand {
     event: MessageEvent,
     args: String[],
     ignoreCooldowns: boolean,
-  ): void;
+  ): Promise<void>;
 }

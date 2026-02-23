@@ -1,5 +1,6 @@
 import CommandOptions from "../CommandOptions";
-import DilemmaCommand, { END_POS } from "../templates/DilemmaCommand";
+import { Placeholders } from "../CommandsUtils";
+import DilemmaCommand from "../templates/DilemmaCommand";
 
 const options: CommandOptions = new CommandOptions([
   /sop/i,
@@ -8,14 +9,14 @@ const options: CommandOptions = new CommandOptions([
 ]);
 
 const answers: String[] = [
-  ", c'est un SMASH !",
-  ", nan, on passe.",
-  ", c'est un ÉNORME SMASH ",
-  ", j'ai vomi en voyant ça, on passe.",
+  `${Placeholders.INPUT}, c'est un SMASH !`,
+  `${Placeholders.INPUT}, nan, on passe.`,
+  `${Placeholders.INPUT}, c'est un ÉNORME SMASH `,
+  `${Placeholders.INPUT}, j'ai vomi en voyant ça, on passe.`,
 ];
 
 export default class SmashOrPassCommand extends DilemmaCommand {
   constructor() {
-    super(options, answers, END_POS, true);
+    super(options, answers, true);
   }
 }

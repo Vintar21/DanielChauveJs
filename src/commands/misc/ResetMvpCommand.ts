@@ -9,11 +9,11 @@ import { rollCommand } from "./AllMiscCommands";
 
 const rolesPermissions: Permissions<Role> = getModOnlyRolesPermissions();
 
-const options: CommandOptions = new CommandOptions([
-  /reset/i,
-  /reset-?mvp/i,
-]).setRolesPermission(rolesPermissions);
+const options: CommandOptions = new CommandOptions([/reset/i, /reset-?mvp/i])
+  .setRolesPermission(rolesPermissions)
+  .disable();
 
+//TODO: arg of !roll not a full command
 export default class ResetMvpCommand extends ACommand {
   constructor(enabled: boolean = true) {
     super(options, enabled);
@@ -34,7 +34,7 @@ export default class ResetMvpCommand extends ACommand {
       );
     } else {
       // Reset OBS source and current MVP for the RollCommand
-      rollCommand.resetMvp();
+      rollCommand.reset();
       this.replyOrSend(user, event, true, "Le MVP a été reset chef !");
     }
   }

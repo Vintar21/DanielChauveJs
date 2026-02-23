@@ -100,11 +100,11 @@ export default class DiscordClient extends Client {
     // Log in to Discord with your client's token
     await this.login(discordToken);
 
-    setInterval(() => this.check(), this.checkInterval);
+    //setInterval(() => this.check(), this.checkInterval);
   }
 
   // TODO: create DiscordCommands objects
-  private onCommandMessage(command: string, args: string[]) {
+  private async onCommandMessage(command: string, args: string[]) {
     switch (command) {
       case "say":
         if (args.length > 1) {
@@ -119,6 +119,12 @@ export default class DiscordClient extends Client {
             }
           }
         }
+        break;
+      case "live":
+        const broadcaster = MainApp.getBroadcaster();
+        const stream = await this.getCurrentStream(broadcaster);
+        this.sendLiveAnounce(stream, broadcaster);
+        break;
     }
   }
 
@@ -137,10 +143,7 @@ export default class DiscordClient extends Client {
     );
   }
 
-  private async check() {
-    const broadcaster =
-      await MainApp.broadcasterApp.api.users.getUserByName(channel);
-    const stream = await this.getCurrentStream(broadcaster);
+  public async sendLiveAnounce(stream: HelixStream, broadcaster: HelixUser) {
     if (this.canSendLiveAnnounce(stream)) {
       const category = await this.getStreamCategoryName();
       SqlManager.getAnnounceMessagesQuery(category).then((messages) => {
@@ -157,9 +160,7 @@ export default class DiscordClient extends Client {
             broadcaster,
           );
         }
-        this.getCurrentStream(broadcaster).then(
-          (stream) => (this.currentStreamStart = stream.startDate.getDate()),
-        );
+        this.currentStreamStart = stream.startDate.getDate();
       });
     }
   }
@@ -213,6 +214,7 @@ export default class DiscordClient extends Client {
 
       this.twitchAnnouncesChannel.send({ content, embeds: [embed] });
       this.lastLiveAnnounce = Date.now();
+      log("Discord live announce sent");
     }
   }
 }
