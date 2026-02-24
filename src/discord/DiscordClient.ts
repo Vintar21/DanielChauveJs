@@ -69,12 +69,13 @@ export default class DiscordClient extends Client {
       if (this.twitchAnnouncesChannel.isTextBased()) {
         this.twitchAnnouncesChannel.messages
           .fetch({ limit: 1 })
-          .then(
-            (messages) =>
-              (this.lastLiveAnnounce = messages
-                .last()
-                .createdAt.getMilliseconds()),
-          );
+          .then((messages) => {
+            log(
+              `lastMessageDate: ${messages.last().createdAt.valueOf()} | ${Date.now()}`,
+            );
+            this.lastLiveAnnounce = messages.last().createdAt.valueOf();
+            log("last live announce updated");
+          });
       }
 
       readyClient.on("messageCreate", (message) => {
@@ -134,6 +135,8 @@ export default class DiscordClient extends Client {
   }
 
   private canSendLiveAnnounce(stream: HelixStream): boolean {
+    log(`Ready: ${this.isReady()} | Stream: ${stream} | Current Stream Start: ${this.currentStreamStart} | 
+    Last Live Announce: ${this.lastLiveAnnounce} | Diff: ${Date.now() - this.lastLiveAnnounce} |Cooldown: ${this.cooldownBetweenLiveAnnounces}`);
     return (
       this.isReady() &&
       stream !== null &&

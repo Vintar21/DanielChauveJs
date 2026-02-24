@@ -22,7 +22,7 @@ const answers: String[] = [
   "Et donc ça, ça te fait rire ?",
 ];
 export default class AnswerRandomMessage extends MultipleAnswersCommand {
-  protected proba: number = 1 / 3000;
+  protected proba: number = 1 / 1000;
 
   constructor(enabled: boolean = true) {
     super(options, answers, enabled);

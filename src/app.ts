@@ -4,7 +4,7 @@ import {
   refreshUserToken,
   StaticAuthProvider,
 } from "@twurple/auth";
-import { Bot } from "@twurple/easy-bot";
+import { Bot, RaidEvent } from "@twurple/easy-bot";
 import { MessageEvent } from "@twurple/easy-bot/lib";
 import ChannelPointsListener from "./channel-points-rewards/ChannelPointsListener";
 import CommandsManager from "./commands/CommandsManager";
@@ -23,12 +23,13 @@ import CountersManager from "./counters/CountersManager";
 import DiscordClient from "./discord/DiscordClient";
 import ObsManager from "./obs/ObsManager";
 import TimerManager from "./timers/TimerManager";
-import { onMessage, onRaid } from "./twitch/TwitchEventHandlers";
+import { onMessage } from "./twitch/TwitchEventHandlers";
 
 import { EventSubWsListener } from "@twurple/eventsub-ws";
 import * as fs from "fs";
-import { log, minutes } from "./utils/CommonUtils";
-import { BackgroundColors } from "./utils/StringConstants";
+import { log, minutes, seconds, warn } from "./utils/CommonUtils";
+import { BackgroundColors, EMPTY, SPACE } from "./utils/StringConstants";
+import User from "./utils/user/User";
 
 export const canUseSqlBase: boolean = !sqlLightTesting;
 export const canUseObsWebsocket: boolean = !obsLightTesting;
@@ -63,7 +64,7 @@ export class MainApp {
   static broadcasterApp: Bot;
   static botApp: Bot;
 
-  public static async start(): Promise<void> {
+  public async start(): Promise<void> {
     const broadcasterAccessToken = await refreshUserToken(
       broadcasterClientId,
       broadcasterClientSecret,
@@ -117,7 +118,7 @@ export class MainApp {
 
     MainApp.botApp.onMessage(onMessage);
 
-    MainApp.botApp.onRaid(onRaid);
+    MainApp.botApp.onRaid(this.onRaid);
 
     const onStreamListener = new EventSubWsListener({
       apiClient: MainApp.botApp.api,
@@ -127,26 +128,104 @@ export class MainApp {
     onStreamListener.onStreamOnline(
       MainApp.getBroadcasterId(),
       async (event) => {
-        if (!this.obsManager.isReady()) {
-          await this.obsManager.connect();
+        log("Stream Online !");
+        if (!MainApp.obsManager.isReady()) {
+          await MainApp.obsManager.connect();
         }
         // In fact, no need to reaffect CommandManager
-        this.commandsManager = CommandsManager.getInstanceAndInit();
+        MainApp.commandsManager = CommandsManager.getInstanceAndInit();
+        MainApp.raidersIdWaiting = [];
+        MainApp.shoutedOutIds.clear();
+
         const broadcaster = MainApp.getBroadcaster();
         var stream = await event.getStream();
         if (stream === null) {
-          setTimeout(
-            async () =>
-              this.discordClient.sendLiveAnounce(
-                await broadcaster.getStream(),
-                broadcaster,
-              ),
-            minutes(1),
-          );
+          log("No current stream via twitch API");
+          setTimeout(async () => {
+            log("Try resending live announce");
+            MainApp.discordClient.sendLiveAnounce(
+              await broadcaster.getStream(),
+              broadcaster,
+            );
+          }, minutes(1));
         } else {
-          this.discordClient.sendLiveAnounce(stream, broadcaster);
+          log("Sending live announce directly");
+          MainApp.discordClient.sendLiveAnounce(stream, broadcaster);
         }
       },
+    );
+  }
+
+  private static async shoutout(userId: string): Promise<void> {
+    const currentStream = await MainApp.getBroadcaster().getStream();
+    if (!currentStream || currentStream === null || !currentStream.startDate) {
+      const user = await MainApp.broadcasterApp.api.users.getUserById(userId);
+      const username = user === null ? EMPTY : user.name;
+      send(
+        `Merci pour le raid ${username}${username === EMPTY ? EMPTY : SPACE}! Même si l'autre est pas en stream LUL`,
+      );
+      return;
+    }
+    return MainApp.broadcasterApp.api.chat.shoutoutUser(
+      MainApp.getBroadcasterId(),
+      userId,
+    );
+  }
+
+  private static async futureShoutout() {
+    if (MainApp.raidersIdWaiting.length > 0) {
+      const userIdToShoutout = MainApp.raidersIdWaiting[0];
+      try {
+        await MainApp.shoutout(userIdToShoutout);
+        MainApp.shoutedOutIds.add(userIdToShoutout);
+        MainApp.raidersIdWaiting = MainApp.raidersIdWaiting.slice(1);
+        MainApp.lastShoutout = Date.now();
+        // If we still have users to SO, program a SO in the future
+        if (MainApp.raidersIdWaiting.length > 0) {
+          setTimeout(() => MainApp.futureShoutout, MainApp.SHOUTOUT_COOLDOWN);
+        }
+      } catch (err) {
+        warn(err);
+      }
+    }
+  }
+
+  // Waiting list of shoutouts to handle several raids in less than 2 minutes
+  private static raidersIdWaiting: string[] = [];
+  // People already so during the stream
+  private static shoutedOutIds: Set<string> = new Set();
+  private static lastShoutout: number;
+  // True Twitch cooldown is 2 minutes but we wait a bit longer
+  private static SHOUTOUT_COOLDOWN = minutes(2) + seconds(30);
+
+  private async onRaid(event: RaidEvent) {
+    log(
+      `Raid received by ${event.userName} | WaitingList: ${MainApp.raidersIdWaiting}`,
+    );
+    if (
+      MainApp.shoutedOutIds.has(event.userId) ||
+      MainApp.raidersIdWaiting.includes(event.userId)
+    ) {
+      log("Already raided the channel during this stream");
+      return;
+    }
+
+    // No shoutout yet or cooldown finished
+    if (
+      !MainApp.lastShoutout ||
+      Date.now() - MainApp.lastShoutout > MainApp.SHOUTOUT_COOLDOWN
+    ) {
+      MainApp.shoutedOutIds.add(event.userId);
+      MainApp.lastShoutout = Date.now();
+      MainApp.shoutout(event.userId);
+      return;
+    }
+
+    const timeSinceLastShoutout = Date.now() - MainApp.lastShoutout;
+    MainApp.raidersIdWaiting.push(event.userId);
+    setTimeout(
+      MainApp.futureShoutout,
+      MainApp.SHOUTOUT_COOLDOWN - timeSinceLastShoutout,
     );
   }
 
@@ -198,4 +277,5 @@ export function reply(message: String, event: MessageEvent) {
   event.reply(message.toString());
 }
 
-MainApp.start();
+const app = new MainApp();
+app.start();

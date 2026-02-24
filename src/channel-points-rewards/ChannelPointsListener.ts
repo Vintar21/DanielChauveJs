@@ -108,10 +108,10 @@ export default class ChannelPointsListener {
     log(`Redemption event received: ${event.id} by ${username} (${userId})`);
     switch (event.rewardId) {
       case REROLL_REWARD_ID:
-        rollCommand.executeNoMessage(new User(username, userId, role));
+        rollCommand.executeNoMessage(new User(username, userId, role), true);
         break;
       case TEST_REWARD_ID:
-        rollCommand.executeNoMessage(new User(username, userId, role));
+        rollCommand.executeNoMessage(new User(username, userId, role), true);
         break;
       case CAMERA_EFFECT_REWARD_ID:
         // Can't be a method, need to be a function

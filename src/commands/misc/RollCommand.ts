@@ -1,26 +1,24 @@
 import { MessageEvent } from "@twurple/easy-bot";
 import { MainApp } from "../../app";
 import SqlManager from "../../database/SqlManager";
-import { choose, log, seconds } from "../../utils/CommonUtils";
+import { choose, log } from "../../utils/CommonUtils";
 import {
   playSound,
   ROLLED_1000_SOUND,
   ROLLED_1_SOUND,
 } from "../../utils/MediaUtils";
+import { getGreaterRole, Roles } from "../../utils/RoleUtils";
 import { AT, EMPTY, SPACE } from "../../utils/StringConstants";
 import User, { isNotAUser, UserId } from "../../utils/user/User";
 import { undefinedUser } from "../../utils/user/UserConstants";
-import ACommand from "../ACommand";
 import CommandOptions from "../CommandOptions";
 import { FOLLOWER_COUNT_MESSAGE, NO_MSG } from "../CommandsUtils";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
-import { getGreaterRole, Roles } from "../../utils/RoleUtils";
-import ObsManager from "../../obs/ObsManager";
 import { resetMvpCommand } from "./AllMiscCommands";
 
 const options: CommandOptions = new CommandOptions([/roll/i])
-  .setMaxUsePerUser(1)
-  .setUserCooldown(30);
+  //.setMaxUsePerUser(1)
+  .setUserCooldown(15);
 
 const RESET_ARG: string = "reset";
 const STATS_ARG: RegExp = /(stat(istique)?s?|moyennes?|means?|av(era)?ge?s?)/i;
@@ -40,6 +38,7 @@ class Mvp {
  */
 export default class RollCommand extends AArgumentsCommand {
   private static RANGE_MAX: number = 1000;
+  private static ROLL_MAX_USE_PER_USER: number = 1;
 
   private currentMVP: Mvp = new Mvp(undefinedUser, 0);
 
@@ -116,7 +115,7 @@ export default class RollCommand extends AArgumentsCommand {
     user: User,
     ignoreCooldowns: boolean = false,
   ): Promise<void> {
-    this.execute(user, NO_MSG, ignoreCooldowns);
+    this.executeNoArg(user, NO_MSG, ignoreCooldowns);
   }
 
   // @Override need to be a real user
@@ -129,6 +128,17 @@ export default class RollCommand extends AArgumentsCommand {
     event: MessageEvent,
     ignoreCooldowns: boolean,
   ): Promise<void> {
+    const userUseCount = this.usersUseCount.get(user.userId) || 0;
+
+    // Manually limit to 1 roll per user
+    if (
+      user.userId !== Number(MainApp.getBroadcasterId()) &&
+      !ignoreCooldowns &&
+      userUseCount >= RollCommand.ROLL_MAX_USE_PER_USER
+    ) {
+      return;
+    }
+
     var value: number = this.roll();
     var response: string = `${user.username} lance son dé et fait... ${value} !`;
     this.insertValue(user.userId, user.username, value);
@@ -200,10 +210,15 @@ export default class RollCommand extends AArgumentsCommand {
         }
       } else if (STATS_ARG.test(args[0].toString())) {
         if (args.length > 1) {
-          const possibleUser =
-            await MainApp.broadcasterApp.api.users.getUserByName(
-              args[1].toString().replaceAll(AT, EMPTY),
-            );
+          const givenUser = args[1].toString().replaceAll(AT, EMPTY);
+          log(`-${givenUser}-`);
+          const validUsername: boolean = /^[a-z0-9_]{3,}$/gi.test(givenUser);
+          log(validUsername);
+          const possibleUser = validUsername
+            ? await MainApp.broadcasterApp.api.users.getUserByName(
+                args[1].toString().replaceAll(AT, EMPTY),
+              )
+            : undefined;
           if (!possibleUser || possibleUser === null) {
             this.replyOrSend(
               user,

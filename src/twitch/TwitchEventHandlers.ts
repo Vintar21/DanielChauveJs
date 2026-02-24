@@ -29,11 +29,3 @@ export const onMessage = async (event: MessageEvent) => {
       });
     });
 };
-
-// Waiting list if last shoutout too early
-export const onRaid = (event: RaidEvent) => {
-  MainApp.broadcasterApp.api.chat.shoutoutUser(
-    event.broadcasterId,
-    event.userId,
-  );
-};

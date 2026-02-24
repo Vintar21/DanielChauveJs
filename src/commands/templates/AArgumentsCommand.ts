@@ -11,7 +11,7 @@ export default abstract class AArgumentsCommand extends ACommand {
   }
 
   protected parseArgs(event: MessageEvent): String[] {
-    return event.text.trim().split(SPACE).slice(1);
+    return event?.text?.trim()?.split(SPACE)?.slice(1);
   }
 
   public execute(
@@ -19,8 +19,8 @@ export default abstract class AArgumentsCommand extends ACommand {
     event: MessageEvent,
     ignoreCooldowns: boolean,
   ): void {
-    this.parseArgs(event);
-    this.executeWithArgs(user, event, this.parseArgs(event), ignoreCooldowns);
+    const args: String[] = this.parseArgs(event) ?? [];
+    this.executeWithArgs(user, event, args, ignoreCooldowns);
   }
 
   protected abstract executeWithArgs(
