@@ -6,7 +6,7 @@ const options: CommandOptions = new CommandOptions([
   /sop/i,
   /smash(or)?pass/i,
   /smash/i,
-]);
+]).setGlobalCooldown(15);
 
 const answers: String[] = [
   `${Placeholders.INPUT}, c'est un SMASH !`,

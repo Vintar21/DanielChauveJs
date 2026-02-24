@@ -3,12 +3,12 @@ import CommandOptions from "../CommandOptions";
 import SimpleCommand from "../templates/SimpleCommand";
 
 const options: CommandOptions = new CommandOptions([
-  /tuto/i,
+  /tutos?/i,
   /tutori[ea]l+e?s?/i,
-  /tuto-?celeste/i,
+  /tutos?-?celeste/i,
   /tutori[ea]l+e?s?-?celeste/i,
-  /tuto-?speedrun/i,
-  /tuto-?any%?/i,
+  /tutos?-?speedrun/i,
+  /tutos?-?any%?/i,
 ]);
 const answer: String = `​Pour retrouver mon tuto sur le speedrun Celeste c'est ici: ${tutosCelestePlaylist}`;
 

@@ -78,7 +78,7 @@ export default abstract class ACommand implements ICommand {
         if (trigger instanceof RegExp) {
           return trigger.test(input);
         } else {
-          return trigger === input;
+          return input.startsWith(trigger);
         }
       }) !== undefined
     );

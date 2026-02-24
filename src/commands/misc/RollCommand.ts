@@ -179,7 +179,17 @@ export default class RollCommand extends AArgumentsCommand {
     }
     response += customMessage;
 
-    super.replyOrSend(user, event, ignoreCooldowns, response);
+    // Ignore cooldown so the user can use !roll stat just after
+    super.replyOrSend(user, event, true, response);
+
+    // Manually update cooldowns
+    this.globalUseCount += 1;
+    this.lastUsed = Date.now();
+    if (user.userId !== undefined) {
+      const userUseCount = this.usersUseCount.get(user.userId) || 0;
+      this.usersUseCount.set(user.userId, userUseCount + 1);
+      //this.userCooldowns.set(user.userId, this.lastUsed);
+    }
     return;
   }
 

@@ -7,7 +7,7 @@ const options: CommandOptions = new CommandOptions([
   /10/i,
   /dix(mais)?/i,
   /ten(but)?/i,
-  /(it'?sa?|c'estun)10/i,
+  /(it'?sa?|c'?estun)10/i,
 ]).setUserCooldown(minutes(5));
 
 const answers: string[] = [

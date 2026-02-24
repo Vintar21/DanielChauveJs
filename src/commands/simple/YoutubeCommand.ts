@@ -2,7 +2,7 @@ import { youtubeLink } from "../../config/ConfigLoader";
 import CommandOptions from "../CommandOptions";
 import SimpleCommand from "../templates/SimpleCommand";
 
-const options: CommandOptions = new CommandOptions([/youtube/i]);
+const options: CommandOptions = new CommandOptions([/y(ou)?tu?be?/i]);
 const answer: String = `​Twitch nous oblige à limiter les rediffs, mais vous pouvez tout retrouver sur YouTube: ${youtubeLink}`;
 
 export default class YoutubeCommand extends SimpleCommand {

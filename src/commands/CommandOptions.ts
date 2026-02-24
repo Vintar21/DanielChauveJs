@@ -10,6 +10,7 @@ import {
   UNLIMITED,
   UseCount,
 } from "./CommandsUtils";
+import { START_REGEX } from "../utils/StringConstants";
 
 export default class CommandOptions {
   prefix: string = COMMAND_PREFIX;
@@ -92,7 +93,10 @@ export default class CommandOptions {
       this.triggers.forEach((trigger) => {
         if (trigger instanceof RegExp) {
           prefixedTriggers.push(
-            new RegExp(this.prefix + trigger.source, trigger.flags),
+            new RegExp(
+              START_REGEX + this.prefix + trigger.source,
+              trigger.flags,
+            ),
           );
         } else {
           prefixedTriggers.push(this.prefix + trigger);

@@ -31,7 +31,7 @@ const options: CommandOptions = new CommandOptions([
 ]).setRolesPermission(rolesPermissions);
 
 export default class PollCommand extends AArgumentsCommand {
-  private defaultDuration: number = minutes(5); // Max 1800s = 30min
+  private defaultDuration: number = minutes(5, true); // Max 1800s = 30min
   private defaultChoices: string[] = ["Pour", "Contre"];
   private title: string = "Plutôt pour ou contre ?";
   private channelPointsDefault: number = 0;
