@@ -16,6 +16,9 @@ export const channel = twitchConfig.channel;
 // Links
 const linksConfig = loadSpecificConfig("Links");
 
+export const commandsManualLink =
+  linksConfig["commands-manual-link"] ?? undefined;
+
 //-- social medias
 const socialMedias = linksConfig["social-media-links"] ?? undefined;
 export const discordLink = socialMedias.discord ?? undefined;

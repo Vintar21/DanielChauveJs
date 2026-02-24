@@ -44,17 +44,25 @@ Renvoie le lien du clip de la chaise.
 
 ### Code ami
 
-- ``!codeami`
+- `!codeami`
   **Rôles:** N'importe qui
   **Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
 
 Donne mon code ami Switch.
 
+### Commandes
+
+- `!commandes` `!commands` `!man` `!commands-list` `!liste-commandes`
+  **Rôles:** N'importe qui
+  **Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
+
+Donne un lien vers une liste des commandes ou un manuel du bot.
+
 ### Config
 
--`!config` `!setup` `!matos` `!micro` `!clavier`...
-**Rôles:** N'importe qui
-**Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
+- `!config` `!setup` `!matos` `!micro` `!clavier`...
+  **Rôles:** N'importe qui
+  **Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
 
 Précise où retrouver ma config.
 
