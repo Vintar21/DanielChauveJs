@@ -1,6 +1,7 @@
 import ICommand from "../ICommand";
 import BackseatCommand from "./BackseatCommand";
 import ChaiseCommand from "./ChaiseCommand";
+import CommandsManualCommand from "./CommandsManualCommand";
 import ConfigCommand from "./ConfigCommand";
 import CreditCommand from "./CreditCommand";
 import DanielCommand from "./DanielCommand";
@@ -37,6 +38,7 @@ export const quadHdCommand = new QuadHdCommand();
 export const tutosCelesteCommand = new TutosCelesteCommand();
 export const vocabCelesteCommand = new VocabCelesteCommand();
 export const gitCommand = new GitCommand();
+export const manCommand = new CommandsManualCommand();
 
 // Arrays
 export const allSimpleCommands: Array<ICommand> = [
@@ -51,6 +53,7 @@ export const allSimpleCommands: Array<ICommand> = [
   creditCommand,
   pbCommand,
   pronounsCommand,
+  manCommand,
   quadHdCommand,
   gitCommand,
   tutosCelesteCommand,

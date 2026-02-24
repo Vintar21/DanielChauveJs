@@ -302,6 +302,16 @@ Crée une prédiction par défaut de 5 minutes avec comme titre celui donné et 
 Crée une prédiction de la durée donnée avec comme titre celui donné et deux possibilités "Oui" et "Non".
 Si la durée est de 30 ou moins, elle sera considérée ccomme étant donné en minute, sinon elle sera considérée comme étant en secondes. La durée est capée à 1800 (30 minutes). Attention il ne doit pas y avoir déjà une prédiction en cours.
 
+### Pronoms
+
+- `!pronoms` `!pronouns`
+
+**Rôles:** N'importe qui
+
+**Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
+
+Donne le lien vers le site et l'extension pour afficher ses pronoms sur le chat Twitch.
+
 ### Roll
 
 - `!roll`
