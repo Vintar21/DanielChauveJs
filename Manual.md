@@ -4,7 +4,7 @@
 
 ### 2k
 
--`!2k` `!1440p` `!2560p``!quadhd` `!uhd`
+-`!2k` `!1440p` `!2560p` `!quadhd` `!uhd`
 
 **Rôles:** N'importe qui
 
@@ -34,13 +34,13 @@ Non il n'y a pas de piège :)
 
 ### C'est un 10 mais...
 
-- `!10 <dilemme>` `!c'estun10 <dilemme>` `!itsa10 <dilemme>``!dixmais <dilemme>` `!tenbut <dilemme>`
+- `!10 <dilemme>` `!c'estun10 <dilemme>` `!itsa10 <dilemme>` `!dixmais <dilemme>` `!tenbut <dilemme>`
 
 **Rôles:** N'importe qui
 
 **Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
 
-Répond au dilemme type "C'est un 10 mais..."
+Répond au dilemme type "C'est un 10 mais...".
 
 ### Chaise
 
@@ -120,7 +120,7 @@ Donne le lien d'invitation du Discord.
 
 **Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
 
-Donne le lien du GSheet pour proposer des messages personnalisés pour le `!roll`
+Donne le lien du GSheet pour proposer des messages personnalisés pour le `!roll`.
 
 ### Git
 
@@ -130,7 +130,7 @@ Donne le lien du GSheet pour proposer des messages personnalisés pour le `!roll
 
 **Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
 
-Donne le lien de mon Git (où se trouve notamment le code de Daniel)
+Donne le lien de mon Git (où se trouve notamment le code de Daniel).
 
 ### Jeu à chier
 
@@ -326,7 +326,7 @@ Retourne la moyenne de tous les `!roll` effectués par l'utilisateur s'il y en a
 
 **Cooldowns:** 30 secondes
 
-Retourne la moyenne de tous les `!roll` effectués par <username> s'il y en a.
+Retourne la moyenne de tous les `!roll` effectués par `<username>` s'il y en a.
 
 - `!roll reset`
 
@@ -408,7 +408,7 @@ Force le post d'une annonce de live dans le channel dédié.
 
 **Rôles:** _Aucun pour l'instant_
 
-Envoie un message en tant que DanielChauve sur la chaîne twitch du diffuseur
+Envoie un message en tant que DanielChauve sur la chaîne twitch du diffuseur.
 
 - `/say <channel> <message>`
 
@@ -416,4 +416,4 @@ Envoie un message en tant que DanielChauve sur la chaîne twitch du diffuseur
 
 **Rôles:** _Aucun pour l'instant_
 
-Envoie un message en tant que @DanielChauve dans le channel Discord correspondant
+Envoie un message en tant que @DanielChauve dans le channel Discord correspondant.
