@@ -151,6 +151,10 @@ export class MainApp {
         } else {
           log("Sending live announce directly");
           MainApp.discordClient.sendLiveAnounce(stream, broadcaster);
+
+          send(
+            "Je suis toujours en phase de test, n'hésitez pas à me mettre à l'épreuve !",
+          );
         }
       },
     );
