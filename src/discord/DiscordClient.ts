@@ -8,7 +8,6 @@ import {
 } from "discord.js";
 import { MainApp, send } from "../app";
 import {
-  channel,
   discordAnnounceChannelId,
   discordCommandsChannelId,
   discordPollsChannelId,
@@ -126,6 +125,24 @@ export default class DiscordClient extends Client {
         const stream = await this.getCurrentStream(broadcaster);
         this.sendLiveAnounce(stream, broadcaster);
         break;
+
+      case "addrollmessage":
+        if (args.length >= 2) {
+          const value = Number(args[0]);
+          if (isNaN(value) || value < 1 || value > 1000) {
+            this.sendMessage(
+              discordCommandsChannelId,
+              "Incorrect value specified, the first argument needs to be a number between 1 and 1000",
+            );
+            break;
+          }
+          const message = args.slice(1).join(SPACE);
+          SqlManager.addRollsMessage(value, message);
+          // TODO check with SqlManager return
+          this.sendMessage(discordCommandsChannelId, "Message added");
+          break;
+        }
+        break;
     }
   }
 
@@ -144,6 +161,13 @@ export default class DiscordClient extends Client {
       stream.startDate.getDate() !== this.currentStreamStart &&
       Date.now() - this.lastLiveAnnounce > this.cooldownBetweenLiveAnnounces
     );
+  }
+
+  public sendMessage(channelId: any, message: string) {
+    const channel = this.getChannel(channelId);
+    if (channel?.isTextBased()) {
+      channel.send(message);
+    }
   }
 
   public async sendLiveAnounce(stream: HelixStream, broadcaster: HelixUser) {

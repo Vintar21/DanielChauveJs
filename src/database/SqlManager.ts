@@ -227,6 +227,18 @@ export default class SqlManager {
     return undefined;
   }
 
+  public static async addRollsMessage(
+    value: number,
+    message: string,
+    proba: number = 1,
+  ) {
+    const query = `INSERT INTO ${ROLLS_MESSAGES_TABLE} (${RESULT_COLUMN}, ${ROLL_MESSAGE_COLUMN}, ${PROBA_COLUMN})
+    VALUES (${value}, '${message}', ${proba});`;
+    const queryAgregator = await SqlManager.executeQuery(query);
+    log(`New message for roll added\r\n${value}: ${message} - proba: ${proba}`);
+    return queryAgregator;
+  }
+
   private static async executeQuery(
     query: string,
   ): Promise<QueryAggregatorResults> {
