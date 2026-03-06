@@ -9,9 +9,11 @@ import {
 import { MainApp, send } from "../app";
 import {
   discordAnnounceChannelId,
+  discordChannelIdBg3,
   discordCommandsChannelId,
   discordPollsChannelId,
   discordServerId,
+  discordServerIdBg3,
   discordToken,
 } from "../config/ConfigLoader";
 import SqlManager from "../database/SqlManager";
@@ -57,6 +59,12 @@ export default class DiscordClient extends Client {
     return this.guilds.cache.get(discordServerId).channels.cache.get(channelId);
   }
 
+  private getBg3Channel(channelId: string): GuildBasedChannel {
+    return this.guilds.cache
+      .get(discordServerIdBg3)
+      .channels.cache.get(channelId);
+  }
+
   public async start() {
     this.once(Events.ClientReady, (readyClient) => {
       log(`Discord client ready ! Logged in as ${readyClient.user.tag}`);
@@ -82,16 +90,42 @@ export default class DiscordClient extends Client {
           `Message received on Discord: [${message.author.id}] ${message.author.username} in ${message.channel}: ${message.content}`,
         );
         if (message.author.bot) return;
+        const parts = message.content.trim().split(SPACE);
+
         if (
           message.channelId === discordCommandsChannelId &&
           message.content.startsWith(DISCORD_COMMAND_PREFIX)
         ) {
-          const parts = message.content.trim().split(SPACE);
           if (parts.length > 0) {
             const command = parts[0]
               .substring(DISCORD_COMMAND_PREFIX.length)
               .toLowerCase();
             this.onCommandMessage(command, parts.slice(1));
+          }
+        } else if (
+          message.channelId === discordChannelIdBg3 &&
+          parts.length > 0
+        ) {
+          const command = parts[0].toLowerCase();
+          log(command);
+          log(parts);
+          switch (command) {
+            case "r":
+            case "roll":
+              if (parts.length > 1) {
+                const value = Number(parts[1]);
+                const roll =
+                  Math.floor(Math.random() * (isNaN(value) ? 100 : value - 1)) +
+                  1;
+                const author = message.author.displayName;
+                log(`${author} lance son dé et fait ${roll} !`);
+                this.sendBg3Message(
+                  discordChannelIdBg3,
+                  `${author} lance son dé et fait ${roll} !`,
+                );
+              }
+
+              break;
           }
         }
       });
@@ -165,6 +199,13 @@ export default class DiscordClient extends Client {
 
   public sendMessage(channelId: any, message: string) {
     const channel = this.getChannel(channelId);
+    if (channel?.isTextBased()) {
+      channel.send(message);
+    }
+  }
+
+  public sendBg3Message(channelId: any, message: string) {
+    const channel = this.getBg3Channel(channelId);
     if (channel?.isTextBased()) {
       channel.send(message);
     }

@@ -72,6 +72,9 @@ export const discordCommandsChannelId =
   discordConfig["commands-channel-id"] ?? undefined;
 export const discordRoleId = discordConfig["role-id"] ?? undefined;
 
+export const discordServerIdBg3 = discordConfig["server-id-bg3"] ?? undefined;
+export const discordChannelIdBg3 = discordConfig["channel-id-bg3"] ?? undefined;
+
 function loadSpecificConfig(configKind: string): any {
   const jsonFile = `config${configKind}.json`;
   const configPath = CONFIGS_FOLDER + jsonFile;
