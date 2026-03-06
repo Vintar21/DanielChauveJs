@@ -192,9 +192,10 @@ export default class Counter {
       SqlManager.updateCounter(this.name, this.value, this.categoryName);
     }
 
+    const obsManager = MainApp.getObsManager();
     // Update OBS
-    if (this.useObsSource && this.obsSourceName) {
-      MainApp.getObsManager().updateObsTextSource(
+    if (obsManager && this.useObsSource && this.obsSourceName) {
+      obsManager.updateObsTextSource(
         this.obsSourceName,
         formatCounterMessage(this.obsTextSourceTemplate, this).toString(),
       );

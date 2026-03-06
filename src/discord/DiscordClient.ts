@@ -6,7 +6,7 @@ import {
   GatewayIntentBits,
   GuildBasedChannel,
 } from "discord.js";
-import { MainApp, send } from "../app";
+import { MainApp } from "../app";
 import {
   discordAnnounceChannelId,
   discordChannelIdBg3,
@@ -27,6 +27,7 @@ import {
   TWITCH_ARGUMENT,
   twitchEmbedTemplate,
 } from "./DiscordConstants";
+import TwitchClient from "../twitch/TwitchClient";
 
 export default class DiscordClient extends Client {
   private twitchAnnouncesChannel: GuildBasedChannel;
@@ -49,9 +50,10 @@ export default class DiscordClient extends Client {
   }
 
   private async getStreamCategoryName(): Promise<string> {
-    const broadcasterResolved = await MainApp.getBroadcaster();
-    return MainApp.broadcasterApp.api.channels
-      .getChannelInfoById(broadcasterResolved.id)
+    const twitchClient = MainApp.getTwitchClient();
+    return twitchClient
+      .getChannelsApi()
+      .getChannelInfoById(twitchClient.getBroadcasterId())
       .then((channel) => channel.gameName);
   }
 
@@ -146,7 +148,7 @@ export default class DiscordClient extends Client {
           const channelId = args[0].toLowerCase().replaceAll(/[<>#]/g, EMPTY);
           const message = args.slice(1).join(SPACE);
           if (channelId === TWITCH_ARGUMENT) {
-            send(message);
+            TwitchClient.send(message);
           } else {
             const channel = this.getChannel(channelId);
             if (channel && channel?.isSendable()) {
@@ -156,7 +158,7 @@ export default class DiscordClient extends Client {
         }
         break;
       case "live":
-        const broadcaster = MainApp.getBroadcaster();
+        const broadcaster = MainApp.getTwitchClient().getBroadcaster();
         const stream = await this.getCurrentStream(broadcaster);
         this.sendLiveAnounce(stream, broadcaster);
         break;

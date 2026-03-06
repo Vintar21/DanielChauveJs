@@ -7,7 +7,7 @@ import {
   formatCounterMessage,
 } from "../../commands/CommandsUtils";
 import SqlManager from "../../database/SqlManager";
-import User from "../../utils/user/User";
+import { User } from "../../utils/user/User";
 import { getGreaterRole } from "../../utils/RoleUtils";
 import { MINUS, PLUS } from "../../utils/StringConstants";
 import CounterCommandOptions from "../CounterCommanOptions";
@@ -194,7 +194,11 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
   }
 
   private async canModifyCounter(event: MessageEvent): Promise<boolean> {
-    const role = await getGreaterRole(event.getUser(), MainApp.broadcasterApp);
+    const twitchClient = MainApp.getTwitchClient();
+    const role = await getGreaterRole(
+      event.getUser(),
+      twitchClient.getBroadcasterApp(),
+    );
     return !this.options.counterModificationPermissions.isUnallowed(role);
   }
 

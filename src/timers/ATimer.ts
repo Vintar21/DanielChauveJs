@@ -1,10 +1,10 @@
-import { send } from "../app";
 import ACommand from "../commands/ACommand";
 import { NO_MSG } from "../commands/CommandsUtils";
 import { timerUser } from "../utils/user/UserConstants";
 import { EMPTY } from "../utils/StringConstants";
 import { TimerMessage } from "./TimerMessage";
 import TimerOptions from "./TimerOptions";
+import TwitchClient from "../twitch/TwitchClient";
 export default abstract class ATimer {
   protected options: TimerOptions;
   protected timerFinished: boolean = false;
@@ -53,7 +53,7 @@ export default abstract class ATimer {
       if (messageToSend instanceof ACommand) {
         messageToSend.execute(timerUser, NO_MSG, true);
       } else if (messageToSend !== EMPTY) {
-        send(messageToSend);
+        TwitchClient.send(messageToSend);
       }
 
       this.messages = [messageToSend].concat(this.messages);

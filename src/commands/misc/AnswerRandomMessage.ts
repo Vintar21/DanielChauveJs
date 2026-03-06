@@ -1,5 +1,5 @@
 import { MessageEvent } from "@twurple/easy-bot/lib";
-import User from "../../utils/user/User";
+import { User } from "../../utils/user/User";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getDefaultRolesPermissions, Role, Roles } from "../../utils/RoleUtils";
 import CommandOptions from "../CommandOptions";

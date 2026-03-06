@@ -1,7 +1,7 @@
 import { Role } from "../RoleUtils";
 import { timerUser, undefinedUser } from "./UserConstants";
 
-export default class User {
+export class User {
   public username: string;
   public userId: UserId;
   public role: Promise<Role>;

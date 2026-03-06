@@ -9,7 +9,7 @@ import {
 } from "../../utils/MediaUtils";
 import { getGreaterRole, Roles } from "../../utils/RoleUtils";
 import { AT, EMPTY, SPACE } from "../../utils/StringConstants";
-import User, { isNotAUser, UserId } from "../../utils/user/User";
+import { isNotAUser, User, UserId } from "../../utils/user/User";
 import { undefinedUser } from "../../utils/user/UserConstants";
 import CommandOptions from "../CommandOptions";
 import { FOLLOWER_COUNT_MESSAGE, NO_MSG } from "../CommandsUtils";
@@ -78,10 +78,10 @@ export default class RollCommand extends AArgumentsCommand {
 
   private async getCustomMessage(value: number, user: User): Promise<String> {
     // Not sure if we should have direct access to bot, and not this way
-    var followerCount: number =
-      await MainApp.broadcasterApp.api.channels.getChannelFollowerCount(
-        MainApp.getBroadcaster().id,
-      );
+    const twitchClient = MainApp.getTwitchClient();
+    var followerCount: number = await twitchClient
+      .getChannelsApi()
+      .getChannelFollowerCount(twitchClient.getBroadcasterId());
     if (value === followerCount) {
       return SPACE + FOLLOWER_COUNT_MESSAGE;
     }
@@ -128,11 +128,11 @@ export default class RollCommand extends AArgumentsCommand {
     event: MessageEvent,
     ignoreCooldowns: boolean,
   ): Promise<void> {
+    const twitchClient = MainApp.getTwitchClient();
     const userUseCount = this.usersUseCount.get(user.userId) || 0;
-
     // Manually limit to 1 roll per user
     if (
-      user.userId !== Number(MainApp.getBroadcasterId()) &&
+      user.userId !== Number(twitchClient.getBroadcasterId()) &&
       !ignoreCooldowns &&
       userUseCount >= RollCommand.ROLL_MAX_USE_PER_USER
     ) {
@@ -203,10 +203,12 @@ export default class RollCommand extends AArgumentsCommand {
     if (args.length === 0) {
       return this.executeNoArg(user, event, ignoreCooldowns);
     } else {
+      const twitchClient = MainApp.getTwitchClient();
+
       if (args[0] === RESET_ARG) {
         const role = await getGreaterRole(
-          MainApp.broadcasterApp.api.users.getUserById(user.userId),
-          MainApp.broadcasterApp,
+          twitchClient.getUsersApi().getUserById(user.userId),
+          twitchClient.getBroadcasterApp(),
         );
         if (role === Roles.BROADCASTER || role === Roles.MOD) {
           return resetMvpCommand.execute(user, event, true);
@@ -225,9 +227,9 @@ export default class RollCommand extends AArgumentsCommand {
           const validUsername: boolean = /^[a-z0-9_]{3,}$/gi.test(givenUser);
           log(validUsername);
           const possibleUser = validUsername
-            ? await MainApp.broadcasterApp.api.users.getUserByName(
-                args[1].toString().replaceAll(AT, EMPTY),
-              )
+            ? await twitchClient
+                .getUsersApi()
+                .getUserByName(args[1].toString().replaceAll(AT, EMPTY))
             : undefined;
           if (!possibleUser || possibleUser === null) {
             this.replyOrSend(

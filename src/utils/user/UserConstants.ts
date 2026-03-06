@@ -1,4 +1,4 @@
-import User from "./User";
+import { User } from "./User";
 
 export const undefinedUser: User = new User(undefined, undefined, undefined);
 export const timerUser: User = new User(undefined, undefined, undefined);

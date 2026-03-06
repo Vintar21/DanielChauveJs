@@ -2,7 +2,7 @@ import { MessageEvent } from "@twurple/easy-bot";
 import { MainApp } from "../../../app";
 import { getDefaultRolesPermissions, Roles } from "../../../utils/RoleUtils";
 import { EMPTY } from "../../../utils/StringConstants";
-import User from "../../../utils/user/User";
+import { User } from "../../../utils/user/User";
 import CommandOptions from "../../CommandOptions";
 import NoPrefixSimpleCommand from "../../templates/NoPrefixSimpleCommand";
 
@@ -27,7 +27,8 @@ export default class BanBestViewersBotCommand extends NoPrefixSimpleCommand {
     ignoreCooldowns?: boolean,
   ): void {
     // if isFirstMessage
-    MainApp.broadcasterApp.api.moderation.banUser(MainApp.getBroadcaster(), {
+    const twitchClient = MainApp.getTwitchClient();
+    twitchClient.getModerationApi().banUser(twitchClient.getBroadcaster(), {
       reason: "Best viewer scam",
       user: event.userId,
     });

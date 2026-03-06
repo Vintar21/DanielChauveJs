@@ -1,7 +1,7 @@
 import { HelixPrediction } from "@twurple/api/lib";
 import { MessageEvent } from "@twurple/easy-bot";
 import { MainApp } from "../../app";
-import User from "../../utils/user/User";
+import { User } from "../../utils/user/User";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import { SPACE } from "../../utils/StringConstants";
@@ -37,8 +37,10 @@ export default class PredictionCommand extends AArgumentsCommand {
     event: MessageEvent,
     ignoreCooldowns: boolean,
   ) {
-    MainApp.broadcasterApp.api.predictions
-      .createPrediction(MainApp.getBroadcaster().id, {
+    const twitchClient = MainApp.getTwitchClient();
+    twitchClient
+      .getPredictionApi()
+      .createPrediction(twitchClient.getBroadcasterId(), {
         autoLockAfter: autoLockTime,
         title: predictionTitle,
         outcomes: outcomes,
@@ -57,10 +59,11 @@ export default class PredictionCommand extends AArgumentsCommand {
   }
 
   private async getLastPrediction(): Promise<HelixPrediction> {
-    const predictions =
-      await MainApp.broadcasterApp.api.predictions.getPredictions(
-        MainApp.getBroadcaster().id,
-      );
+    const twitchClient = MainApp.getTwitchClient();
+
+    const predictions = await twitchClient
+      .getPredictionApi()
+      .getPredictions(twitchClient.getBroadcasterId());
     return predictions?.data?.length > 0 ? predictions?.data[0] : undefined;
   }
 
@@ -89,11 +92,16 @@ export default class PredictionCommand extends AArgumentsCommand {
     ignoreCooldowns: boolean,
   ): boolean {
     if (args.length === 1) {
+      const twitchClient = MainApp.getTwitchClient();
       switch (args[0].toLowerCase()) {
         case CANCEL_PREDICTION:
           if (!this.isLastPredictionFinished(lastPrediction)) {
-            MainApp.broadcasterApp.api.predictions
-              .cancelPrediction(MainApp.getBroadcaster().id, lastPrediction.id)
+            twitchClient
+              .getPredictionApi()
+              .cancelPrediction(
+                twitchClient.getBroadcasterId(),
+                lastPrediction.id,
+              )
               .then(() => {
                 this.replyOrSend(
                   user,
@@ -107,8 +115,12 @@ export default class PredictionCommand extends AArgumentsCommand {
         case LOCK_PREDICTION:
           this.getLastPrediction()?.then((lastPrediction) => {
             if (this.isLastPredictionActive(lastPrediction)) {
-              MainApp.broadcasterApp.api.predictions
-                .lockPrediction(MainApp.getBroadcaster().id, lastPrediction.id)
+              twitchClient
+                .getPredictionApi()
+                .lockPrediction(
+                  twitchClient.getBroadcasterId(),
+                  lastPrediction.id,
+                )
                 .then(() => {
                   this.replyOrSend(
                     user,

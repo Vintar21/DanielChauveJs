@@ -1,7 +1,8 @@
 import { MessageEvent } from "@twurple/easy-bot/lib";
-import { reply, send } from "../app";
+import { MainApp } from "../app";
+import TwitchClient from "../twitch/TwitchClient";
 import { AT, SPACE } from "../utils/StringConstants";
-import User, { isNotAUser, UserId } from "../utils/user/User";
+import { isNotAUser, User, UserId } from "../utils/user/User";
 import CommandOptions from "./CommandOptions";
 import { formatCommandMessage, Trigger, UNLIMITED } from "./CommandsUtils";
 import ICommand from "./ICommand";
@@ -33,15 +34,16 @@ export default abstract class ACommand implements ICommand {
     message: String,
     formatMessage: boolean = false,
   ) {
+    const twitchClient: TwitchClient = MainApp.getTwitchClient();
     message = formatMessage ? formatCommandMessage(message, event) : message;
     if (this.canReplyToUser(event)) {
-      reply(message, event);
+      twitchClient.reply(message, event);
     } else if (this.options.sendAsAnnounce) {
-      send(message, true);
+      TwitchClient.send(message, true);
     } else if (isNotAUser(user)) {
-      send(message);
+      TwitchClient.send(message);
     } else {
-      send(`${AT}${user.username} ${message}`);
+      TwitchClient.send(`${AT}${user.username} ${message}`);
     }
 
     if (!ignoreCooldowns) {

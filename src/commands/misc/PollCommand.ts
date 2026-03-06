@@ -3,7 +3,7 @@ import { MessageEvent } from "@twurple/easy-bot";
 import { EventSubChannelPollEndEvent } from "@twurple/eventsub-base/lib/events/EventSubChannelPollEndEvent";
 import { EventSubWsListener } from "@twurple/eventsub-ws";
 import { MainApp } from "../../app";
-import User from "../../utils/user/User";
+import { User } from "../../utils/user/User";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import { SPACE } from "../../utils/StringConstants";
@@ -43,13 +43,14 @@ export default class PollCommand extends AArgumentsCommand {
   }
 
   public initListener() {
+    const twitchClient = MainApp.getTwitchClient();
     if (!this.pollListener) {
       this.pollListener = new EventSubWsListener({
-        apiClient: MainApp.broadcasterApp.api,
+        apiClient: twitchClient.getApi(),
       });
       this.pollListener.start();
       this.pollListener.onChannelPollEnd(
-        MainApp.getBroadcaster().id,
+        twitchClient.getBroadcasterId(),
         this.onPollEnded,
       );
     }
@@ -93,8 +94,10 @@ export default class PollCommand extends AArgumentsCommand {
         duration,
       };
     }
-    MainApp.broadcasterApp.api.polls
-      .createPoll(MainApp.getBroadcaster().id, pollData)
+    const twitchClient = MainApp.getTwitchClient();
+    twitchClient
+      .getPollsApi()
+      .createPoll(twitchClient.getBroadcasterId(), pollData)
       .then(() => {
         log(`Poll: ${title} [${choices}] | duration: ${duration}s`);
         this.replyOrSend(
@@ -107,9 +110,10 @@ export default class PollCommand extends AArgumentsCommand {
   }
 
   private async getLastPoll(): Promise<HelixPoll | undefined> {
-    const polls = await MainApp.broadcasterApp.api.polls.getPolls(
-      MainApp.getBroadcaster().id,
-    );
+    const twitchClient = MainApp.getTwitchClient();
+    const polls = await twitchClient
+      .getPollsApi()
+      .getPolls(twitchClient.getBroadcasterId());
     return polls?.data?.length > 0 ? polls?.data[0] : undefined;
   }
 
@@ -139,12 +143,14 @@ export default class PollCommand extends AArgumentsCommand {
     ignoreCooldowns: boolean,
   ): boolean {
     if (args.length === 1) {
+      const twitchClient = MainApp.getTwitchClient();
       switch (args[0].toLowerCase()) {
         case CANCEL_POLL:
         case END_POLL:
           if (!this.isLastPollFinished(lastPoll)) {
-            MainApp.broadcasterApp.api.polls
-              .endPoll(MainApp.getBroadcaster().id, lastPoll.id)
+            twitchClient
+              .getPollsApi()
+              .endPoll(twitchClient.getBroadcasterId(), lastPoll.id)
               .then(() => {
                 this.replyOrSend(
                   user,

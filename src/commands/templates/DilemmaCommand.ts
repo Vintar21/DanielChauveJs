@@ -1,9 +1,8 @@
 import MultipleAnswersCommand from "./MultipleAnswersCommand";
 import CommandOptions from "../CommandOptions";
-import User from "../../utils/user/User";
+import { User } from "../../utils/user/User";
 import { MessageEvent } from "@twurple/easy-bot";
 import { EMPTY, SPACE } from "../../utils/StringConstants";
-import { concatTextWithPunctuation } from "../../utils/CommonUtils";
 import { Placeholders } from "../CommandsUtils";
 
 export default class DilemmaCommand extends MultipleAnswersCommand {

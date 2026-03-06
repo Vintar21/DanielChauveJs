@@ -1,5 +1,5 @@
 import { MessageEvent } from "@twurple/easy-bot/lib";
-import User from "../../utils/user/User";
+import { User } from "../../utils/user/User";
 import { undefinedUser } from "../../utils/user/UserConstants";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";

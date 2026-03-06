@@ -1,7 +1,7 @@
 import { Bot } from "@twurple/easy-bot";
 import { EventSubChannelRedemptionAddEvent } from "@twurple/eventsub-base/lib/events/EventSubChannelRedemptionAddEvent";
 import { EventSubWsListener } from "@twurple/eventsub-ws";
-import { MainApp, send } from "../app";
+import { MainApp } from "../app";
 import { rollCommand } from "../commands/misc/AllMiscCommands";
 import { allObsCameraEffects } from "../obs/camera-effects/AllObsCameraEffects";
 import AObsCameraEffect from "../obs/camera-effects/AObsCameraEffect";
@@ -11,7 +11,7 @@ import ObsManager from "../obs/ObsManager";
 import { choose, log } from "../utils/CommonUtils";
 import { CHILD_LAUGH_SOUND, playSound } from "../utils/MediaUtils";
 import { getGreaterRole, Role } from "../utils/RoleUtils";
-import User from "../utils/user/User";
+import { User } from "../utils/user/User";
 import {
   CAMERA_EFFECT_REWARD_ID,
   CHILD_LAUGH_REWARD_ID,
@@ -23,6 +23,7 @@ import {
   TIKTOK_REWARD_ID,
   TOCTOC_REWARD_ID,
 } from "./ChannelPointsConstants";
+import TwitchClient from "../twitch/TwitchClient";
 
 export default class ChannelPointsListener {
   private static listener: EventSubWsListener;
@@ -31,24 +32,24 @@ export default class ChannelPointsListener {
   constructor() {}
 
   public static async getInstanceAndInit(
-    bot: Bot,
+    twitchClient: TwitchClient,
   ): Promise<ChannelPointsListener> {
     var instance = ChannelPointsListener.instance;
     if (instance === undefined) {
       instance = new ChannelPointsListener();
       ChannelPointsListener.listener = new EventSubWsListener({
-        apiClient: bot.api,
+        apiClient: twitchClient.getApi(),
       });
-      await instance.init();
+      await instance.init(twitchClient.getBroadcasterId());
     }
     return instance;
   }
 
   // Use getInstanceAndInit instead
-  protected async init(): Promise<void> {
+  protected async init(broadcasterId: string): Promise<void> {
     ChannelPointsListener.listener.start();
     ChannelPointsListener.listener.onChannelRedemptionAdd(
-      MainApp.getBroadcaster().id,
+      broadcasterId,
       this.onRedemptionRedeemed,
     );
   }
@@ -72,12 +73,12 @@ export default class ChannelPointsListener {
       .then((scene) => {
         const sceneName = scene?.currentProgramSceneName;
         if (sceneName && noCamScenes.includes(sceneName)) {
-          send(
+          TwitchClient.send(
             `@${event.userName} espèce de voyeureuse ! Non on ne change pas la scène s'il y a pas la caméra affichée !`,
           );
           // TODO: refund if possible
         } else if (sceneName === TIKTOK_SCENE_NAME) {
-          send(
+          TwitchClient.send(
             `Mais ${event.userName}... On est déjà sur la scène... Les brainrots ont fait des dommages...`,
           );
           // TODO: refund if possible
@@ -101,9 +102,10 @@ export default class ChannelPointsListener {
     const username: string = event.userName;
     const userId: number = parseInt(event.userId);
     const input: string = event.input;
+    const twitchClient: TwitchClient = MainApp.getTwitchClient();
     const role: Promise<Role> = getGreaterRole(
       event.getUser(),
-      MainApp.broadcasterApp,
+      twitchClient.getBroadcasterApp(),
     );
     log(`Redemption event received: ${event.id} by ${username} (${userId})`);
     switch (event.rewardId) {

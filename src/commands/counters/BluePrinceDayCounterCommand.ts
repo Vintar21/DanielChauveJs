@@ -4,7 +4,7 @@ import { Placeholders } from "../../commands/CommandsUtils";
 import Counter from "../../counters/Counter";
 import { minutes } from "../../utils/CommonUtils";
 import { getDefaultRolesPermissions, Roles } from "../../utils/RoleUtils";
-import User from "../../utils/user/User";
+import { User } from "../../utils/user/User";
 import CounterCommandOptions from "../CounterCommanOptions";
 import ACounterCommand from "../templates/ACounterCommand";
 
@@ -52,32 +52,32 @@ export default class BluePrinceDayCounterCommand extends ACounterCommand {
   }
 
   private addMarker(): void {
-    MainApp.getBroadcaster()
+    const twitchClient = MainApp.getTwitchClient();
+    twitchClient
+      .getBroadcaster()
       .getStream()
       .then((stream) => {
         if (stream && stream !== null) {
-          MainApp.botApp.api.streams.createStreamMarker(
-            MainApp.getBroadcasterId(),
-            `Jour ${this.counter.getValue()}`,
-          );
+          twitchClient.createMarker(`Jour ${this.counter.getValue()}`);
         }
       });
   }
 
   public updateTitle(): void {
-    MainApp.broadcasterApp.api.channels
-      .getChannelInfoById(MainApp.getBroadcasterId())
+    const twitchClient = MainApp.getTwitchClient();
+    twitchClient
+      .getChannelsApi()
+      .getChannelInfoById(twitchClient.getBroadcasterId())
       .then((channelInfo) => {
         if (channelInfo && channelInfo !== null) {
-          MainApp.broadcasterApp.api.channels.updateChannelInfo(
-            MainApp.getBroadcasterId(),
-            {
+          twitchClient
+            .getChannelsApi()
+            .updateChannelInfo(twitchClient.getBroadcasterId(), {
               title: channelInfo.title.replaceAll(
                 /\bJour \d+/gi,
                 `Jour ${this.counter.getValue()}`,
               ),
-            },
-          );
+            });
         }
       });
   }

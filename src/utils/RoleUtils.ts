@@ -116,7 +116,8 @@ export async function getGreaterRole(
 ): Promise<Role> {
   var role: Role;
   const user = await promisedUser;
-  const broadcasterUser = await MainApp.getBroadcaster();
+  const twitchClient = MainApp.getTwitchClient();
+  const broadcasterUser = await twitchClient.getBroadcaster();
 
   if (isBroadcaster(broadcasterUser, user)) {
     role = Roles.BROADCASTER;
@@ -141,7 +142,8 @@ export async function getUserRoles(
 ): Promise<Role[]> {
   const roles: Role[] = [];
   const user = await promisedUser;
-  const broadcasterUser = await MainApp.getBroadcaster();
+  const twitchClient = MainApp.getTwitchClient();
+  const broadcasterUser = await twitchClient.getBroadcaster();
 
   if (isBroadcaster(broadcasterUser, user)) {
     roles.push(Roles.BROADCASTER);
