@@ -74,6 +74,7 @@ export default class DiscordClient extends Client {
       this.twitchPollResultsChannel = this.getChannel(discordPollsChannelId);
 
       if (this.twitchAnnouncesChannel.isTextBased()) {
+        // fetch like 5 messages, filter the ones of the bot and then take the last (or first depending the order)
         this.twitchAnnouncesChannel.messages
           .fetch({ limit: 1 })
           .then((messages) => {
