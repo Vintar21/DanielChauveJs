@@ -398,6 +398,17 @@ Donne le lien de ma chaîne YouTube.
 
 ## Discord
 
+### Add roll message
+
+- `/addrollmessage <value> <message>`
+
+**Channel:** 👨‍🦲daniel
+
+**Rôles:** _Aucun pour l'instant_
+
+Ajoute un message custom pour le résultat du `!roll` correspondant. La valeur doit se trouver entre 1 et 1000 et le message ne peut pas être vide.
+_N.B.: Plus tard il y aura la possibilité d'ajouter des messages plus ou moins probable_
+
 ### Live
 
 - `/live`
@@ -409,8 +420,6 @@ Donne le lien de ma chaîne YouTube.
 Force le post d'une annonce de live dans le channel dédié.
 
 ### Say
-
-**Channel:**
 
 - `/say twitch <message>`
 
