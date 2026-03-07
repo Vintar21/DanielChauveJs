@@ -14,6 +14,7 @@ import {
   StaticAuthProvider,
 } from "@twurple/auth";
 import { Bot, MessageEvent, RaidEvent } from "@twurple/easy-bot";
+import { EventSubStreamOnlineEvent } from "@twurple/eventsub-base/lib/events/EventSubStreamOnlineEvent";
 import { EventSubWsListener } from "@twurple/eventsub-ws";
 import { MainApp } from "../app";
 import ChannelPointsListener from "../channel-points-rewards/ChannelPointsListener";
@@ -131,42 +132,11 @@ export default class TwitchClient {
         apiClient: this.getApi(),
       });
 
+      // Can I use same listener for everything ?
       onStreamListener.start();
       onStreamListener.onStreamOnline(
-        TwitchClient.broadcaster.id,
-        async (event) => {
-          log("Stream Online !");
-          if (!MainApp.obsManager.isReady()) {
-            await MainApp.obsManager.connect();
-          }
-          // In fact, no need to reaffect CommandManager
-          TwitchClient.commandsManager = CommandsManager.getInstanceAndInit();
-          TwitchClient.raidersIdWaiting = [];
-          TwitchClient.shoutedOutIds.clear();
-
-          //const broadcaster = MainApp.getBroadcaster();
-          var stream = await event.getStream();
-          if (stream === null) {
-            log("No current stream via twitch API");
-            setTimeout(async () => {
-              log("Try resending live announce");
-              MainApp.discordClient.sendLiveAnounce(
-                await TwitchClient.broadcaster.getStream(),
-                TwitchClient.broadcaster,
-              );
-            }, minutes(1));
-          } else {
-            log("Sending live announce directly");
-            MainApp.discordClient.sendLiveAnounce(
-              stream,
-              TwitchClient.broadcaster,
-            );
-
-            TwitchClient.send(
-              "Je suis toujours en phase de test, n'hésitez pas à me mettre à l'épreuve !",
-            );
-          }
-        },
+        this.getBroadcasterId(),
+        this.onStreamOnline,
       );
     }
     log("Twitch Client ready !");
@@ -322,15 +292,46 @@ export default class TwitchClient {
     ) {
       TwitchClient.shoutedOutIds.add(event.userId);
       TwitchClient.lastShoutout = Date.now();
-      this.shoutout(event.userId);
+      TwitchClient.INSTANCE.shoutout(event.userId);
       return;
     }
 
     const timeSinceLastShoutout = Date.now() - TwitchClient.lastShoutout;
     TwitchClient.raidersIdWaiting.push(event.userId);
     setTimeout(
-      this.futureShoutout,
+      TwitchClient.INSTANCE.futureShoutout,
       TwitchClient.SHOUTOUT_COOLDOWN - timeSinceLastShoutout,
     );
+  }
+
+  private async onStreamOnline(event: EventSubStreamOnlineEvent) {
+    log("Stream Online !");
+    if (!MainApp.obsManager.isReady()) {
+      await MainApp.obsManager.connect();
+    }
+    // In fact, no need to reaffect CommandManager
+    TwitchClient.commandsManager = CommandsManager.getInstanceAndInit();
+    TwitchClient.raidersIdWaiting = [];
+    TwitchClient.shoutedOutIds.clear();
+
+    //const broadcaster = MainApp.getBroadcaster();
+    var stream = await event.getStream();
+    if (stream === null) {
+      log("No current stream via twitch API");
+      setTimeout(async () => {
+        log("Try resending live announce");
+        MainApp.discordClient.sendLiveAnounce(
+          await TwitchClient.broadcaster.getStream(),
+          TwitchClient.broadcaster,
+        );
+      }, minutes(1));
+    } else {
+      log("Sending live announce directly");
+      MainApp.discordClient.sendLiveAnounce(stream, TwitchClient.broadcaster);
+
+      TwitchClient.send(
+        "Je suis toujours en phase de test, n'hésitez pas à me mettre à l'épreuve !",
+      );
+    }
   }
 }

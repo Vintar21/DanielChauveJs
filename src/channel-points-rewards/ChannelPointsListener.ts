@@ -1,4 +1,3 @@
-import { Bot } from "@twurple/easy-bot";
 import { EventSubChannelRedemptionAddEvent } from "@twurple/eventsub-base/lib/events/EventSubChannelRedemptionAddEvent";
 import { EventSubWsListener } from "@twurple/eventsub-ws";
 import { MainApp } from "../app";
@@ -8,6 +7,7 @@ import AObsCameraEffect from "../obs/camera-effects/AObsCameraEffect";
 import { COOLDOWN_CAMERA_EFFECT } from "../obs/ObsCameraFilterEffect";
 import { noCamScenes, TIKTOK_SCENE_NAME } from "../obs/ObsConstants";
 import ObsManager from "../obs/ObsManager";
+import TwitchClient from "../twitch/TwitchClient";
 import { choose, log } from "../utils/CommonUtils";
 import { CHILD_LAUGH_SOUND, playSound } from "../utils/MediaUtils";
 import { getGreaterRole, Role } from "../utils/RoleUtils";
@@ -23,7 +23,6 @@ import {
   TIKTOK_REWARD_ID,
   TOCTOC_REWARD_ID,
 } from "./ChannelPointsConstants";
-import TwitchClient from "../twitch/TwitchClient";
 
 export default class ChannelPointsListener {
   private static listener: EventSubWsListener;
