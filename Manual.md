@@ -42,6 +42,16 @@ Non il n'y a pas de piège :)
 
 Répond au dilemme type "C'est un 10 mais...".
 
+### Chaise
+
+- `!chaise` `!clip-chaise`
+
+**Rôles:** N'importe qui
+
+**Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
+
+Renvoie le lien du clip de la chaise.
+
 ### Code ami
 
 - `!codeami`
@@ -82,6 +92,16 @@ Précise où retrouver ma config.
 
 Crédite toustes les artistes qui ont participé à la DA de la chaîne.
 
+### Daniel
+
+- `!daniel` `!danielchauve`
+
+**Rôles:** N'importe qui
+
+**Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
+
+C'est Daniel.
+
 ### Discord
 
 - `!discord`
@@ -92,6 +112,16 @@ Crédite toustes les artistes qui ont participé à la DA de la chaîne.
 
 Donne le lien d'invitation du Discord.
 
+### Docroll
+
+- `!docroll` `!docsheet` `!rolldoc` `!rollmessage` `!rollsheet`
+
+**Rôles:** N'importe qui
+
+**Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
+
+Donne le lien du GSheet pour proposer des messages personnalisés pour le `!roll`.
+
 ### Git
 
 - `!git` `!github`
@@ -101,6 +131,16 @@ Donne le lien d'invitation du Discord.
 **Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
 
 Donne le lien de mon Git (où se trouve notamment le code de Daniel).
+
+### Jeu à chier
+
+- `!jeuàchier`
+
+**Rôles:** N'importe qui
+
+**Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
+
+Pour quand j'insulte trop le jeu.
 
 ### Jour
 
@@ -175,6 +215,16 @@ Modifie et donne le nouveau nombre de morts sur le jeu/la catégorie actuelle ou
 **Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
 
 Donne un lien kadgar pour regarder toutes les POVs des streameureuses.
+
+### Pb
+
+- `!pb` `!pbceleste` `!pb-supermarket` `!speedrun.com`
+
+**Rôles:** N'importe qui
+
+**Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
+
+Donne mes PBs sur les jeux que je speedrun et le lien vers mon profil speedrun.com.
 
 ### Poll
 
@@ -262,6 +312,40 @@ Si la durée est de 30 ou moins, elle sera considérée ccomme étant donné en 
 
 Donne le lien vers le site et l'extension pour afficher ses pronoms sur le chat Twitch.
 
+### Roll
+
+- `!roll`
+
+**Rôles:** N'importe qui
+
+**Cooldowns:** 1 fois par utilisateur par stream
+
+Lance un dé et retourne la valeur entre 1 et 1000. Si la valeur est la plus haute tirée à ce stream, l'utilisateur devient le MVP et est affiché sur l'overlay OBS.
+
+- `!roll stat`
+
+**Rôles:** N'importe qui
+
+**Cooldowns:** 30 secondes
+
+Retourne la moyenne de tous les `!roll` effectués par l'utilisateur s'il y en a.
+
+- `!roll stat <username>`
+
+**Rôles:** N'importe qui
+
+**Cooldowns:** 30 secondes
+
+Retourne la moyenne de tous les `!roll` effectués par `<username>` s'il y en a.
+
+- `!roll reset`
+
+**Rôles:** Modérateurs
+
+**Cooldowns:** 30 secondes
+
+Reset les cooldowns et la valeur du MVP pour la commande `!roll` pour ce stream.
+
 ### Réseaux sociaux
 
 - `!rs` `!rezo` `!instagram` `!bluesky` `!threads` `!x` `!twitter`
@@ -282,6 +366,26 @@ Donne le liens de mes résaux sociaux.
 
 Répond à un dilemme type "Smash or Pass". Merci de ne pas le faire en utilisant des pseudos du chat si vous ne les connaissez pas suffisamment bien.
 
+### Tutos
+
+- `!tutos` `!tutos-celeste` `!tutosany%` `!tutos-speedrun`
+
+**Rôles:** N'importe qui
+
+**Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
+
+Donne le lien vers ma playlist de tutos de speedrun Celeste.
+
+### Vocab
+
+- `!vocab` `!vocabulary` `!vocab-celeste`
+
+**Rôles:** N'importe qui
+
+**Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
+
+Donne le lien vers le fandom Celeste qui liste et explique les termes du vocabulaire de speedrun.
+
 ### Youtube
 
 - `!youtube` `!ytb`
@@ -293,6 +397,17 @@ Répond à un dilemme type "Smash or Pass". Merci de ne pas le faire en utilisan
 Donne le lien de ma chaîne YouTube.
 
 ## Discord
+
+### Add roll message
+
+- `/addrollmessage <value> <message>`
+
+**Channel:** 👨‍🦲daniel
+
+**Rôles:** _Aucun pour l'instant_
+
+Ajoute un message custom pour le résultat du `!roll` correspondant. La valeur doit se trouver entre 1 et 1000 et le message ne peut pas être vide.
+_N.B.: Plus tard il y aura la possibilité d'ajouter des messages plus ou moins probable_
 
 ### Live
 
