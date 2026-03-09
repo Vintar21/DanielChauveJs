@@ -105,6 +105,30 @@ export default class DiscordClient extends Client {
               .toLowerCase();
             this.onCommandMessage(command, parts.slice(1));
           }
+        } else if (
+          message.channelId === discordChannelIdBg3 &&
+          parts.length > 0
+        ) {
+          const command = parts[0].toLowerCase();
+          log(command);
+          log(parts);
+          switch (command) {
+            case "r":
+            case "roll":
+              if (parts.length > 1) {
+                const value = Number(parts[1]);
+                const roll =
+                  Math.floor(Math.random() * (isNaN(value) ? 100 : value - 1)) +
+                  1;
+                const author = message.author.displayName;
+                this.sendBg3Message(
+                  discordChannelIdBg3,
+                  `${author} lance son dé et fait un magnifique ${roll} !`,
+                );
+              }
+
+              break;
+          }
         }
       });
     });

@@ -20,10 +20,22 @@ import QuadHdCommand from "./simple/QuadHdCommand";
 import SocialMediasCommand from "./simple/SocialMediasCommand";
 import SwitchFriendCodeCommand from "./simple/SwitchFriendCodeCommand";
 import YoutubeCommand from "./simple/YoutubeCommand";
+import CthulhuCommand from "./simple/jdr/CthulhuCommand";
+import GianniCommand from "./simple/jdr/GianniCommand";
+import GustaveCommand from "./simple/jdr/GustaveCommand";
+import MarlaCommand from "./simple/jdr/MarlaCommand";
+import MartaCommand from "./simple/jdr/MartaCommand";
+import MichelCommand from "./simple/jdr/MichelCommand";
+import PeterCommand from "./simple/jdr/PeterCommand";
+import SidoniaCommand from "./simple/jdr/SidoniaCommand";
+import SummaryCommand from "./simple/jdr/SummaryCommand";
+import ThelmaCommand from "./simple/jdr/ThelmaCommand";
 import BanBestViewersBotCommand from "./simple/no-prefix/BanBestViewersBotCommand";
 import ACounterCommand from "./templates/ACounterCommand";
 import ICommand from "./templates/ICommand";
 import FakeBanCommand from "./trolls/FakeBanCommand";
+import RollCommand from "./misc/RollCommand";
+import ResetMvpCommand from "./misc/ResetMvpCommand";
 
 // ----- Simple commands -----
 export const switchFriendCodeCommand = new SwitchFriendCodeCommand();
@@ -52,6 +64,38 @@ export const allSimpleCommands: Array<ICommand> = [
   switchFriendCodeCommand,
 ];
 
+// Jdr Commands
+export const gianniCommand: GianniCommand = new GianniCommand();
+export const gustaveCommand: GustaveCommand = new GustaveCommand();
+export const marlaCommand: MarlaCommand = new MarlaCommand();
+export const martaCommand: MartaCommand = new MartaCommand();
+export const michelCommand: MichelCommand = new MichelCommand();
+export const peterCommand: PeterCommand = new PeterCommand();
+export const sidoniaCommand: SidoniaCommand = new SidoniaCommand();
+export const thelmaCommand: ThelmaCommand = new ThelmaCommand();
+
+export const cthulhuCommand: CthulhuCommand = new CthulhuCommand();
+export const summaryCommand: SummaryCommand = new SummaryCommand(true);
+
+export const pjCommands: Array<ICommand> = [
+  gianniCommand,
+  gustaveCommand,
+  marlaCommand,
+  martaCommand,
+  michelCommand,
+  peterCommand,
+  sidoniaCommand,
+  thelmaCommand,
+];
+
+export const allJdrCommands: Array<ICommand> = [
+  ...pjCommands,
+  cthulhuCommand,
+  summaryCommand,
+];
+
+allSimpleCommands.concat(allJdrCommands);
+
 // No prefix commands
 export const banBestViewersBotCommand: BanBestViewersBotCommand =
   new BanBestViewersBotCommand();
@@ -71,6 +115,9 @@ export const allMultipleAnswersCommands: Array<ICommand> = [
 ];
 
 // ----- Misc Commands -----
+export const rollCommand: RollCommand = new RollCommand();
+export const resetMvpCommand: ResetMvpCommand = new ResetMvpCommand();
+
 export const multiCommand: MultiCommand = new MultiCommand();
 export const markerCommand: MarkerCommand = new MarkerCommand();
 export const predictionCommand: PredictionCommand = new PredictionCommand();
@@ -84,6 +131,7 @@ export const answerRandomMessage: AnswerRandomMessage =
   new AnswerRandomMessage();
 
 export const allMiscCommands: Array<ICommand> = [
+  rollCommand,
   markerCommand,
   multiCommand,
   pollCommand,
