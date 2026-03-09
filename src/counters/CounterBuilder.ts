@@ -1,6 +1,11 @@
 import { EMPTY } from "../utils/StringConstants";
 import Counter from "./Counter";
-import { CounterBehaviors, CounterBehavior } from "./CounterUtils";
+import {
+  CounterBehaviors,
+  CounterBehavior,
+  CounterStorage,
+  CounterStorages,
+} from "./CounterUtils";
 
 export default class CounterBuilder {
   private _name: string = EMPTY;
@@ -18,7 +23,8 @@ export default class CounterBuilder {
   private _obsSourceName: string | undefined = undefined;
   private _obsTextSourceTemplate: string | undefined = undefined;
 
-  private isStoredInDatabase: boolean = true;
+  // Change this default value if you don't have a database
+  private storage: CounterStorage = CounterStorages.DATABASE;
 
   private static INSTANCE: CounterBuilder = new CounterBuilder();
 
@@ -96,18 +102,8 @@ export default class CounterBuilder {
     return this;
   }
 
-  public setStoredInDatabase(storedInDatabase: boolean): CounterBuilder {
-    this.isStoredInDatabase = storedInDatabase;
-    return this;
-  }
-
-  public storedInDatabase(): CounterBuilder {
-    this.isStoredInDatabase = true;
-    return this;
-  }
-
-  public notStoredInDatabase(): CounterBuilder {
-    this.isStoredInDatabase = false;
+  public setStorage(storage: CounterStorage): CounterBuilder {
+    this.storage = storage;
     return this;
   }
 
@@ -116,7 +112,11 @@ export default class CounterBuilder {
     this._startValue = counter.getStartValue();
     this._step = counter.getStep();
     this._behavior = counter.getBehavior();
-    this.isStoredInDatabase = counter.getStoredInDatabase();
+    this.storage = counter.getStoredInDatabase()
+      ? CounterStorages.DATABASE
+      : counter.getStoredInGSheet()
+        ? CounterStorages.GSHEET
+        : undefined;
     this._stopValue = counter.getStopValue();
     this._categoryRelated = counter.isCategoryRelated();
     this._categoryName = counter.getCategory();
@@ -136,7 +136,7 @@ export default class CounterBuilder {
       this._startValue,
       this._step,
       this._behavior,
-      this.isStoredInDatabase,
+      this.storage,
       this._stopValue,
       this._categoryRelated,
       this._categoryName,

@@ -1,0 +1,5 @@
+{
+  "private_key": "Your service private key",
+  "client_email": "Your service mail",
+  "spreadsheet_id": "The id of your spreadsheet found in the link of your sheet like: (https://docs.google.com/spreadsheets/d/<ID>/edit?gid=0#gid=0)"
+}

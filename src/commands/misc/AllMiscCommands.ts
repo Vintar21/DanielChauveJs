@@ -7,6 +7,7 @@ import MarkerCommand from "./MarkerCommand";
 import PredictionCommand from "./PredictionCommand";
 import PollCommand from "./PollCommand";
 import FakeBanCommand from "../trolls/FakeBanCommand";
+import ChooseFromGSheetCommand from "./ChooseFromGSheetCommand";
 
 // Commands
 export const rollCommand: RollCommand = new RollCommand();
@@ -16,6 +17,8 @@ export const markerCommand: MarkerCommand = new MarkerCommand();
 export const predictionCommand: PredictionCommand = new PredictionCommand();
 export const pollCommand: PollCommand = new PollCommand();
 export const fakeBanCommand: FakeBanCommand = new FakeBanCommand();
+export const chooseFromGsheetCommand: ChooseFromGSheetCommand =
+  new ChooseFromGSheetCommand();
 
 // In a separate array because it should be added in last !
 export const answerRandomMessage: AnswerRandomMessage =
@@ -30,5 +33,6 @@ export const allMiscCommands: Array<ICommand> = [
   predictionCommand,
   resetMvpCommand,
   fakeBanCommand,
+  chooseFromGsheetCommand,
 ];
 export const lastAddedCommands: Array<ICommand> = [answerRandomMessage];

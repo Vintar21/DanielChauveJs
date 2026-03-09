@@ -1,6 +1,11 @@
 import { MainApp } from "../app";
 import SqlManager from "../database/SqlManager";
-import { CounterBehavior, CounterBehaviors } from "./CounterUtils";
+import {
+  CounterBehavior,
+  CounterBehaviors,
+  CounterStorage,
+  CounterStorages,
+} from "./CounterUtils";
 
 import { formatCounterMessage, Placeholders } from "../commands/CommandsUtils";
 
@@ -23,6 +28,7 @@ export default class Counter {
   protected obsTextSourceTemplate: string;
 
   protected isStoredInDatabase: boolean;
+  protected isStoredInGSheet: boolean;
 
   protected freezed: boolean = false;
 
@@ -31,7 +37,7 @@ export default class Counter {
     start: number,
     step: number,
     behavior: CounterBehavior,
-    storedInDatabase: boolean,
+    storage: CounterStorage,
     stop: number | undefined,
     categoryRelated: boolean,
     categoryName: string | undefined,
@@ -44,7 +50,8 @@ export default class Counter {
     this.value = this.startValue;
     this.step = step;
     this.behavior = behavior;
-    this.isStoredInDatabase = storedInDatabase;
+    this.isStoredInDatabase = storage === CounterStorages.DATABASE;
+    this.isStoredInGSheet = storage === CounterStorages.GSHEET;
     this.stopValue = stop;
     this.categoryRelated = categoryRelated;
     this.categoryName = categoryName;
@@ -184,12 +191,21 @@ export default class Counter {
     return this.isStoredInDatabase;
   }
 
-  public saveCounter() {
-    // Save in file
+  public getStoredInGSheet(): boolean {
+    return this.isStoredInGSheet;
+  }
 
+  // By default create and save a local file if no gsheet nor database
+  public saveCounter() {
     // Save in Database
     if (this.isStoredInDatabase) {
       SqlManager.updateCounter(this.name, this.value, this.categoryName);
+    } else if (this.isStoredInGSheet) {
+      MainApp.getGoogleSheetManager().updateCounter(
+        this.name,
+        this.value,
+        this.categoryName,
+      );
     }
 
     const obsManager = MainApp.getObsManager();
@@ -210,11 +226,23 @@ export default class Counter {
   public async init(): Promise<void> {
     // Look into files or database to get the counter value
 
+    var initialCounterValue: Promise<number> = Promise.resolve(undefined);
+
     // Database
     if (this.isStoredInDatabase) {
-      await SqlManager.getCounterValue(this.name, this.categoryName).then(
-        (value) => (this.value = value ?? this.startValue),
+      initialCounterValue = SqlManager.getCounterValue(
+        this.name,
+        this.categoryName,
+      );
+    } else if (this.isStoredInGSheet) {
+      initialCounterValue = MainApp.getGoogleSheetManager().getCounterValue(
+        this.name,
+        this.categoryName,
       );
     }
+
+    await initialCounterValue.then(
+      (value) => (this.value = value ?? this.startValue),
+    );
   }
 }
