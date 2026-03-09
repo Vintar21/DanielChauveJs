@@ -7,7 +7,7 @@ const options: CommandOptions = new CommandOptions([
   /roll(doc|g?sheet|messages?)/i,
 ]);
 
-const answer: String = `​Vous pouvez proposer des idées de réponses à vos rolls ici : ${docRollLink}`;
+const answer: String = `​Vous pouvez proposer des idées de réponses à vos !roll ici : ${docRollLink}`;
 
 export default class DocRollCommand extends SimpleCommand {
   constructor(enabled: boolean = true) {

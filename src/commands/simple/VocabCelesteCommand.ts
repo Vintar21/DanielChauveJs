@@ -10,7 +10,7 @@ const options: CommandOptions = new CommandOptions([
   /vocabul(ai|[eéèê])re-?celeste/i,
 ]);
 const answer: String =
-  "​Pour plus d'info sur le vocabulaire de speedrun de Celeste:: https://celestegame.fandom.com/wiki/Moves";
+  "​Pour plus d'info sur le vocabulaire de speedrun de Celeste: https://celestegame.fandom.com/wiki/Moves";
 
 export default class VocabCelesteCommand extends SimpleCommand {
   constructor(enabled: boolean = true) {

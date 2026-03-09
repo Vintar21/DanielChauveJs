@@ -10,7 +10,7 @@ const options: CommandOptions = new CommandOptions([
   /tutos?-?speedrun/i,
   /tutos?-?any%?/i,
 ]);
-const answer: String = `​Pour retrouver mon tuto sur le speedrun Celeste c'est ici:: ${tutosCelestePlaylist}`;
+const answer: String = `​Pour retrouver mon tuto sur le speedrun Celeste c'est ici: ${tutosCelestePlaylist}`;
 
 export default class TutosCelesteCommand extends SimpleCommand {
   constructor(enabled: boolean = true) {

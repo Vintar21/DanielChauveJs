@@ -8,7 +8,7 @@ const options: CommandOptions = new CommandOptions([
 ]);
 
 const answer: String =
-  "Retrouvez le résumé de la campagne ici:: https://shorturl.at/owCWc 🐙";
+  "Retrouvez le résumé de la campagne ici: https://shorturl.at/owCWc 🐙";
 
 export default class SummaryCommand extends SimpleCommand {
   constructor(enabled: boolean = true) {

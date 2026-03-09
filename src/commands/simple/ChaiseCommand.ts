@@ -7,7 +7,7 @@ const options: CommandOptions = new CommandOptions([
   /(clip-?)?chaise(-?clip)?/i,
 ]);
 
-const answer: String = `​Démonstration de la gravité:: ${chaiseClip}`;
+const answer: String = `​Démonstration de la gravité: ${chaiseClip}`;
 
 export default class ChaiseCommand extends SimpleCommand {
   constructor(enabled: boolean = true) {

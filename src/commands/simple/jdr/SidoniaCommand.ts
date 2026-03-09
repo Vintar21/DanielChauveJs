@@ -5,7 +5,7 @@ import SimpleCommand from "../../templates/SimpleCommand";
 const options: CommandOptions = new CommandOptions([/sidonia/i]);
 
 const answer: String =
-  JDR_PJ_MESSAGE_START + "Sidonia:: https://ibb.co/RGTnMKYT 🦝";
+  JDR_PJ_MESSAGE_START + "Sidonia: https://ibb.co/RGTnMKYT 🦝";
 
 export default class SidoniaCommand extends SimpleCommand {
   constructor(enabled: boolean = true) {
