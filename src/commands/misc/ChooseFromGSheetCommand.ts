@@ -13,6 +13,7 @@ const options: CommandOptions = new CommandOptions([
   /fruits?/i,
 ]).setRolesPermission(rolesPermissions);
 
+// A simple example to send a random message/info from a list in a GSheet
 export default class ChooseFromGSheetCommand extends ACommand {
   constructor(enabled: boolean = true) {
     super(options, enabled);
@@ -23,7 +24,10 @@ export default class ChooseFromGSheetCommand extends ACommand {
     event: MessageEvent,
     ignoreCooldowns: boolean,
   ): Promise<void> {
-    const fruit = await MainApp.getGoogleSheetManager().getRandomFruit();
+    const fruit = await MainApp.getGoogleSheetManager().getRandomWord(
+      "Fruits",
+      "A2:A",
+    );
     if (fruit !== EMPTY) {
       this.replyOrSend(
         user,

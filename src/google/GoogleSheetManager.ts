@@ -5,12 +5,19 @@ import {
   googlePrivateKey,
   googleSpreadSheetId,
 } from "../config/ConfigLoader";
-import { sheets } from "googleapis/build/src/apis/sheets";
 import { choose, warn } from "../utils/CommonUtils";
 import { EMPTY } from "../utils/StringConstants";
+import {
+  COUNTERS_RANGE,
+  COUNTERS_SHEET,
+  COUNTERS_VALUE_COLUMN,
+  FIRST_COUNTERS_ROW,
+  SPREADSHEET_SCOPE,
+} from "./GoogleConstants";
 
+// TODO: write a method to select a discord announce from GSheet
 export default class GoogleSheetManager {
-  private scopes: string[] = ["https://www.googleapis.com/auth/spreadsheets"];
+  private scopes: string[] = [SPREADSHEET_SCOPE];
   private client: JWT;
   private sheets: sheets_v4.Sheets;
 
@@ -28,7 +35,7 @@ export default class GoogleSheetManager {
     counterName: string,
     categoryName: string | undefined,
   ): Promise<number> {
-    const countersData = await this.getDatas("Counters", "A2:C");
+    const countersData = await this.getDatas(COUNTERS_SHEET, "A2:C");
     const counterLine = countersData.find(
       (row) =>
         row[0] === counterName && (!categoryName || row[1] === categoryName),
@@ -45,7 +52,7 @@ export default class GoogleSheetManager {
     counterValue: number,
     categoryName: string | undefined,
   ) {
-    const countersData = await this.getDatas("Counters", "A2:C");
+    const countersData = await this.getDatas(COUNTERS_SHEET, COUNTERS_RANGE);
     const counterIndex = countersData.findIndex(
       (row) =>
         row[0] === counterName && (!categoryName || row[1] === categoryName),
@@ -53,8 +60,8 @@ export default class GoogleSheetManager {
 
     // Counters already exists
     if (counterIndex >= 0) {
-      // C is the column of the counter value, index+2 because spreadsheets start to 1 and there's a title line in our case
-      const range = `'Counters'!C${counterIndex + 2}`;
+      // Index + first row number because spreadsheets start to 1
+      const range = `'${COUNTERS_SHEET}'!${COUNTERS_VALUE_COLUMN}${counterIndex + FIRST_COUNTERS_ROW}`;
       this.sheets.spreadsheets.values.update({
         spreadsheetId: googleSpreadSheetId,
         range,
@@ -65,7 +72,7 @@ export default class GoogleSheetManager {
       });
     } else {
       // Else create it
-      const range = `'Counters'!A2:C`;
+      const range = `'${COUNTERS_SHEET}'!${COUNTERS_RANGE}`;
       this.sheets.spreadsheets.values.append({
         spreadsheetId: googleSpreadSheetId,
         range,
@@ -77,16 +84,21 @@ export default class GoogleSheetManager {
     }
   }
 
-  public async getRandomFruit(): Promise<string> {
-    const values = await this.getDatas("Random Words", "A2:A");
+  public async getRandomWord(
+    sheetName: string,
+    range: string = "A:A",
+  ): Promise<string> {
+    const values = await this.getDatas(sheetName, range);
 
     if (!values) {
-      warn("Can't get the specified information from GSheet");
+      warn(
+        `Can't get the specified information from GSheet: ${sheetName} range: ${range}`,
+      );
       return EMPTY;
     }
 
-    const randomFruit: string = choose(values).toString();
-    return randomFruit;
+    const randomWord: string = choose(values).toString();
+    return randomWord;
   }
 
   public async getDatas(sheetName: string, range: string) {
