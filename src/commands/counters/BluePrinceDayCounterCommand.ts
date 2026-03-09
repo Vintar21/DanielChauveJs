@@ -9,6 +9,7 @@ import CounterCommandOptions from "../CounterCommanOptions";
 import ACounterCommand from "../templates/ACounterCommand";
 
 // TODO: FollowerOnlyPermissions
+// Example of another counter commands
 const rolesModificationPermissions = getDefaultRolesPermissions();
 rolesModificationPermissions.unallow(Roles.NO_ROLE);
 

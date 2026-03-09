@@ -1,8 +1,6 @@
 import ICommand from "../ICommand";
 import AnswerRandomMessage from "./AnswerRandomMessage";
 import MultiCommand from "./MultiCommand";
-import RollCommand from "./RollCommand";
-import ResetMvpCommand from "./ResetMvpCommand";
 import MarkerCommand from "./MarkerCommand";
 import PredictionCommand from "./PredictionCommand";
 import PollCommand from "./PollCommand";
@@ -10,9 +8,7 @@ import FakeBanCommand from "../trolls/FakeBanCommand";
 import ChooseFromGSheetCommand from "./ChooseFromGSheetCommand";
 
 // Commands
-export const rollCommand: RollCommand = new RollCommand();
 export const multiCommand: MultiCommand = new MultiCommand();
-export const resetMvpCommand: ResetMvpCommand = new ResetMvpCommand(false);
 export const markerCommand: MarkerCommand = new MarkerCommand();
 export const predictionCommand: PredictionCommand = new PredictionCommand();
 export const pollCommand: PollCommand = new PollCommand();
@@ -26,12 +22,10 @@ export const answerRandomMessage: AnswerRandomMessage =
 
 // Arrays
 export const allMiscCommands: Array<ICommand> = [
-  rollCommand,
   markerCommand,
   multiCommand,
   pollCommand,
   predictionCommand,
-  resetMvpCommand,
   fakeBanCommand,
   chooseFromGsheetCommand,
 ];
