@@ -57,6 +57,12 @@ export const sqlConnectionString = sqlConfig
   ? `Driver={${sqlServer.driver}}; Server=${sqlServer.server}; Database=${sqlServer.database};Trusted_Connection=${sqlServer["trusted-connection"]};TrustServerCertificate=${sqlServer["trust-server-certificate"]};`
   : undefined;
 
+// Google
+const googleConfig = loadSpecificConfig("Google");
+export const googleApiMail = googleConfig.client_email;
+export const googlePrivateKey = googleConfig.private_key;
+export const googleSpreadSheetId = googleConfig.spreadsheet_id;
+
 // Discord
 const discordConfig = loadSpecificConfig("Discord");
 export const discordServerId = discordConfig["server-id"] ?? undefined;

@@ -1,6 +1,7 @@
 # DanielChauve Js
 
 This aims to be a complete bot for streaming on Twitch (and link it with Discord later) to replace Streamer.bot, feel free to use/enrich/comment it !
+Please do not use this bot or it's template in a commercial purpose (which does not include using it for your Twitch channel or Discord server).
 
 The name comes from my own bot name account.
 
@@ -24,7 +25,15 @@ Please found below a quick overview of the features you will find in this bot.
 
 - **Link with an OBS websocket:** Everything needed to connect your bot to your OBS and update sources and scenes (currently not updating scene)
 
+- **Link with a Google spreadsheet:** Everything needed to connect to Google Spreadsheet APIs, it could be an alternative for not using database
+
 - **Channel Points Redemption Listener:** Listen to channel points redemptions rewards (with or without text message)
+
+- **Easy bets and polls:** Create polls and bet easily, relaunching the last one or start one with default values
+
+- **Timers:** Messages or commands that are send regularly parameterized with number of messages send and time elapsed since the last timer's message
+
+- **Counters:** Create counters in commands but not only. You can bind counters to stream ccategory in order they aren't triggered everytime or to have different counter with the same name
 
 - **Discord announces:** Connect the bot to a Discord Client to send announce messages (with embed) when live is on
 
@@ -46,3 +55,4 @@ just before the line of the error.
 
 Find my twitch here: [vintar21](https://www.twitch.tv/vintar21).
 You can contact me by mail: contact@vintar.fr
+Find me on Discord: vintar for DM or [Vintar](https://discord.gg/n82ZkWSXjV) to join my server.
