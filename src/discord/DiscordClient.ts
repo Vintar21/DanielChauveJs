@@ -105,31 +105,6 @@ export default class DiscordClient extends Client {
               .toLowerCase();
             this.onCommandMessage(command, parts.slice(1));
           }
-        } else if (
-          message.channelId === discordChannelIdBg3 &&
-          parts.length > 0
-        ) {
-          const command = parts[0].toLowerCase();
-          log(command);
-          log(parts);
-          switch (command) {
-            case "r":
-            case "roll":
-              if (parts.length > 1) {
-                const value = Number(parts[1]);
-                const roll =
-                  Math.floor(Math.random() * (isNaN(value) ? 100 : value - 1)) +
-                  1;
-                const author = message.author.displayName;
-                log(`${author} lance son dé et fait ${roll} !`);
-                this.sendBg3Message(
-                  discordChannelIdBg3,
-                  `${author} lance son dé et fait ${roll} !`,
-                );
-              }
-
-              break;
-          }
         }
       });
     });
@@ -161,24 +136,6 @@ export default class DiscordClient extends Client {
         const broadcaster = MainApp.getTwitchClient().getBroadcaster();
         const stream = await this.getCurrentStream(broadcaster);
         this.sendLiveAnounce(stream, broadcaster);
-        break;
-
-      case "addrollmessage":
-        if (args.length >= 2) {
-          const value = Number(args[0]);
-          if (isNaN(value) || value < 1 || value > 1000) {
-            this.sendMessage(
-              discordCommandsChannelId,
-              "Incorrect value specified, the first argument needs to be a number between 1 and 1000",
-            );
-            break;
-          }
-          const message = args.slice(1).join(SPACE);
-          SqlManager.addRollsMessage(value, message);
-          // TODO check with SqlManager return
-          this.sendMessage(discordCommandsChannelId, "Message added");
-          break;
-        }
         break;
     }
   }
