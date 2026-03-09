@@ -37,6 +37,7 @@ export default abstract class ACommand implements ICommand {
     ignoreCooldowns: boolean,
     message: String,
     formatMessage: boolean = false,
+    canTagUser: boolean = true,
   ) {
     const twitchClient: TwitchClient = MainApp.getTwitchClient();
     message = formatMessage ? formatCommandMessage(message, event) : message;
@@ -44,7 +45,7 @@ export default abstract class ACommand implements ICommand {
       twitchClient.reply(message, event);
     } else if (this.options.sendAsAnnounce) {
       TwitchClient.send(message, true);
-    } else if (isNotAUser(user)) {
+    } else if (isNotAUser(user) || !canTagUser) {
       TwitchClient.send(message);
     } else {
       TwitchClient.send(`${AT}${user.username} ${message}`);
