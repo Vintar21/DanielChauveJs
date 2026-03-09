@@ -1,5 +1,5 @@
 import { _ } from "../../utils/ImportConstants";
-import CommandOptions from "../CommandOptions";
+import CommandOptions from "../options/CommandOptions";
 import SimpleCommand from "./SimpleCommand";
 
 export default class NoPrefixSimpleCommand extends SimpleCommand {

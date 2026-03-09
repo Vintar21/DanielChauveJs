@@ -1,8 +1,8 @@
 import { MessageEvent } from "@twurple/easy-bot";
 import { User } from "../../utils/user/User";
-import ACommand from "../ACommand";
+import ACommand from "./ACommand";
 import { SPACE } from "../../utils/StringConstants";
-import CommandOptions from "../CommandOptions";
+import CommandOptions from "../options/CommandOptions";
 
 export default abstract class AArgumentsCommand extends ACommand {
   constructor(options: CommandOptions, enabled: boolean = true) {

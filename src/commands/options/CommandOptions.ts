@@ -1,16 +1,16 @@
-import { UserId } from "../utils/user/User";
-import { getDefaultUsersPermissions } from "../utils/user/UserUtils";
-import { seconds, warn } from "../utils/CommonUtils";
-import { Permissions } from "../utils/permissions/Permissions";
-import { getDefaultRolesPermissions, Role } from "../utils/RoleUtils";
+import { UserId } from "../../utils/user/User";
+import { getDefaultUsersPermissions } from "../../utils/user/UserUtils";
+import { seconds, warn } from "../../utils/CommonUtils";
+import { Permissions } from "../../utils/permissions/Permissions";
+import { getDefaultRolesPermissions, Role } from "../../utils/RoleUtils";
 import {
   COMMAND_PREFIX,
   Trigger,
   TWITCH_UNAUTHORIZED_PREFIXES,
   UNLIMITED,
   UseCount,
-} from "./CommandsUtils";
-import { START_REGEX } from "../utils/StringConstants";
+} from "../../utils/CommandsUtils";
+import { START_REGEX } from "../../utils/StringConstants";
 
 export default class CommandOptions {
   prefix: string = COMMAND_PREFIX;

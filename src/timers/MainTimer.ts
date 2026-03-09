@@ -2,7 +2,7 @@ import {
   discordCommand,
   socialMediasCommand,
   youtubeCommand,
-} from "../commands/simple/AllSimpleCommands";
+} from "../commands/AllCommands";
 import ATimer from "./ATimer";
 import { TimerMessage } from "./TimerMessage";
 import TimerOptions from "./TimerOptions";

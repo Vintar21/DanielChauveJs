@@ -7,7 +7,7 @@ import {
   CounterStorages,
 } from "./CounterUtils";
 
-import { formatCounterMessage, Placeholders } from "../commands/CommandsUtils";
+import { formatCounterMessage, Placeholders } from "../utils/CommandsUtils";
 
 export default class Counter {
   protected name: string;

@@ -2,8 +2,8 @@ import { MessageEvent } from "@twurple/easy-bot";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import { User } from "../../utils/user/User";
-import ACommand from "../ACommand";
-import CommandOptions from "../CommandOptions";
+import ACommand from "../templates/ACommand";
+import CommandOptions from "../options/CommandOptions";
 import { MainApp } from "../../app";
 import { EMPTY } from "../../utils/StringConstants";
 

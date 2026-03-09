@@ -1,10 +1,14 @@
 import { MessageEvent } from "@twurple/easy-bot/lib";
-import { MainApp } from "../app";
-import TwitchClient from "../twitch/TwitchClient";
-import { AT, SPACE } from "../utils/StringConstants";
-import { isNotAUser, User, UserId } from "../utils/user/User";
-import CommandOptions from "./CommandOptions";
-import { formatCommandMessage, Trigger, UNLIMITED } from "./CommandsUtils";
+import { MainApp } from "../../app";
+import TwitchClient from "../../twitch/TwitchClient";
+import {
+  formatCommandMessage,
+  Trigger,
+  UNLIMITED,
+} from "../../utils/CommandsUtils";
+import { AT, SPACE } from "../../utils/StringConstants";
+import { isNotAUser, User, UserId } from "../../utils/user/User";
+import CommandOptions from "../options/CommandOptions";
 import ICommand from "./ICommand";
 
 export default abstract class ACommand implements ICommand {

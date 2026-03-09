@@ -1,8 +1,8 @@
-import { MessageEvent } from "@twurple/easy-bot/lib";
+import { MessageEvent } from "@twurple/easy-bot";
 import { User } from "../../utils/user/User";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getDefaultRolesPermissions, Role, Roles } from "../../utils/RoleUtils";
-import CommandOptions from "../CommandOptions";
+import CommandOptions from "../options/CommandOptions";
 import MultipleAnswersCommand from "../templates/MultipleAnswersCommand";
 
 const rolesPermissions: Permissions<Role> = getDefaultRolesPermissions();

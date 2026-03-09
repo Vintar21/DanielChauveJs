@@ -3,7 +3,7 @@ import { MainApp } from "../../../app";
 import { getDefaultRolesPermissions, Roles } from "../../../utils/RoleUtils";
 import { EMPTY } from "../../../utils/StringConstants";
 import { User } from "../../../utils/user/User";
-import CommandOptions from "../../CommandOptions";
+import CommandOptions from "../../options/CommandOptions";
 import NoPrefixSimpleCommand from "../../templates/NoPrefixSimpleCommand";
 
 const permissions = getDefaultRolesPermissions();

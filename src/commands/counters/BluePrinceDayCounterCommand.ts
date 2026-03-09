@@ -1,11 +1,11 @@
-import { MessageEvent } from "@twurple/easy-bot/lib";
+import { MessageEvent } from "@twurple/easy-bot";
 import { MainApp } from "../../app";
-import { Placeholders } from "../../commands/CommandsUtils";
+import { Placeholders } from "../../utils/CommandsUtils";
 import Counter from "../../counters/Counter";
 import { minutes } from "../../utils/CommonUtils";
 import { getDefaultRolesPermissions, Roles } from "../../utils/RoleUtils";
 import { User } from "../../utils/user/User";
-import CounterCommandOptions from "../CounterCommanOptions";
+import CounterCommandOptions from "../options/CounterCommanOptions";
 import ACounterCommand from "../templates/ACounterCommand";
 
 // TODO: FollowerOnlyPermissions

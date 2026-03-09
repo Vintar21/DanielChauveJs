@@ -1,13 +1,14 @@
 import CounterBuilder from "./CounterBuilder";
 import Counter from "./Counter";
 
-import { Placeholders } from "../commands/CommandsUtils";
+import { Placeholders } from "../utils/CommandsUtils";
 import { CounterStorages } from "./CounterUtils";
+import { BLUE_PRINCE } from "../utils/CategoriesConstants";
 
 export const bluePrinceDayCounter: Counter = CounterBuilder.getInstance()
   .name("jour")
   .categoryRelated()
-  .category("Blue Prince")
+  .category(BLUE_PRINCE)
   .setStorage(CounterStorages.DATABASE)
   .obsSourceName("JourBluePrince")
   .obsTextSourceTemplate(`Jour ${Placeholders.COUNTER}`)

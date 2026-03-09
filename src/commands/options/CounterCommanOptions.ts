@@ -1,6 +1,6 @@
-import { seconds } from "../utils/CommonUtils";
-import { Permissions } from "../utils/permissions/Permissions";
-import { getModOnlyRolesPermissions, Role } from "../utils/RoleUtils";
+import { seconds } from "../../utils/CommonUtils";
+import { Permissions } from "../../utils/permissions/Permissions";
+import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import CommandOptions from "./CommandOptions";
 
 export default class CounterCommandOptions extends CommandOptions {

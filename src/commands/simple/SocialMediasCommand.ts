@@ -1,5 +1,5 @@
 import { blueskyLink, instagramLink } from "../../config/ConfigLoader";
-import CommandOptions from "../CommandOptions";
+import CommandOptions from "../options/CommandOptions";
 import SimpleCommand from "../templates/SimpleCommand";
 
 const options: CommandOptions = new CommandOptions([

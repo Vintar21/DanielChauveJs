@@ -9,7 +9,7 @@ import { EventSubWsListener } from "@twurple/eventsub-ws";
 import { MainApp } from "../app";
 import ChannelPointsListener from "../channel-points-rewards/ChannelPointsListener";
 import CommandsManager from "../commands/CommandsManager";
-import { allCounterCommands } from "../commands/counters/AllCounterCommands";
+import { allCounterCommands } from "../commands/AllCommands";
 import {
   botAccessToken,
   botClientId,

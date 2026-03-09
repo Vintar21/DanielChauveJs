@@ -1,7 +1,6 @@
 import { EventSubChannelRedemptionAddEvent } from "@twurple/eventsub-base/lib/events/EventSubChannelRedemptionAddEvent";
 import { EventSubWsListener } from "@twurple/eventsub-ws";
 import { MainApp } from "../app";
-import { rollCommand } from "../commands/misc/AllMiscCommands";
 import { allObsCameraEffects } from "../obs/camera-effects/AllObsCameraEffects";
 import AObsCameraEffect from "../obs/camera-effects/AObsCameraEffect";
 import { COOLDOWN_CAMERA_EFFECT } from "../obs/ObsCameraFilterEffect";
@@ -95,6 +94,7 @@ export default class ChannelPointsListener {
       });
   }
 
+  // Example of redemptions that play a sound or that have a link with OBS
   private async onRedemptionRedeemed(
     event: EventSubChannelRedemptionAddEvent,
   ): Promise<void> {
@@ -108,12 +108,6 @@ export default class ChannelPointsListener {
     );
     log(`Redemption event received: ${event.id} by ${username} (${userId})`);
     switch (event.rewardId) {
-      case REROLL_REWARD_ID:
-        rollCommand.executeNoMessage(new User(username, userId, role), true);
-        break;
-      case TEST_REWARD_ID:
-        rollCommand.executeNoMessage(new User(username, userId, role), true);
-        break;
       case CAMERA_EFFECT_REWARD_ID:
         // Can't be a method, need to be a function
         ChannelPointsListener.onCameraEffectRedeemed(input);

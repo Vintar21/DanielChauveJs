@@ -3,8 +3,8 @@ import { MainApp } from "../../app";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getVipOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import { User } from "../../utils/user/User";
-import ACommand from "../ACommand";
-import CommandOptions from "../CommandOptions";
+import ACommand from "../templates/ACommand";
+import CommandOptions from "../options/CommandOptions";
 
 const rolesPermissions: Permissions<Role> = getVipOnlyRolesPermissions();
 

@@ -1,5 +1,5 @@
 import { MessageEvent } from "@twurple/easy-bot/lib";
-import { User } from "../utils/user/User";
+import { User } from "../../utils/user/User";
 
 export default interface ICommand {
   match(input: string, game: string): boolean;

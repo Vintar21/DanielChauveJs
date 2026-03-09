@@ -1,6 +1,6 @@
 import Counter from "../../counters/Counter";
-import { Placeholders } from "../../commands/CommandsUtils";
-import CounterCommandOptions from "../CounterCommanOptions";
+import { Placeholders } from "../../utils/CommandsUtils";
+import CounterCommandOptions from "../options/CounterCommanOptions";
 import ACounterCommand from "../templates/ACounterCommand";
 
 const options: CounterCommandOptions = new CounterCommandOptions([

@@ -1,15 +1,15 @@
 import { HelixPoll } from "@twurple/api";
 import { MessageEvent } from "@twurple/easy-bot";
-import { EventSubChannelPollEndEvent } from "@twurple/eventsub-base/lib/events/EventSubChannelPollEndEvent";
+import { EventSubChannelPollEndEvent } from "@twurple/eventsub-base";
 import { EventSubWsListener } from "@twurple/eventsub-ws";
 import { MainApp } from "../../app";
-import { User } from "../../utils/user/User";
+import { log, minutes } from "../../utils/CommonUtils";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import { SPACE } from "../../utils/StringConstants";
-import CommandOptions from "../CommandOptions";
+import { User } from "../../utils/user/User";
+import CommandOptions from "../options/CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
-import { log, minutes } from "../../utils/CommonUtils";
 
 const CANCEL_POLL = "cancel";
 const END_POLL = "stop";
@@ -32,8 +32,8 @@ const options: CommandOptions = new CommandOptions([
 
 export default class PollCommand extends AArgumentsCommand {
   private defaultDuration: number = minutes(5, true); // Max 1800s = 30min
-  private defaultChoices: string[] = ["Pour", "Contre"];
-  private title: string = "Plutôt pour ou contre ?";
+  private defaultChoices: string[] = ["D'accord", "Pas d'accord"];
+  private title: string = "Vous en pensez quoi ?";
   private channelPointsDefault: number = 0;
 
   private pollListener: EventSubWsListener;
@@ -166,7 +166,7 @@ export default class PollCommand extends AArgumentsCommand {
     return false;
   }
 
-  protected executeWithArgs(
+  protected async executeWithArgs(
     user: User,
     event: MessageEvent,
     args: String[],

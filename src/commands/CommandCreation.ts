@@ -1,5 +1,5 @@
-import CommandOptions from "./CommandOptions";
-import ICommand from "./ICommand";
+import CommandOptions from "./options/CommandOptions";
+import ICommand from "./templates/ICommand";
 import SimpleCommand from "./templates/SimpleCommand";
 
 // Not sure to keep this file, it's a draft

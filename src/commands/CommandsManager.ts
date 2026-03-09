@@ -1,13 +1,13 @@
-import ICommand from "./ICommand";
 import {
+  allCounterCommands,
   allMiscCommands,
+  allMultipleAnswersCommands,
+  allNoPrefixSimpleCommands,
+  allSimpleCommands,
   lastAddedCommands,
   pollCommand,
-} from "./misc/AllMiscCommands";
-import { allMultipleAnswersCommands } from "./multiple-answers/AllMultipleAnswersCommands";
-import { allSimpleCommands } from "./simple/AllSimpleCommands";
-import { allNoPrefixSimpleCommands } from "./simple/no-prefix/AllNoPrefixSimpleCommands";
-import { allCounterCommands } from "../commands/counters/AllCounterCommands";
+} from "./AllCommands";
+import ICommand from "./templates/ICommand";
 
 export default class CommandsManager {
   private static commands: Array<ICommand> = new Array<ICommand>();

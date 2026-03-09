@@ -1,11 +1,11 @@
-import { HelixPrediction } from "@twurple/api/lib";
+import { HelixPrediction } from "@twurple/api";
 import { MessageEvent } from "@twurple/easy-bot";
 import { MainApp } from "../../app";
 import { User } from "../../utils/user/User";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import { SPACE } from "../../utils/StringConstants";
-import CommandOptions from "../CommandOptions";
+import CommandOptions from "../options/CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
 import { log, minutes } from "../../utils/CommonUtils";
 
@@ -58,7 +58,7 @@ export default class PredictionCommand extends AArgumentsCommand {
       });
   }
 
-  private async getLastPrediction(): Promise<HelixPrediction> {
+  private async getLastPrediction(): Promise<HelixPrediction | undefined> {
     const twitchClient = MainApp.getTwitchClient();
 
     const predictions = await twitchClient
@@ -114,7 +114,7 @@ export default class PredictionCommand extends AArgumentsCommand {
           return true;
         case LOCK_PREDICTION:
           this.getLastPrediction()?.then((lastPrediction) => {
-            if (this.isLastPredictionActive(lastPrediction)) {
+            if (lastPrediction && this.isLastPredictionActive(lastPrediction)) {
               twitchClient
                 .getPredictionApi()
                 .lockPrediction(
@@ -137,7 +137,7 @@ export default class PredictionCommand extends AArgumentsCommand {
     return false;
   }
 
-  protected executeWithArgs(
+  protected async executeWithArgs(
     user: User,
     event: MessageEvent,
     args: String[],
@@ -148,7 +148,7 @@ export default class PredictionCommand extends AArgumentsCommand {
     // Pouvoir donner le résultat de la prédi ?
     this.getLastPrediction()?.then((lastPrediction) => {
       // If we have a current prediction, check if we want to cancel or lock it
-      if (!this.isLastPredictionFinished(lastPrediction)) {
+      if (lastPrediction && !this.isLastPredictionFinished(lastPrediction)) {
         // Check for particular parameters (cancel, lock, etc.)
         // If we've cancelled or locked it, we stop here
         if (

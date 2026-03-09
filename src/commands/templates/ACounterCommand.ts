@@ -2,17 +2,14 @@ import { MessageEvent } from "@twurple/easy-bot";
 import { MainApp } from "../../app";
 import Counter from "../../counters/Counter";
 import CounterBuilder from "../../counters/CounterBuilder";
-import {
-  Placeholders,
-  formatCounterMessage,
-} from "../../commands/CommandsUtils";
 import SqlManager from "../../database/SqlManager";
-import { User } from "../../utils/user/User";
+import { Placeholders, formatCounterMessage } from "../../utils/CommandsUtils";
+import { log } from "../../utils/CommonUtils";
 import { getGreaterRole } from "../../utils/RoleUtils";
 import { MINUS, PLUS } from "../../utils/StringConstants";
-import CounterCommandOptions from "../CounterCommanOptions";
+import { User } from "../../utils/user/User";
+import CounterCommandOptions from "../options/CounterCommanOptions";
 import AArgumentsCommand from "./AArgumentsCommand";
-import { log } from "../../utils/CommonUtils";
 
 const RESET_COUNTER_ARG = "reset";
 const FREEZE_COUNTER_ARG = "freeze";

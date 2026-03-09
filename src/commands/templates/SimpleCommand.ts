@@ -1,7 +1,7 @@
 import { MessageEvent } from "@twurple/easy-bot/lib";
 import { User } from "../../utils/user/User";
-import ACommand from "../ACommand";
-import CommandOptions from "../CommandOptions";
+import CommandOptions from "../options/CommandOptions";
+import ACommand from "./ACommand";
 
 export default class SimpleCommand extends ACommand {
   private response: String;

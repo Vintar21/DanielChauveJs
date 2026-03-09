@@ -4,7 +4,7 @@ import { Permissions } from "../../utils/permissions/Permissions";
 import { getDefaultRolesPermissions, Role, Roles } from "../../utils/RoleUtils";
 import { AT } from "../../utils/StringConstants";
 import { User } from "../../utils/user/User";
-import CommandOptions from "../CommandOptions";
+import CommandOptions from "../options/CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
 
 const rolesPermissions: Permissions<Role> = getDefaultRolesPermissions();

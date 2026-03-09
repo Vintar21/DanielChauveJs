@@ -1,5 +1,5 @@
-import CommandOptions from "../CommandOptions";
-import { Placeholders } from "../CommandsUtils";
+import CommandOptions from "../options/CommandOptions";
+import { Placeholders } from "../../utils/CommandsUtils";
 import DilemmaCommand from "../templates/DilemmaCommand";
 
 const options: CommandOptions = new CommandOptions([
