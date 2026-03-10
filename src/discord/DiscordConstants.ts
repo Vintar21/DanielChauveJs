@@ -1,11 +1,12 @@
 import { EmbedBuilder, Message, OmitPartialGroupDMChannel } from "discord.js";
-import { channel } from "../config/ConfigLoader";
+import { channel, discordServerIdBg3 } from "../config/ConfigLoader";
 import { Role, Roles } from "../utils/RoleUtils";
 import {
   NEW_LINE,
   SLASH,
   TWITCH_CHANNEL_PREFIX,
 } from "../utils/StringConstants";
+import { MainApp } from "../app";
 
 export const DISCORD_COMMAND_PREFIX = SLASH;
 export const TWITCH_ARGUMENT = "twitch";
@@ -59,10 +60,12 @@ const BOT_ROLES: string[] = [
 ];
 
 function doesAuthorHasRole(message: DiscordMessage, roleId: string): boolean {
-  return message.guild.roles.cache.get(roleId).members.has(message.author.id);
+  return message.guild.roles.cache.get(roleId)?.members.has(message.author.id);
 }
 
-export function getGreaterDiscordRole(message: DiscordMessage): Role {
+export async function getGreaterDiscordRole(
+  message: DiscordMessage,
+): Promise<Role> {
   const isBot = BOT_ROLES.find((roleId) => doesAuthorHasRole(message, roleId));
   if (isBot) {
     // No role for bots for the moment

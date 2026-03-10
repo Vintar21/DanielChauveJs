@@ -36,12 +36,12 @@ export default abstract class ADiscordCommand {
 
   protected replyOrSend(
     message: DiscordMessage,
+    response: string,
     user: User,
     ignoreCooldowns: boolean,
   ) {
     const twitchClient: TwitchClient = MainApp.getTwitchClient();
 
-    const response = message.content;
     if (this.canReplyToUser(message)) {
       message.reply(response);
     } else {
@@ -86,7 +86,10 @@ export default abstract class ADiscordCommand {
     );*/
   }
 
-  public async canExecute(user: User): Promise<boolean> {
+  public async canExecute(
+    user: User,
+    message: DiscordMessage,
+  ): Promise<boolean> {
     // Command enabled
     if (!this.options.enabled) {
       return false;
@@ -106,7 +109,7 @@ export default abstract class ADiscordCommand {
       } else if (this.options.rolesPermissions.canBypass(role)) {
         return true;
       }
-      console.log("Not unallowed");
+
       return (
         this.isGlobalCooldownFinished() &&
         this.isUserCooldownFinished(user.userId)

@@ -21,6 +21,8 @@ import { User } from "../utils/user/User";
 import ADiscordCommand from "./commands/ADiscordCommand";
 import { sayCommand } from "./commands/SayCommand";
 import { liveCommand } from "./commands/LiveCommand";
+import { rollBg3ServCommand } from "./commands/RollBg3ServCommand";
+
 import {
   CATEGORY_PLACEHOLDER,
   DEFAULT_MESSAGE,
@@ -38,7 +40,11 @@ export default class DiscordClient extends Client {
   private cooldownBetweenLiveAnnounces: number = hours(8);
   private lastLiveAnnounce: number = 0;
 
-  private commands: ADiscordCommand[] = [sayCommand, liveCommand];
+  private commands: ADiscordCommand[] = [
+    sayCommand,
+    liveCommand,
+    rollBg3ServCommand,
+  ];
 
   private checkInterval: number = minutes(5);
 
@@ -47,6 +53,7 @@ export default class DiscordClient extends Client {
       intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildMembers,
         GatewayIntentBits.MessageContent,
       ],
     });
@@ -62,12 +69,6 @@ export default class DiscordClient extends Client {
 
   public getChannel(channelId: string): GuildBasedChannel {
     return this.guilds.cache.get(discordServerId).channels.cache.get(channelId);
-  }
-
-  private getBg3Channel(channelId: string): GuildBasedChannel {
-    return this.guilds.cache
-      .get(discordServerIdBg3)
-      .channels.cache.get(channelId);
   }
 
   public async start() {
@@ -101,7 +102,7 @@ export default class DiscordClient extends Client {
         const user = new User(
           message.author.username,
           Number(message.author.id),
-          Promise.resolve(getGreaterDiscordRole(message)),
+          getGreaterDiscordRole(message),
         );
 
         if (parts.length > 0) {
@@ -110,32 +111,9 @@ export default class DiscordClient extends Client {
           const foundCommand = this.commands.find((command) =>
             command.match(parsedCommand),
           );
-          if (foundCommand && (await foundCommand.canExecute(user))) {
-            foundCommand.execute(message, user, false);
-          }
-        } else if (
-          message.channelId === discordChannelIdBg3 &&
-          parts.length > 0
-        ) {
-          const command = parts[0].toLowerCase();
-          log(command);
-          log(parts);
-          switch (command) {
-            case "r":
-            case "roll":
-              if (parts.length > 1) {
-                const value = Number(parts[1]);
-                const roll =
-                  Math.floor(Math.random() * (isNaN(value) ? 100 : value - 1)) +
-                  1;
-                const author = message.author.displayName;
-                this.sendBg3Message(
-                  discordChannelIdBg3,
-                  `${author} lance son dé et fait un magnifique ${roll} !`,
-                );
-              }
 
-              break;
+          if (foundCommand && (await foundCommand.canExecute(user, message))) {
+            foundCommand.execute(message, user, false);
           }
         }
       });
@@ -161,13 +139,6 @@ export default class DiscordClient extends Client {
 
   public sendMessage(channelId: any, message: string) {
     const channel = this.getChannel(channelId);
-    if (channel?.isTextBased()) {
-      channel.send(message);
-    }
-  }
-
-  public sendBg3Message(channelId: any, message: string) {
-    const channel = this.getBg3Channel(channelId);
     if (channel?.isTextBased()) {
       channel.send(message);
     }

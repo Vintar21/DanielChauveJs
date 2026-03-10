@@ -10,8 +10,7 @@ import {
 } from "../../utils/MediaUtils";
 import { getGreaterRole, Roles } from "../../utils/RoleUtils";
 import { AT, EMPTY, SPACE } from "../../utils/StringConstants";
-import { isNotAUser, User, UserId } from "../../utils/user/User";
-import { undefinedUser } from "../../utils/user/UserConstants";
+import { isNotAUser, undefinedUser, User, UserId } from "../../utils/user/User";
 import { resetMvpCommand } from "../AllCommands";
 import CommandOptions from "../options/CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
