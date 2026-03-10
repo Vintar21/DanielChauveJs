@@ -12,6 +12,7 @@ import {
   HelixModerationApi,
   HelixPollApi,
   HelixPredictionApi,
+  HelixStream,
   HelixUser,
   HelixUserApi,
 } from "@twurple/api";
@@ -22,7 +23,6 @@ import { channel } from "../config/ConfigLoader";
 import CountersManager from "../counters/CountersManager";
 import TimerManager from "../timers/TimerManager";
 import { EMPTY, SPACE } from "../utils/StringConstants";
-import TwitchClient from "./TwitchClient";
 
 export default abstract class ATwitchClient {
   protected static botApp: Bot;
@@ -169,5 +169,9 @@ export default abstract class ATwitchClient {
     return this.getChannelsApi()
       .getChannelInfoById(this.getBroadcasterId())
       .then((channel) => channel?.gameName);
+  }
+
+  public async getCurrentStream(): Promise<HelixStream> {
+    return this.getBroadcaster().getStream();
   }
 }
