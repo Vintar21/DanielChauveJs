@@ -37,7 +37,7 @@ class RollBg3ServCommand extends ADiscordCommand {
       args.length > 0 && !isNaN(Number(args[0])) ? Number(args[0]) : 100;
 
     const roll = Math.floor(Math.random() * (isNaN(dice) ? 100 : dice - 1)) + 1;
-    const author = message.author.displayName;
+    const author = message.author.globalName;
     this.replyOrSend(
       message,
       `${author} lance son dé et fait un magnifique ${roll} !`,

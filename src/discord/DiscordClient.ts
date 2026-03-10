@@ -11,7 +11,6 @@ import {
   discordAnnounceChannelId,
   discordPollsChannelId,
   discordServerId,
-  discordServerIdBg3,
   discordToken,
 } from "../config/ConfigLoader";
 import SqlManager from "../database/SqlManager";
@@ -19,14 +18,13 @@ import { choose, hours, log, minutes, pluralize } from "../utils/CommonUtils";
 import { NEW_LINE, SPACE } from "../utils/StringConstants";
 import { User } from "../utils/user/User";
 import ADiscordCommand from "./commands/ADiscordCommand";
-import { sayCommand } from "./commands/SayCommand";
 import { liveCommand } from "./commands/LiveCommand";
 import { rollBg3ServCommand } from "./commands/RollBg3ServCommand";
+import { sayCommand } from "./commands/SayCommand";
 
 import {
   CATEGORY_PLACEHOLDER,
   DEFAULT_MESSAGE,
-  DISCORD_COMMAND_PREFIX,
   getGreaterDiscordRole,
   TAG_EVERYONE,
   twitchEmbedTemplate,
