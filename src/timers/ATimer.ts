@@ -1,10 +1,10 @@
 import ACommand from "../commands/templates/ACommand";
+import TwitchClient from "../twitch/TwitchClient";
 import { NO_MSG } from "../utils/CommandsUtils";
-import { timerUser } from "../utils/user/UserConstants";
 import { EMPTY } from "../utils/StringConstants";
+import { timerUser } from "../utils/user/User";
 import { TimerMessage } from "./TimerMessage";
 import TimerOptions from "./TimerOptions";
-import TwitchClient from "../twitch/TwitchClient";
 export default abstract class ATimer {
   protected options: TimerOptions;
   protected timerFinished: boolean = false;
