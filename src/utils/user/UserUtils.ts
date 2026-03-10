@@ -1,6 +1,6 @@
 import { Permissions } from "../permissions/Permissions";
 import { UserId } from "./User";
-import { botsUser } from "./UserConstants";
+import { botsUser } from "./User";
 
 // Allow everyone except registered bots (Moobot, Nightbot, streamelements)
 export function getDefaultUsersPermissions(): Permissions<UserId> {
