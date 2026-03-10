@@ -106,7 +106,7 @@ export default abstract class ADiscordCommand {
       } else if (this.options.rolesPermissions.canBypass(role)) {
         return true;
       }
-      console.log("Not unallowed");
+
       return (
         this.isGlobalCooldownFinished() &&
         this.isUserCooldownFinished(user.userId)

@@ -11,7 +11,6 @@ import {
   discordAnnounceChannelId,
   discordPollsChannelId,
   discordServerId,
-  discordServerIdBg3,
   discordToken,
 } from "../config/ConfigLoader";
 import SqlManager from "../database/SqlManager";
@@ -19,12 +18,11 @@ import { choose, hours, log, minutes, pluralize } from "../utils/CommonUtils";
 import { NEW_LINE, SPACE } from "../utils/StringConstants";
 import { User } from "../utils/user/User";
 import ADiscordCommand from "./commands/ADiscordCommand";
-import { sayCommand } from "./commands/SayCommand";
 import { liveCommand } from "./commands/LiveCommand";
+import { sayCommand } from "./commands/SayCommand";
 import {
   CATEGORY_PLACEHOLDER,
   DEFAULT_MESSAGE,
-  DISCORD_COMMAND_PREFIX,
   getGreaterDiscordRole,
   TAG_EVERYONE,
   twitchEmbedTemplate,
@@ -47,6 +45,7 @@ export default class DiscordClient extends Client {
       intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildMembers,
         GatewayIntentBits.MessageContent,
       ],
     });
@@ -62,12 +61,6 @@ export default class DiscordClient extends Client {
 
   public getChannel(channelId: string): GuildBasedChannel {
     return this.guilds.cache.get(discordServerId).channels.cache.get(channelId);
-  }
-
-  private getBg3Channel(channelId: string): GuildBasedChannel {
-    return this.guilds.cache
-      .get(discordServerIdBg3)
-      .channels.cache.get(channelId);
   }
 
   public async start() {
@@ -137,13 +130,6 @@ export default class DiscordClient extends Client {
 
   public sendMessage(channelId: any, message: string) {
     const channel = this.getChannel(channelId);
-    if (channel?.isTextBased()) {
-      channel.send(message);
-    }
-  }
-
-  public sendBg3Message(channelId: any, message: string) {
-    const channel = this.getBg3Channel(channelId);
     if (channel?.isTextBased()) {
       channel.send(message);
     }
