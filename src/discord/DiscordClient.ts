@@ -9,8 +9,6 @@ import {
 import { MainApp } from "../app";
 import {
   discordAnnounceChannelId,
-  discordChannelIdBg3,
-  discordCommandsChannelId,
   discordPollsChannelId,
   discordServerId,
   discordServerIdBg3,
@@ -18,16 +16,19 @@ import {
 } from "../config/ConfigLoader";
 import SqlManager from "../database/SqlManager";
 import { choose, hours, log, minutes, pluralize } from "../utils/CommonUtils";
-import { EMPTY, NEW_LINE, SPACE } from "../utils/StringConstants";
+import { NEW_LINE, SPACE } from "../utils/StringConstants";
+import { User } from "../utils/user/User";
+import ADiscordCommand from "./commands/ADiscordCommand";
+import { sayCommand } from "./commands/SayCommand";
+import { liveCommand } from "./commands/LiveCommand";
 import {
   CATEGORY_PLACEHOLDER,
   DEFAULT_MESSAGE,
   DISCORD_COMMAND_PREFIX,
+  getGreaterDiscordRole,
   TAG_EVERYONE,
-  TWITCH_ARGUMENT,
   twitchEmbedTemplate,
 } from "./DiscordConstants";
-import TwitchClient from "../twitch/TwitchClient";
 
 export default class DiscordClient extends Client {
   private twitchAnnouncesChannel: GuildBasedChannel;
@@ -36,6 +37,8 @@ export default class DiscordClient extends Client {
   private currentStreamStart: number;
   private cooldownBetweenLiveAnnounces: number = hours(8);
   private lastLiveAnnounce: number = 0;
+
+  private commands: ADiscordCommand[] = [sayCommand, liveCommand];
 
   private checkInterval: number = minutes(5);
 
@@ -57,7 +60,7 @@ export default class DiscordClient extends Client {
       .then((channel) => channel.gameName);
   }
 
-  private getChannel(channelId: string): GuildBasedChannel {
+  public getChannel(channelId: string): GuildBasedChannel {
     return this.guilds.cache.get(discordServerId).channels.cache.get(channelId);
   }
 
@@ -88,22 +91,27 @@ export default class DiscordClient extends Client {
           });
       }
 
-      readyClient.on("messageCreate", (message) => {
+      readyClient.on("messageCreate", async (message) => {
         log(
           `Message received on Discord: [${message.author.id}] ${message.author.username} in ${message.channel}: ${message.content}`,
         );
         if (message.author.bot) return;
         const parts = message.content.trim().split(SPACE);
 
-        if (
-          message.channelId === discordCommandsChannelId &&
-          message.content.startsWith(DISCORD_COMMAND_PREFIX)
-        ) {
-          if (parts.length > 0) {
-            const command = parts[0]
-              .substring(DISCORD_COMMAND_PREFIX.length)
-              .toLowerCase();
-            this.onCommandMessage(command, parts.slice(1));
+        const user = new User(
+          message.author.username,
+          Number(message.author.id),
+          Promise.resolve(getGreaterDiscordRole(message)),
+        );
+
+        if (parts.length > 0) {
+          const parsedCommand = parts[0].toLowerCase();
+
+          const foundCommand = this.commands.find((command) =>
+            command.match(parsedCommand),
+          );
+          if (foundCommand && (await foundCommand.canExecute(user))) {
+            foundCommand.execute(message, user, false);
           }
         } else if (
           message.channelId === discordChannelIdBg3 &&
@@ -137,36 +145,6 @@ export default class DiscordClient extends Client {
     await this.login(discordToken);
 
     //setInterval(() => this.check(), this.checkInterval);
-  }
-
-  // TODO: create DiscordCommands objects
-  private async onCommandMessage(command: string, args: string[]) {
-    switch (command) {
-      case "say":
-        if (args.length > 1) {
-          const channelId = args[0].toLowerCase().replaceAll(/[<>#]/g, EMPTY);
-          const message = args.slice(1).join(SPACE);
-          if (channelId === TWITCH_ARGUMENT) {
-            TwitchClient.send(message);
-          } else {
-            const channel = this.getChannel(channelId);
-            if (channel && channel?.isSendable()) {
-              channel.send(message);
-            }
-          }
-        }
-        break;
-      case "live":
-        const broadcaster = MainApp.getTwitchClient().getBroadcaster();
-        const stream = await this.getCurrentStream(broadcaster);
-        this.sendLiveAnounce(stream, broadcaster);
-        break;
-    }
-  }
-
-  // TODO: move it in a dedicated class or Utils
-  private getCurrentStream(broadcaster: HelixUser): Promise<HelixStream> {
-    return broadcaster.getStream();
   }
 
   private canSendLiveAnnounce(stream: HelixStream): boolean {
