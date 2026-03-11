@@ -20,6 +20,8 @@ export default abstract class ACommand implements ICommand {
   protected usersUseCount: Map<UserId, number> = new Map();
   protected globalUseCount: number = 0;
 
+  protected randomParts: Map<string, string[]> = new Map();
+
   constructor(options: CommandOptions, enabled: boolean = true) {
     options.enabled = enabled;
     this.options = options;
@@ -39,7 +41,11 @@ export default abstract class ACommand implements ICommand {
     formatMessage: boolean = false,
   ) {
     const twitchClient: TwitchClient = MainApp.getTwitchClient();
-    message = formatMessage ? formatCommandMessage(message, event) : message;
+    // Automatically format message if it contains random parts
+    formatMessage ||= this.randomParts.size > 0;
+    message = formatMessage
+      ? formatCommandMessage(message, event, this.randomParts)
+      : message;
     if (this.canReplyToUser(event)) {
       twitchClient.reply(message, event);
     } else if (this.options.sendAsAnnounce) {
