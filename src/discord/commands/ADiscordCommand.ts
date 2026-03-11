@@ -102,6 +102,20 @@ export default abstract class ADiscordCommand {
       return true;
     }
 
+    // Server permissions
+    if (this.options.serverPermissions.isUnallowed(message.guildId)) {
+      return false;
+    } else if (this.options.serverPermissions.canBypass(message.guildId)) {
+      return true;
+    }
+
+    // Channel permissions
+    if (this.options.channelPermissions.isUnallowed(message.channelId)) {
+      return false;
+    } else if (this.options.channelPermissions.canBypass(message.channelId)) {
+      return true;
+    }
+
     return user.getGreaterRole().then((role) => {
       // Role permissions
       if (this.options.rolesPermissions.isUnallowed(role)) {

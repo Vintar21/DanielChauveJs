@@ -5,7 +5,13 @@ import { getDefaultRolesPermissions, Role } from "../../../utils/RoleUtils";
 import { START_REGEX } from "../../../utils/StringConstants";
 import { UserId } from "../../../utils/user/User";
 import { getDefaultUsersPermissions } from "../../../utils/user/UserUtils";
-import { DISCORD_COMMAND_PREFIX } from "../../DiscordConstants";
+import {
+  ChannelId,
+  DISCORD_COMMAND_PREFIX,
+  getDefaultChannelPermissions,
+  getDefaultServerPermissions,
+  ServerId,
+} from "../../DiscordConstants";
 
 export default class DiscordCommandOptions {
   prefix: string = DISCORD_COMMAND_PREFIX;
@@ -25,6 +31,8 @@ export default class DiscordCommandOptions {
 
   rolesPermissions: Permissions<Role> = getDefaultRolesPermissions();
   usersPermissions: Permissions<UserId> = getDefaultUsersPermissions();
+  serverPermissions: Permissions<ServerId> = getDefaultServerPermissions();
+  channelPermissions: Permissions<ChannelId> = getDefaultChannelPermissions();
 
   constructor(triggers: Array<Trigger>) {
     this.triggers = triggers;
@@ -41,6 +49,8 @@ export default class DiscordCommandOptions {
     newOptions.authorizedChannels = commandOptions.authorizedChannels;
     newOptions.rolesPermissions = commandOptions.rolesPermissions;
     newOptions.usersPermissions = commandOptions.usersPermissions;
+    newOptions.serverPermissions = commandOptions.serverPermissions;
+    newOptions.channelPermissions = commandOptions.channelPermissions;
     newOptions.enabled = commandOptions.enabled;
     newOptions.usePrefix = commandOptions.usePrefix;
     newOptions.useFullMessage = commandOptions.useFullMessage;
@@ -135,6 +145,20 @@ export default class DiscordCommandOptions {
     usersPermissions: Permissions<UserId>,
   ): DiscordCommandOptions {
     this.usersPermissions = usersPermissions;
+    return this;
+  }
+
+  public setServerPermission(
+    serverPermissions: Permissions<ServerId>,
+  ): DiscordCommandOptions {
+    this.serverPermissions = serverPermissions;
+    return this;
+  }
+
+  public setChannelPermission(
+    channelPermissions: Permissions<ChannelId>,
+  ): DiscordCommandOptions {
+    this.channelPermissions = channelPermissions;
     return this;
   }
 

@@ -19,9 +19,8 @@ import { NEW_LINE, SPACE } from "../utils/StringConstants";
 import { User } from "../utils/user/User";
 import ADiscordCommand from "./commands/ADiscordCommand";
 import { liveCommand } from "./commands/LiveCommand";
-import { rollBg3ServCommand } from "./commands/RollBg3ServCommand";
 import { sayCommand } from "./commands/SayCommand";
-
+import { rollBg3ServCommand } from "./commands/RollBg3ServCommand";
 import {
   CATEGORY_PLACEHOLDER,
   DEFAULT_MESSAGE,

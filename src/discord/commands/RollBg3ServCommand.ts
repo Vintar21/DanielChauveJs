@@ -1,30 +1,27 @@
+import { server } from "typescript";
 import { discordServerIdBg3 } from "../../config/ConfigLoader";
 import { getDefaultRolesPermissions } from "../../utils/RoleUtils";
 import { User } from "../../utils/user/User";
-import { DiscordMessage } from "../DiscordConstants";
+import {
+  DiscordMessage,
+  getDefaultServerPermissions,
+} from "../DiscordConstants";
 import ADiscordCommand from "./ADiscordCommand";
 import DiscordCommandOptions from "./options/DiscordCommandOptions";
 
-const permissions = getDefaultRolesPermissions();
+const rolesPermissions = getDefaultRolesPermissions();
+const serverPermissions = getDefaultServerPermissions();
+serverPermissions.unallowAllExcept([discordServerIdBg3]);
 
 const options = new DiscordCommandOptions(["roll", "r"])
-  .setRolesPermission(permissions)
+  .setRolesPermission(rolesPermissions)
+  .setServerPermission(serverPermissions)
   .setReplyToUser(true)
   .dontUsePrefix();
 
 class RollBg3ServCommand extends ADiscordCommand {
   constructor(enabled: boolean = true) {
     super(options, enabled);
-  }
-
-  public async canExecute(
-    user: User,
-    message: DiscordMessage,
-  ): Promise<boolean> {
-    console.log(user);
-    return (
-      message.guildId === discordServerIdBg3 && super.canExecute(user, message)
-    );
   }
 
   public async execute(

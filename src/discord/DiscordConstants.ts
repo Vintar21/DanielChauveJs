@@ -1,12 +1,12 @@
 import { EmbedBuilder, Message, OmitPartialGroupDMChannel } from "discord.js";
-import { channel, discordServerIdBg3 } from "../config/ConfigLoader";
+import { channel, discordCommandsChannelId } from "../config/ConfigLoader";
+import { Permissions } from "../utils/permissions/Permissions";
 import { Role, Roles } from "../utils/RoleUtils";
 import {
   NEW_LINE,
   SLASH,
   TWITCH_CHANNEL_PREFIX,
 } from "../utils/StringConstants";
-import { MainApp } from "../app";
 
 export const DISCORD_COMMAND_PREFIX = SLASH;
 export const TWITCH_ARGUMENT = "twitch";
@@ -36,6 +36,23 @@ export const twitchEmbedTemplate = new EmbedBuilder()
   .setTimestamp();
 
 export type DiscordMessage = OmitPartialGroupDMChannel<Message<boolean>>;
+export type ServerId = string;
+export type ChannelId = string;
+
+// Allow every server
+export function getDefaultServerPermissions(): Permissions<ServerId> {
+  const defaultServerPermissions: Permissions<ServerId> = new Permissions();
+  defaultServerPermissions.allowDefault();
+  return defaultServerPermissions;
+}
+
+// The given commandChannelId can ByPass, others are just allowed
+export function getDefaultChannelPermissions(): Permissions<ChannelId> {
+  const defaultChannelPermissions: Permissions<ChannelId> = new Permissions();
+  defaultChannelPermissions.allowDefault();
+  defaultChannelPermissions.bypass(discordCommandsChannelId);
+  return defaultChannelPermissions;
+}
 
 const OWNER = "974801540202250282";
 const MODERATOR = "974801661551849552";
