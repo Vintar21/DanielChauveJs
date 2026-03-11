@@ -20,6 +20,8 @@ export default abstract class ACommand implements ICommand {
   protected usersUseCount: Map<UserId, number> = new Map();
   protected globalUseCount: number = 0;
 
+  protected randomParts: Map<string, string[]> = new Map();
+
   constructor(options: CommandOptions, enabled: boolean = true) {
     options.enabled = enabled;
     this.options = options;
@@ -40,7 +42,11 @@ export default abstract class ACommand implements ICommand {
     canTagUser: boolean = true,
   ) {
     const twitchClient: TwitchClient = MainApp.getTwitchClient();
-    message = formatMessage ? formatCommandMessage(message, event) : message;
+    // Automatically format message if it contains random parts
+    formatMessage ||= this.randomParts.size > 0;
+    message = formatMessage
+      ? formatCommandMessage(message, event, this.randomParts)
+      : message;
     if (this.canReplyToUser(event)) {
       twitchClient.reply(message, event);
     } else if (this.options.sendAsAnnounce) {
@@ -97,6 +103,17 @@ export default abstract class ACommand implements ICommand {
     // Command enabled
     if (!this.options.enabled) {
       return false;
+    }
+
+    // Categories permissions
+    const category = (
+      await MainApp.getTwitchClient().getCurrentGame()
+    ).toLowerCase();
+
+    if (this.options.categoriesPermissions.isUnallowed(category)) {
+      return false;
+    } else if (this.options.categoriesPermissions.canBypass(category)) {
+      return true;
     }
 
     // Specific user permissions

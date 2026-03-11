@@ -7,11 +7,17 @@ import { getDefaultRolesPermissions, Roles } from "../../utils/RoleUtils";
 import { User } from "../../utils/user/User";
 import CounterCommandOptions from "../options/CounterCommanOptions";
 import ACounterCommand from "../templates/ACounterCommand";
+import {
+  BLUE_PRINCE,
+  getCategoryPermissions,
+} from "../../utils/CategoriesConstants";
 
 // TODO: FollowerOnlyPermissions
 // Example of another counter commands
 const rolesModificationPermissions = getDefaultRolesPermissions();
 rolesModificationPermissions.unallow(Roles.NO_ROLE);
+
+const categoriesPermissions = getCategoryPermissions(BLUE_PRINCE);
 
 const options: CounterCommandOptions = new CounterCommandOptions([
   /jours?/i,
@@ -20,6 +26,7 @@ const options: CounterCommandOptions = new CounterCommandOptions([
   /deaths?/i,
 ])
   .setCounterModificationPermissions(rolesModificationPermissions)
+  .setCategoriesPermissions(categoriesPermissions)
   .setGlobalCooldown(minutes(2)) as CounterCommandOptions;
 
 export default class BluePrinceDayCounterCommand extends ACounterCommand {
