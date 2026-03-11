@@ -86,7 +86,10 @@ export default abstract class ADiscordCommand {
     );*/
   }
 
-  public async canExecute(user: User): Promise<boolean> {
+  public async canExecute(
+    user: User,
+    message: DiscordMessage,
+  ): Promise<boolean> {
     // Command enabled
     if (!this.options.enabled) {
       return false;
@@ -96,6 +99,20 @@ export default abstract class ADiscordCommand {
     if (this.options.usersPermissions.isUnallowed(user.userId)) {
       return false;
     } else if (this.options.usersPermissions.canBypass(user.userId)) {
+      return true;
+    }
+
+    // Server permissions
+    if (this.options.serverPermissions.isUnallowed(message.guildId)) {
+      return false;
+    } else if (this.options.serverPermissions.canBypass(message.guildId)) {
+      return true;
+    }
+
+    // Channel permissions
+    if (this.options.channelPermissions.isUnallowed(message.channelId)) {
+      return false;
+    } else if (this.options.channelPermissions.canBypass(message.channelId)) {
       return true;
     }
 
