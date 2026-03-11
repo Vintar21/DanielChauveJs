@@ -38,14 +38,13 @@ export default abstract class ACommand implements ICommand {
     event: MessageEvent,
     ignoreCooldowns: boolean,
     message: String,
-    formatMessage: boolean = false,
   ) {
     const twitchClient: TwitchClient = MainApp.getTwitchClient();
     // Automatically format message if it contains random parts
-    formatMessage ||= this.randomParts.size > 0;
-    message = formatMessage
-      ? formatCommandMessage(message, event, this.randomParts)
-      : message;
+    message =
+      this.options.formatMessage || this.randomParts.size > 0
+        ? formatCommandMessage(message, event, this.randomParts)
+        : message;
     if (this.canReplyToUser(event)) {
       twitchClient.reply(message, event);
     } else if (this.options.sendAsAnnounce) {

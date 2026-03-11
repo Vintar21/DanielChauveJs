@@ -34,6 +34,9 @@ export default class CommandOptions {
   enabled: boolean = true;
   private usePrefix: boolean = true;
 
+  // Has variable to replace in the answer
+  formatMessage: boolean = false;
+
   rolesPermissions: Permissions<Role> = getDefaultRolesPermissions();
   usersPermissions: Permissions<UserId> = getDefaultUsersPermissions();
   categoriesPermissions: Permissions<Category> =
@@ -58,6 +61,7 @@ export default class CommandOptions {
     newOptions.enabled = commandOptions.enabled;
     newOptions.usePrefix = commandOptions.usePrefix;
     newOptions.useFullMessage = commandOptions.useFullMessage;
+    newOptions.formatMessage = commandOptions.formatMessage;
     return newOptions;
   }
 
@@ -91,6 +95,17 @@ export default class CommandOptions {
   // Default behavior, you probably don't need to use it
   public dontUseFullMessage(): CommandOptions {
     this.useFullMessage = false;
+    return this;
+  }
+
+  public hasPlaceholders(): CommandOptions {
+    this.formatMessage = true;
+    return this;
+  }
+
+  // Default behavior, you prbably don't need to use it
+  public noPlaceholder(): CommandOptions {
+    this.formatMessage = true;
     return this;
   }
 

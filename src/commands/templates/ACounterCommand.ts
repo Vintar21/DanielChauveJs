@@ -36,6 +36,7 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
   ) {
     super(options, enabled);
     this.counter = counter;
+    options.formatMessage = true;
     this.options = options;
   }
 
@@ -217,20 +218,5 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
       return false;
     }
     return super.match(input, game, formatMessage);
-  }
-
-  public replyOrSend(
-    user: User,
-    event: MessageEvent,
-    ignoreCooldowns: boolean,
-    message: String,
-  ): void {
-    super.replyOrSend(
-      user,
-      event,
-      ignoreCooldowns,
-      formatCounterMessage(message, this.counter),
-      true,
-    );
   }
 }
