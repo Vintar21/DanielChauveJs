@@ -103,7 +103,7 @@ export default class DiscordClient extends Client {
           const foundCommand = this.commands.find((command) =>
             command.match(parsedCommand),
           );
-          if (foundCommand && (await foundCommand.canExecute(user))) {
+          if (foundCommand && (await foundCommand.canExecute(user, message))) {
             foundCommand.execute(message, user, false);
           }
         }

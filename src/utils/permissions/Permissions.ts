@@ -1,5 +1,3 @@
-import { warn } from "../CommonUtils";
-
 export type Right = number;
 export class Permissions<T> {
   static BYPASS: Right = 1;
@@ -31,7 +29,7 @@ export class Permissions<T> {
   public getRightOrDefault(element: T): Right {
     const right = this.permissionsMap.get(element);
     if (!right) {
-      warn(`No permission found for ${element} !`);
+      //warn(`No permission found for ${element} !`);
     }
     return right ?? this.defaultPermission;
   }
