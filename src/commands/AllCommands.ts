@@ -7,6 +7,8 @@ import MarkerCommand from "./misc/MarkerCommand";
 import MultiCommand from "./misc/MultiCommand";
 import PollCommand from "./misc/PollCommand";
 import PredictionCommand from "./misc/PredictionCommand";
+import SetCategoryCommand from "./misc/SetCategoryCommand";
+import SetTitleCommand from "./misc/SetTitleCommand";
 import ItsATenButCommand from "./multiple-answers/ItsATenButCommand";
 import SmashOrPassCommand from "./multiple-answers/SmashOrPassCommand";
 import BackseatCommand from "./simple/BackseatCommand";
@@ -81,6 +83,8 @@ export const pollCommand: PollCommand = new PollCommand();
 export const fakeBanCommand: FakeBanCommand = new FakeBanCommand();
 export const chooseFromGsheetCommand: ChooseFromGSheetCommand =
   new ChooseFromGSheetCommand();
+export const setCategoryCommand: SetCategoryCommand = new SetCategoryCommand();
+export const setTitleCommand: SetTitleCommand = new SetTitleCommand();
 
 // In a separate array because it should be added in last !
 export const answerRandomMessage: AnswerRandomMessage =
@@ -91,6 +95,8 @@ export const allMiscCommands: Array<ICommand> = [
   multiCommand,
   pollCommand,
   predictionCommand,
+  setCategoryCommand,
+  setTitleCommand,
   fakeBanCommand,
   chooseFromGsheetCommand,
 ];

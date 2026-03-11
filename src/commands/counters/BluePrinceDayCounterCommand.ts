@@ -74,19 +74,11 @@ export default class BluePrinceDayCounterCommand extends ACounterCommand {
   public updateTitle(): void {
     const twitchClient = MainApp.getTwitchClient();
     twitchClient
-      .getChannelsApi()
-      .getChannelInfoById(twitchClient.getBroadcasterId())
-      .then((channelInfo) => {
-        if (channelInfo && channelInfo !== null) {
-          twitchClient
-            .getChannelsApi()
-            .updateChannelInfo(twitchClient.getBroadcasterId(), {
-              title: channelInfo.title.replaceAll(
-                /\bJour \d+/gi,
-                `Jour ${this.counter.getValue()}`,
-              ),
-            });
-        }
-      });
+      .getTitle()
+      .then((title) =>
+        twitchClient.setTitle(
+          title.replaceAll(/\bJour \d+/gi, `Jour ${this.counter.getValue()}`),
+        ),
+      );
   }
 }

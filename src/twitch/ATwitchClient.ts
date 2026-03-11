@@ -6,6 +6,7 @@ import {
   HelixCharityApi,
   HelixChatApi,
   HelixClipApi,
+  HelixGame,
   HelixGameApi,
   HelixGoalApi,
   HelixHypeTrainApi,
@@ -13,6 +14,7 @@ import {
   HelixPollApi,
   HelixPredictionApi,
   HelixStream,
+  HelixStreamApi,
   HelixUser,
   HelixUserApi,
 } from "@twurple/api";
@@ -23,6 +25,8 @@ import { channel } from "../config/ConfigLoader";
 import CountersManager from "../counters/CountersManager";
 import TimerManager from "../timers/TimerManager";
 import { EMPTY, SPACE } from "../utils/StringConstants";
+import { Category } from "../utils/CategoriesConstants";
+import { error, warn } from "../utils/CommonUtils";
 
 export default abstract class ATwitchClient {
   protected static botApp: Bot;
@@ -64,6 +68,26 @@ export default abstract class ATwitchClient {
       return;
     }
     return this.getChatApi().shoutoutUser(this.getBroadcasterId(), userId);
+  }
+
+  public async getTitle(): Promise<string> {
+    return (
+      await this.getChannelsApi().getChannelInfoById(this.getBroadcasterId())
+    ).title;
+  }
+
+  public async setTitle(title: string): Promise<boolean> {
+    if (title.length > 140) {
+      warn(`Title not updated: given title was too long (> 140)`);
+      return false;
+    }
+
+    return this.getChannelsApi()
+      .updateChannelInfo(this.getBroadcasterId(), {
+        title,
+      })
+      .then(() => true)
+      .catch(() => false);
   }
 
   public static send(message: String, isAnnounce: boolean = false): void {
@@ -137,9 +161,15 @@ export default abstract class ATwitchClient {
     return this.getApi().predictions;
   }
 
+  public getStreamsApi(): HelixStreamApi {
+    return this.getApi().streams;
+  }
+
   public getUsersApi(): HelixUserApi {
     return this.getApi().users;
   }
+
+  // Other getters
 
   public getBroadcaster(): HelixUser {
     return ATwitchClient.broadcaster;
@@ -169,6 +199,19 @@ export default abstract class ATwitchClient {
     return this.getChannelsApi()
       .getChannelInfoById(this.getBroadcasterId())
       .then((channel) => channel?.gameName);
+  }
+
+  public async setCurrentGame(game: Category): Promise<boolean> {
+    const category: HelixGame = await this.getGamesApi().getGameByName(game);
+    if (!category || category === null) {
+      warn(`No category named ${game}`);
+      return false;
+    }
+
+    this.getChannelsApi().updateChannelInfo(this.getBroadcasterId(), {
+      gameId: category.id,
+    });
+    return true;
   }
 
   public async getCurrentStream(): Promise<HelixStream> {
