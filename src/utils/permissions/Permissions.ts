@@ -7,6 +7,9 @@ export class Permissions<T> {
   private permissionsMap: Map<T, Right>;
   private defaultPermission: Right = Permissions.ALLOWED;
 
+  // Only if T instance of string
+  private caseSensitive = false;
+
   constructor(defaultPermissions?: [T, Right][]) {
     this.permissionsMap = defaultPermissions
       ? new Map(defaultPermissions)
@@ -19,6 +22,11 @@ export class Permissions<T> {
 
   // Prefer using getRightOrDefault instead
   public getRight(element: T): Right | undefined {
+    element =
+      (element instanceof String || typeof element === "string") &&
+      !this.caseSensitive
+        ? (element.toLowerCase() as T)
+        : element;
     return this.permissionsMap.get(element);
   }
 
@@ -27,7 +35,7 @@ export class Permissions<T> {
   }
 
   public getRightOrDefault(element: T): Right {
-    const right = this.permissionsMap.get(element);
+    const right = this.getRight(element);
     if (!right) {
       //warn(`No permission found for ${element} !`);
     }
@@ -49,6 +57,11 @@ export class Permissions<T> {
   }
 
   public setPermission(element: T, permission: Right): void {
+    element =
+      (element instanceof String || typeof element === "string") &&
+      !this.caseSensitive
+        ? (element.toLowerCase() as T)
+        : element;
     this.permissionsMap.set(element, permission);
   }
 
@@ -59,16 +72,13 @@ export class Permissions<T> {
   public setPermissionsForAllExcept(elements: T[], right: Right): void {
     // Insert given elements in the permissionsMap if not already present
     elements.forEach((e) =>
-      this.permissionsMap.set(
-        e,
-        this.permissionsMap.get(e) ?? this.defaultPermission,
-      ),
+      this.setPermission(e, this.getRight(e) ?? this.defaultPermission),
     );
     // Change defaultPermission and all permissionsMap values which aren't in the given elements
     this.defaultPermission = right;
     this.permissionsMap.forEach((value: Right, key: T) => {
       if (!elements.includes(key)) {
-        this.permissionsMap.set(key, right);
+        this.setPermission(key, right);
       }
     });
   }
@@ -135,5 +145,14 @@ export class Permissions<T> {
 
   public unallowAll(): void {
     this.setPermissionsForAll(Permissions.UNALLOWED);
+  }
+
+  // By default
+  public ignoreCase(): void {
+    this.caseSensitive = false;
+  }
+
+  public dontIgnoreCase(): void {
+    this.caseSensitive = true;
   }
 }

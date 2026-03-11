@@ -11,6 +11,10 @@ import {
   UseCount,
 } from "../../utils/CommandsUtils";
 import { START_REGEX } from "../../utils/StringConstants";
+import {
+  Category,
+  getDefaultCategoriesPermissions,
+} from "../../utils/CategoriesConstants";
 
 export default class CommandOptions {
   prefix: string = COMMAND_PREFIX;
@@ -32,6 +36,8 @@ export default class CommandOptions {
 
   rolesPermissions: Permissions<Role> = getDefaultRolesPermissions();
   usersPermissions: Permissions<UserId> = getDefaultUsersPermissions();
+  categoriesPermissions: Permissions<Category> =
+    getDefaultCategoriesPermissions();
 
   constructor(triggers: Array<Trigger>) {
     this.triggers = triggers;
@@ -48,6 +54,7 @@ export default class CommandOptions {
     newOptions.maxUsePerUser = commandOptions.maxUsePerUser;
     newOptions.rolesPermissions = commandOptions.rolesPermissions;
     newOptions.usersPermissions = commandOptions.usersPermissions;
+    newOptions.categoriesPermissions = commandOptions.categoriesPermissions;
     newOptions.enabled = commandOptions.enabled;
     newOptions.usePrefix = commandOptions.usePrefix;
     newOptions.useFullMessage = commandOptions.useFullMessage;
@@ -158,6 +165,13 @@ export default class CommandOptions {
     usersPermissions: Permissions<UserId>,
   ): CommandOptions {
     this.usersPermissions = usersPermissions;
+    return this;
+  }
+
+  public setCategoriesPermissions(
+    categoriesPermissions: Permissions<Category>,
+  ): CommandOptions {
+    this.categoriesPermissions = categoriesPermissions;
     return this;
   }
 

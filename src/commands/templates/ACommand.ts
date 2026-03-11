@@ -104,6 +104,17 @@ export default abstract class ACommand implements ICommand {
       return false;
     }
 
+    // Categories permissions
+    const category = (
+      await MainApp.getTwitchClient().getCurrentGame()
+    ).toLowerCase();
+
+    if (this.options.categoriesPermissions.isUnallowed(category)) {
+      return false;
+    } else if (this.options.categoriesPermissions.canBypass(category)) {
+      return true;
+    }
+
     // Specific user permissions
     if (this.options.usersPermissions.isUnallowed(user.userId)) {
       return false;
