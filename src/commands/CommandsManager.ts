@@ -44,10 +44,6 @@ export default class CommandsManager {
     return Array.from(this.commandsMap.values()).find((command) =>
       command.match(message, game),
     );
-    /*
-    return CommandsManager.commands.find((command) => {
-      return command.match(message);
-    });*/
   }
 
   public addCommand(command: ICommand): void {
