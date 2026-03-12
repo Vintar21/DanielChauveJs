@@ -1,6 +1,7 @@
 import { EventSubChannelRedemptionAddEvent } from "@twurple/eventsub-base/lib/events/EventSubChannelRedemptionAddEvent";
 import { EventSubWsListener } from "@twurple/eventsub-ws";
 import { MainApp } from "../app";
+import { rollCommand } from "../commands/AllCommands";
 import { allObsCameraEffects } from "../obs/camera-effects/AllObsCameraEffects";
 import AObsCameraEffect from "../obs/camera-effects/AObsCameraEffect";
 import { COOLDOWN_CAMERA_EFFECT } from "../obs/ObsCameraFilterEffect";
@@ -10,12 +11,15 @@ import TwitchClient from "../twitch/TwitchClient";
 import { choose, log } from "../utils/CommonUtils";
 import { CHILD_LAUGH_SOUND, playSound } from "../utils/MediaUtils";
 import { getGreaterRole, Role } from "../utils/RoleUtils";
+import { User } from "../utils/user/User";
 import {
   CAMERA_EFFECT_REWARD_ID,
   CHILD_LAUGH_REWARD_ID,
   DRING_REWARD_ID,
   MAX_TIME_TIKTOK_SCENE,
   MIN_TIME_TIKTOK_SCENE,
+  REROLL_REWARD_ID,
+  TEST_REWARD_ID,
   TIKTOK_REWARD_ID,
   TOCTOC_REWARD_ID,
 } from "./ChannelPointsConstants";
@@ -105,6 +109,12 @@ export default class ChannelPointsListener {
     );
     log(`Redemption event received: ${event.id} by ${username} (${userId})`);
     switch (event.rewardId) {
+      case REROLL_REWARD_ID:
+        rollCommand.executeNoMessage(new User(username, userId, role), true);
+        break;
+      case TEST_REWARD_ID:
+        rollCommand.executeNoMessage(new User(username, userId, role), true);
+        break;
       case CAMERA_EFFECT_REWARD_ID:
         // Can't be a method, need to be a function
         ChannelPointsListener.onCameraEffectRedeemed(input);
