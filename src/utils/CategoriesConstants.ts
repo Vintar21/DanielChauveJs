@@ -55,6 +55,7 @@ export const SCIENCE: Category = "Science & Technology";
 export const SPORT: Category = "Sports";
 export const STUDYING: Category = "Co-working & Studying";
 export const TALKSHOWS: Category = "Talk Shows & Podcasts";
+export const TABLETOP_RPG: Category = "Tabletop RPGs";
 
 export const NOT_GAMES: Category[] = [
   JUST_CHATTING,
