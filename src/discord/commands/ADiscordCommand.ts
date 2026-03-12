@@ -24,7 +24,7 @@ export default abstract class ADiscordCommand {
   ) {
     options.enabled = enabled;
     this.options = options;
-    this.name = this.options.canUsePrefix() ? this.options.prefix + name : name;
+    this.name = this.options.usePrefix ? this.options.prefix + name : name;
   }
 
   public abstract execute(

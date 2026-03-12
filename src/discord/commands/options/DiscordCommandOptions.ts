@@ -27,7 +27,7 @@ export default class DiscordCommandOptions {
   useFullMessage: boolean = false;
 
   enabled: boolean = true;
-  private usePrefix: boolean = true;
+  usePrefix: boolean = true;
 
   rolesPermissions: Permissions<Role> = getDefaultRolesPermissions();
   usersPermissions: Permissions<UserId> = getDefaultUsersPermissions();
