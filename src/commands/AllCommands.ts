@@ -37,6 +37,8 @@ import BanBestViewersBotCommand from "./simple/no-prefix/BanBestViewersBotComman
 import ACounterCommand from "./templates/ACounterCommand";
 import ICommand from "./templates/ICommand";
 import FakeBanCommand from "./trolls/FakeBanCommand";
+import RollCommand from "./misc/RollCommand";
+import ResetMvpCommand from "./misc/ResetMvpCommand";
 
 // ----- Simple commands -----
 export const switchFriendCodeCommand = new SwitchFriendCodeCommand();
@@ -118,6 +120,9 @@ export const allMultipleAnswersCommands: Array<ICommand> = [
 ];
 
 // ----- Misc Commands -----
+export const rollCommand: RollCommand = new RollCommand();
+export const resetMvpCommand: ResetMvpCommand = new ResetMvpCommand();
+
 export const multiCommand: MultiCommand = new MultiCommand();
 export const markerCommand: MarkerCommand = new MarkerCommand();
 export const predictionCommand: PredictionCommand = new PredictionCommand();
@@ -133,6 +138,7 @@ export const answerRandomMessage: AnswerRandomMessage =
   new AnswerRandomMessage();
 
 export const allMiscCommands: Array<ICommand> = [
+  rollCommand,
   markerCommand,
   multiCommand,
   pollCommand,
