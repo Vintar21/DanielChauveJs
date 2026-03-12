@@ -1,6 +1,7 @@
 export const SPACE: string = " ";
 export const EMPTY: string = "";
 export const SLASH: string = "/";
+export const PIPE: string = "|";
 export const DOT: string = ".";
 export const EXCLAMATION_POINT: string = "!";
 export const INTERROGATION_POINT: string = "?";

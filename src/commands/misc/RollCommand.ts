@@ -179,7 +179,7 @@ export default class RollCommand extends AArgumentsCommand {
     response += customMessage;
 
     // Ignore cooldown so the user can use !roll stat just after
-    super.replyOrSend(user, event, true, response, false, false);
+    super.replyOrSend(user, event, true, response);
 
     // Manually update cooldowns
     this.globalUseCount += 1;
