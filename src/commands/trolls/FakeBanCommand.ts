@@ -7,19 +7,20 @@ import { User } from "../../utils/user/User";
 import CommandOptions from "../options/CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
 
+const mainTrigger: string = "ban";
+
 const rolesPermissions: Permissions<Role> = getDefaultRolesPermissions();
 rolesPermissions.unallowEach([Roles.BROADCASTER, Roles.MOD]);
 
 const options: CommandOptions = new CommandOptions([
-  /ban/i,
-  /banuser/i,
-  /to/i,
-  /timeout/i,
+  "banUser",
+  "to",
+  "timeout",
 ]).setRolesPermission(rolesPermissions);
 
 export default class FakeBanCommand extends AArgumentsCommand {
   constructor(enabled: boolean = true) {
-    super(options, enabled);
+    super(mainTrigger, options, enabled);
   }
   protected executeWithArgs(
     user: User,

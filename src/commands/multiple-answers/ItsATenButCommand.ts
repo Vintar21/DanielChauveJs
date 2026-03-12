@@ -3,8 +3,9 @@ import CommandOptions from "../options/CommandOptions";
 import { Placeholders } from "../../utils/CommandsUtils";
 import DilemmaCommand from "../templates/DilemmaCommand";
 
+const mainTrigger: string = "10";
+
 const options: CommandOptions = new CommandOptions([
-  /10/i,
   /dix(mais)?/i,
   /ten(but)?/i,
   /(it'?sa?|c'?estun)10/i,
@@ -29,6 +30,6 @@ const answers: string[] = [
 
 export default class ItsATenButCommand extends DilemmaCommand {
   constructor() {
-    super(options, answers, true);
+    super(mainTrigger, options, answers, true);
   }
 }

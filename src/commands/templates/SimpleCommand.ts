@@ -7,11 +7,12 @@ export default class SimpleCommand extends ACommand {
   private response: String;
 
   constructor(
+    name: string,
     options: CommandOptions,
     response: String,
     enabled: boolean = true,
   ) {
-    super(options, enabled);
+    super(name, options, enabled);
     this.response = response;
   }
 

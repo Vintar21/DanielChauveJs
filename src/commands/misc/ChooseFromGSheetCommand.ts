@@ -7,16 +7,18 @@ import CommandOptions from "../options/CommandOptions";
 import { MainApp } from "../../app";
 import { EMPTY } from "../../utils/StringConstants";
 
+const mainTrigger: string = "fruit";
+
 const rolesPermissions: Permissions<Role> = getModOnlyRolesPermissions();
 
-const options: CommandOptions = new CommandOptions([
-  /fruits?/i,
-]).setRolesPermission(rolesPermissions);
+const options: CommandOptions = new CommandOptions([]).setRolesPermission(
+  rolesPermissions,
+);
 
 // A simple example to send a random message/info from a list in a GSheet
 export default class ChooseFromGSheetCommand extends ACommand {
   constructor(enabled: boolean = true) {
-    super(options, enabled);
+    super(mainTrigger, options, enabled);
   }
 
   public async execute(

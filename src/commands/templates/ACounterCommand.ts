@@ -30,11 +30,12 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
   protected unfreezeMessage: string = `Le compteur n'est plus freeze, il vaut toujours ${Placeholders.COUNTER}`;
 
   constructor(
+    name: string,
     counter: Counter,
     options: CounterCommandOptions,
     enabled: boolean = true,
   ) {
-    super(options, enabled);
+    super(name, options, enabled);
     this.counter = counter;
     this.options = options;
   }

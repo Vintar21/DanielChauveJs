@@ -12,6 +12,9 @@ import CommandOptions from "../options/CommandOptions";
 import ICommand from "./ICommand";
 
 export default abstract class ACommand implements ICommand {
+  // The command name used for call the command "!name", you could add aliases in options.triggers
+  protected name: string;
+
   protected options: CommandOptions;
 
   protected userCooldowns: Map<UserId, number> = new Map();
@@ -22,9 +25,10 @@ export default abstract class ACommand implements ICommand {
 
   protected randomParts: Map<string, string[]> = new Map();
 
-  constructor(options: CommandOptions, enabled: boolean = true) {
+  constructor(name: string, options: CommandOptions, enabled: boolean = true) {
     options.enabled = enabled;
     this.options = options;
+    this.name = this.options.canUsePrefix() ? this.options.prefix + name : name;
   }
 
   public abstract execute(
@@ -77,20 +81,21 @@ export default abstract class ACommand implements ICommand {
     const formattedInput = formatMessage ? input.trim() : input;
 
     if (this.options.useFullMessage) {
-      return this.internalMatch(formattedInput, this.options.getTriggers());
+      return this.internalMatch(formattedInput, this.getTriggers());
     }
     const parts = formattedInput.split(SPACE);
 
-    return this.internalMatch(parts[0], this.options.getTriggers());
+    return this.internalMatch(parts[0], this.getTriggers());
   }
 
   protected internalMatch(input: string, triggers: Array<Trigger>): boolean {
+    const normalizedInput = input.normalize().toLowerCase();
     return (
       triggers.find((trigger) => {
         if (trigger instanceof RegExp) {
-          return trigger.test(input);
+          return trigger.test(normalizedInput);
         } else {
-          return input.startsWith(trigger);
+          return normalizedInput.startsWith(trigger.normalize().toLowerCase());
         }
       }) !== undefined
     );
@@ -197,5 +202,25 @@ export default abstract class ACommand implements ICommand {
 
   public getPrefix(): string {
     return this.options.prefix;
+  }
+
+  public getName(): string {
+    return this.name;
+  }
+
+  public getTriggers(): Trigger[] {
+    return [this.name, ...this.options.getTriggers()];
+  }
+
+  public getAllStringTriggers(): string[] {
+    const stringTriggers: string[] = [];
+    this.getTriggers()
+      .filter(
+        (trigger) => typeof trigger === "string" || trigger instanceof String,
+      )
+      .forEach((stringTrigger) =>
+        stringTriggers.push(stringTrigger.toString()),
+      );
+    return stringTriggers;
   }
 }

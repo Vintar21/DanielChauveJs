@@ -6,16 +6,18 @@ import { rollCommand } from "../AllCommands";
 import CommandOptions from "../options/CommandOptions";
 import ACommand from "../templates/ACommand";
 
+const mainTrigger: string = "reset";
+
 const rolesPermissions: Permissions<Role> = getModOnlyRolesPermissions();
 
-const options: CommandOptions = new CommandOptions([/reset/i, /reset-?mvp/i])
+const options: CommandOptions = new CommandOptions(["resetMvp", "reset-mvp"])
   .setRolesPermission(rolesPermissions)
   .disable();
 
 //TODO: arg of !roll not a full command
 export default class ResetMvpCommand extends ACommand {
   constructor(enabled: boolean = true) {
-    super(options, enabled);
+    super(mainTrigger, options, enabled);
   }
 
   public execute(

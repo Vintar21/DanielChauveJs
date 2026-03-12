@@ -9,9 +9,12 @@ import { EMPTY } from "../../utils/StringConstants";
 import CounterCommandOptions from "../options/CounterCommanOptions";
 import ACounterCommand from "../templates/ACounterCommand";
 
+const mainTrigger = "mort";
+
 const categoriesPermissions = getGamesCategoriesPermissions();
 categoriesPermissions.unallowEach([BLUE_PRINCE, TRACKMANIA]);
 
+// TODO: not only regexp in COunterCommandOptions
 const options: CounterCommandOptions = new CounterCommandOptions([
   /morts?/i,
   /deaths?/i,
@@ -24,7 +27,7 @@ export default class DeathCounterCommand extends ACounterCommand {
   protected modifyCounterMessage: string = this.getCounterMessage;
 
   constructor(counter: Counter, enabled: boolean = true) {
-    super(counter, options, enabled);
+    super(mainTrigger, counter, options, enabled);
     this.randomParts.set(Placeholders.RANDOM_PART_1, [
       EMPTY,
       "Coup dur...",

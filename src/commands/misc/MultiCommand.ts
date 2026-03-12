@@ -7,11 +7,13 @@ import { SLASH, SPACE } from "../../utils/StringConstants";
 import ACommand from "../templates/ACommand";
 import CommandOptions from "../options/CommandOptions";
 
+const mainTrigger: string = "multi";
+
 const rolesPermissions: Permissions<Role> = getVipOnlyRolesPermissions();
 
-const options: CommandOptions = new CommandOptions([
-  /multi/i,
-]).setRolesPermission(rolesPermissions);
+const options: CommandOptions = new CommandOptions([]).setRolesPermission(
+  rolesPermissions,
+);
 
 // TODO: extends AArgumentsCommand
 export default class MultiCommand extends ACommand {
@@ -21,7 +23,7 @@ export default class MultiCommand extends ACommand {
   private static messageStart: string = "Pour suivre toutes les POVs: ";
 
   constructor(enabled: boolean = true) {
-    super(options, enabled);
+    super(mainTrigger, options, enabled);
   }
 
   public execute(

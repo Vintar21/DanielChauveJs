@@ -18,7 +18,7 @@ const options: CommandOptions = new CommandOptions([
 
 export default class BanBestViewersBotCommand extends NoPrefixSimpleCommand {
   constructor(enabled: boolean = true) {
-    super(options, EMPTY, enabled);
+    super(EMPTY, options, EMPTY, enabled);
   }
 
   public execute(

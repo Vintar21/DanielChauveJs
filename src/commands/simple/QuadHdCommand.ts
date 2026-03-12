@@ -1,13 +1,14 @@
 import CommandOptions from "../options/CommandOptions";
 import SimpleCommand from "../templates/SimpleCommand";
 
+const mainTrigger: string = "2k";
+
 const options: CommandOptions = new CommandOptions([
-  /2k/i,
-  /1440p/i,
-  /2560p?x1440p?/i,
-  /2560p/i,
-  /uhd/i,
-  /quadhd/i,
+  "1440p",
+  "2560x1440",
+  "2560p",
+  "uhd",
+  "quadhd",
 ]);
 
 const answer: String =
@@ -15,6 +16,6 @@ const answer: String =
 
 export default class QuadHdCommand extends SimpleCommand {
   constructor(enabled: boolean = true) {
-    super(options, answer, enabled);
+    super(mainTrigger, options, answer, enabled);
   }
 }

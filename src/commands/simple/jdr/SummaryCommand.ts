@@ -1,10 +1,12 @@
 import CommandOptions from "../../options/CommandOptions";
 import SimpleCommand from "../../templates/SimpleCommand";
 
+const mainTrigger: string = "resume";
+
 const options: CommandOptions = new CommandOptions([
-  /r[éeêè]sum[éeêè]e?/i,
-  /campagne/i,
-  /histoire/i,
+  "resumee",
+  "campagne",
+  "histoire",
 ]);
 
 const answer: String =
@@ -12,6 +14,6 @@ const answer: String =
 
 export default class SummaryCommand extends SimpleCommand {
   constructor(enabled: boolean = true) {
-    super(options, answer, enabled);
+    super(mainTrigger, options, answer, enabled);
   }
 }

@@ -2,10 +2,11 @@ import CommandOptions from "../options/CommandOptions";
 import { Placeholders } from "../../utils/CommandsUtils";
 import DilemmaCommand from "../templates/DilemmaCommand";
 
+const mainTrigger: string = "smash";
+
 const options: CommandOptions = new CommandOptions([
-  /sop/i,
+  "sop",
   /smash(or)?pass/i,
-  /smash/i,
 ]).setGlobalCooldown(15);
 
 const answers: String[] = [
@@ -17,6 +18,6 @@ const answers: String[] = [
 
 export default class SmashOrPassCommand extends DilemmaCommand {
   constructor() {
-    super(options, answers, true);
+    super(mainTrigger, options, answers, true);
   }
 }

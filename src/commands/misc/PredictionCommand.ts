@@ -12,12 +12,15 @@ import { log, minutes } from "../../utils/CommonUtils";
 const CANCEL_PREDICTION = "cancel";
 const LOCK_PREDICTION = "stop";
 
+const mainTrigger: string = "bet";
+
 const rolesPermissions: Permissions<Role> = getModOnlyRolesPermissions();
 
 const options: CommandOptions = new CommandOptions([
-  /pr[eéèê]di(ction)?s?/i,
-  /bets?/i,
-  /paris?/i,
+  "prediction",
+  "bets",
+  "pari",
+  "paris",
 ]).setRolesPermission(rolesPermissions);
 
 export default class PredictionCommand extends AArgumentsCommand {
@@ -26,7 +29,7 @@ export default class PredictionCommand extends AArgumentsCommand {
   private title: string = "Est-ce que ça va arriver ?";
 
   constructor() {
-    super(options, true);
+    super(mainTrigger, options, true);
   }
 
   private createPrediction(

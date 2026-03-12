@@ -22,12 +22,16 @@ const ARCHIVED = "ARCHIVED";
 const MODERATED = "MODERATED";
 const INVALID = "INVALID";
 
+const mainTrigger: string = "poll";
+
 const rolesPermissions: Permissions<Role> = getModOnlyRolesPermissions();
 
 const options: CommandOptions = new CommandOptions([
-  /polls?/i,
-  /sondages?/i,
-  /votes?/i,
+  "polls",
+  "sondage",
+  "sondages",
+  "vote",
+  "votes",
 ]).setRolesPermission(rolesPermissions);
 
 export default class PollCommand extends AArgumentsCommand {
@@ -39,7 +43,7 @@ export default class PollCommand extends AArgumentsCommand {
   private pollListener: EventSubWsListener;
 
   constructor() {
-    super(options, true);
+    super(mainTrigger, options, true);
   }
 
   public initListener() {

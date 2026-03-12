@@ -1,3 +1,4 @@
+import { SPACE } from "../utils/StringConstants";
 import {
   allCounterCommands,
   allMiscCommands,
@@ -10,7 +11,8 @@ import {
 import ICommand from "./templates/ICommand";
 
 export default class CommandsManager {
-  private static commands: Array<ICommand> = new Array<ICommand>();
+  //private static commands: Array<ICommand> = new Array<ICommand>();
+  private commandsMap: Map<string, ICommand> = new Map();
 
   private static instance: CommandsManager = new CommandsManager();
 
@@ -29,13 +31,19 @@ export default class CommandsManager {
     message: string,
     game: string,
   ): Promise<ICommand | undefined> {
-    // Check all commands, that's not OK
-    const matchResults = await Promise.all(
-      CommandsManager.commands.map((command) => command.match(message, game)),
-    );
+    const firstWord = message.split(SPACE)[0].normalize().toLowerCase();
+    const potentialCommand = this.commandsMap.get(firstWord);
 
-    const index = matchResults.findIndex((result) => result);
-    return CommandsManager.commands[index];
+    // recheck with match because of game conditions TODO: change that
+    if (potentialCommand && potentialCommand.match(message, game)) {
+      return potentialCommand;
+    }
+
+    this.commandsMap.forEach((command, name) => command.match(message, game));
+
+    return Array.from(this.commandsMap.values()).find((command) =>
+      command.match(message, game),
+    );
     /*
     return CommandsManager.commands.find((command) => {
       return command.match(message);
@@ -43,7 +51,11 @@ export default class CommandsManager {
   }
 
   public addCommand(command: ICommand): void {
-    CommandsManager.commands.push(command);
+    command
+      .getAllStringTriggers()
+      .forEach((trigger) =>
+        this.commandsMap.set(trigger.trim().normalize().toLowerCase(), command),
+      );
   }
 
   public addCommands(commands: Array<ICommand>): void {
@@ -55,8 +67,8 @@ export default class CommandsManager {
   // Shouldn't init yourself, use getInstanceAndInit instead
   protected init(): void {
     // Init only once
-    if (CommandsManager.commands.length > 0) {
-      CommandsManager.commands.forEach((command) => command.reset());
+    if (this.commandsMap.size > 0) {
+      this.commandsMap.forEach((command) => command.reset());
       return;
     }
 

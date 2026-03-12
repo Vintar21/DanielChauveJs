@@ -1,21 +1,18 @@
 import { MessageEvent } from "@twurple/easy-bot";
 import { MainApp } from "../../app";
 import { Permissions } from "../../utils/permissions/Permissions";
-import {
-  getModOnlyRolesPermissions,
-  getVipOnlyRolesPermissions,
-  Role,
-} from "../../utils/RoleUtils";
+import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
+import { PIPE, SPACE } from "../../utils/StringConstants";
 import { User } from "../../utils/user/User";
-import ACommand from "../templates/ACommand";
 import CommandOptions from "../options/CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
-import { PIPE, SPACE } from "../../utils/StringConstants";
+
+const mainTrigger: string = "setTitle";
 
 const rolesPermissions: Permissions<Role> = getModOnlyRolesPermissions();
 
 const options: CommandOptions = new CommandOptions([
-  /(?:set)?title/i,
+  "title",
 ]).setRolesPermission(rolesPermissions);
 
 export default class SetTitleCommand extends AArgumentsCommand {
@@ -77,6 +74,6 @@ export default class SetTitleCommand extends AArgumentsCommand {
   }
 
   constructor(enabled: boolean = true) {
-    super(options, enabled);
+    super(mainTrigger, options, enabled);
   }
 }

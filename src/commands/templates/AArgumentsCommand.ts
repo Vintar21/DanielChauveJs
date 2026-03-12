@@ -5,9 +5,9 @@ import { SPACE } from "../../utils/StringConstants";
 import CommandOptions from "../options/CommandOptions";
 
 export default abstract class AArgumentsCommand extends ACommand {
-  constructor(options: CommandOptions, enabled: boolean = true) {
+  constructor(name: string, options: CommandOptions, enabled: boolean = true) {
     options = options.canUseFullMessage();
-    super(options, enabled);
+    super(name, options, enabled);
   }
 
   protected parseArgs(event: MessageEvent): String[] {

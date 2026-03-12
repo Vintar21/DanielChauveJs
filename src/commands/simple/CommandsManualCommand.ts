@@ -2,9 +2,15 @@ import { commandsManualLink } from "../../config/ConfigLoader";
 import CommandOptions from "../options/CommandOptions";
 import SimpleCommand from "../templates/SimpleCommand";
 
+const mainTrigger: string = "commandes";
+
 const options: CommandOptions = new CommandOptions([
-  /commande?s?/i,
-  /man(u[ae]l)?/i,
+  "commande",
+  "commands",
+  "command",
+  "man",
+  "manual",
+  "manuel",
   /commands?-?list/i,
   /liste(-|des?)commandes?/,
 ]);
@@ -13,6 +19,6 @@ const answer: String = `Vous pouvez retrouver le manuel de mes commandes ici: ${
 
 export default class CommandsManualCommand extends SimpleCommand {
   constructor(enabled: boolean = true) {
-    super(options, answer, enabled);
+    super(mainTrigger, options, answer, enabled);
   }
 }

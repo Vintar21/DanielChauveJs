@@ -15,7 +15,9 @@ import { resetMvpCommand } from "../AllCommands";
 import CommandOptions from "../options/CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
 
-const options: CommandOptions = new CommandOptions([/roll/i])
+const mainTrigger: string = "roll";
+
+const options: CommandOptions = new CommandOptions([])
   //.setMaxUsePerUser(1)
   .setUserCooldown(15);
 
@@ -42,7 +44,7 @@ export default class RollCommand extends AArgumentsCommand {
   private currentMVP: Mvp = new Mvp(undefinedUser, 0);
 
   constructor(enabled: boolean = true) {
-    super(options, enabled);
+    super(mainTrigger, options, enabled);
   }
 
   private roll(): number {

@@ -8,11 +8,12 @@ export default class MultipleAnswersCommand extends ACommand {
   protected responses: String[];
 
   constructor(
+    name: string,
     options: CommandOptions,
     responses: String[],
     enabled: boolean = true,
   ) {
-    super(options, enabled);
+    super(name, options, enabled);
     this.responses = responses;
   }
 

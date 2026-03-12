@@ -2,12 +2,13 @@ import { getGamesCategoriesPermissions } from "../../utils/CategoriesConstants";
 import CommandOptions from "../options/CommandOptions";
 import SimpleCommand from "../templates/SimpleCommand";
 
+const mainTrigger: string = "bs";
+
 const categoriesPermissions = getGamesCategoriesPermissions();
 
 const options: CommandOptions = new CommandOptions([
-  /bs/i,
-  /backseat/i,
-  /si[èéêe]ge-?arr?i[éeèê]r+e/i,
+  "backseat",
+  /siege-?arr?ier+e/i,
 ])
   .sendAnnounce()
   .setCategoriesPermissions(categoriesPermissions);
@@ -16,6 +17,6 @@ const answer: String =
 
 export default class BackseatCommand extends SimpleCommand {
   constructor(enabled: boolean = true) {
-    super(options, answer, enabled);
+    super(mainTrigger, options, answer, enabled);
   }
 }

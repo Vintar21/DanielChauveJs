@@ -4,11 +4,12 @@ import SimpleCommand from "./SimpleCommand";
 
 export default class NoPrefixSimpleCommand extends SimpleCommand {
   constructor(
+    name: string,
     options: CommandOptions,
     response: String,
     enabled: boolean = true,
   ) {
     options.dontUsePrefix().canUseFullMessage();
-    super(options, response, enabled);
+    super(name, options, response, enabled);
   }
 }

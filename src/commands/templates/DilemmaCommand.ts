@@ -9,12 +9,13 @@ export default class DilemmaCommand extends MultipleAnswersCommand {
   private possibilities: String[];
 
   constructor(
+    name: string,
     options: CommandOptions,
     possibilities: String[],
     enabled: boolean = true,
   ) {
     options = options.canUseFullMessage();
-    super(options, [], enabled);
+    super(name, options, [], enabled);
     this.possibilities = possibilities;
   }
 

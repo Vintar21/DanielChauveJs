@@ -2,8 +2,10 @@ import { tutosCelestePlaylist } from "../../config/ConfigLoader";
 import CommandOptions from "../options/CommandOptions";
 import SimpleCommand from "../templates/SimpleCommand";
 
+const mainTrigger: string = "tutos";
+
 const options: CommandOptions = new CommandOptions([
-  /tutos?/i,
+  "tuto",
   /tutori[ea]l+e?s?/i,
   /tutos?-?celeste/i,
   /tutori[ea]l+e?s?-?celeste/i,
@@ -14,6 +16,6 @@ const answer: String = `​Pour retrouver mon tuto sur le speedrun Celeste c'est
 
 export default class TutosCelesteCommand extends SimpleCommand {
   constructor(enabled: boolean = true) {
-    super(options, answer, enabled);
+    super(mainTrigger, options, answer, enabled);
   }
 }

@@ -6,16 +6,19 @@ import { User } from "../../utils/user/User";
 import ACommand from "../templates/ACommand";
 import CommandOptions from "../options/CommandOptions";
 
+const mainTrigger: string = "marker";
+
 const rolesPermissions: Permissions<Role> = getVipOnlyRolesPermissions();
 
 const options: CommandOptions = new CommandOptions([
-  /markers?/i,
-  /marqueurs?/i,
+  "markers",
+  "marqueur",
+  "marqueurs",
 ]).setRolesPermission(rolesPermissions);
 
 export default class AnswerRandomMessage extends ACommand {
   constructor(enabled: boolean = true) {
-    super(options, enabled);
+    super(mainTrigger, options, enabled);
   }
 
   public execute(

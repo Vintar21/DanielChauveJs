@@ -12,6 +12,8 @@ import {
   getCategoryPermissions,
 } from "../../utils/CategoriesConstants";
 
+const mainTrigger = "jour";
+
 // TODO: FollowerOnlyPermissions
 // Example of another counter commands
 const rolesModificationPermissions = getDefaultRolesPermissions();
@@ -34,7 +36,7 @@ export default class BluePrinceDayCounterCommand extends ACounterCommand {
   protected modifyCounterMessage: string = `Encore une bonne journée qui se termine dans ${Placeholders.CATEGORY} ! Direction le jour ${Placeholders.COUNTER} !`;
 
   constructor(counter: Counter, enabled: boolean = true) {
-    super(counter, options, enabled);
+    super(mainTrigger, counter, options, enabled);
   }
 
   protected plusArg(

@@ -4,6 +4,7 @@ import { Permissions } from "../../utils/permissions/Permissions";
 import { getDefaultRolesPermissions, Role, Roles } from "../../utils/RoleUtils";
 import CommandOptions from "../options/CommandOptions";
 import MultipleAnswersCommand from "../templates/MultipleAnswersCommand";
+import { EMPTY } from "../../utils/StringConstants";
 
 const rolesPermissions: Permissions<Role> = getDefaultRolesPermissions();
 rolesPermissions.unallow(Roles.BROADCASTER);
@@ -25,7 +26,7 @@ export default class AnswerRandomMessage extends MultipleAnswersCommand {
   protected proba: number = 1 / 1000;
 
   constructor(enabled: boolean = true) {
-    super(options, answers, enabled);
+    super(EMPTY, options, answers, enabled);
   }
 
   public execute(

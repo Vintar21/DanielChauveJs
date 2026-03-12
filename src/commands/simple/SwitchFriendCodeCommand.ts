@@ -26,14 +26,16 @@ categoriesPermissions.allowEach([
   SMASH_BROS_ULTIMATE,
 ]);
 
+const mainTrigger: string = "codeAmi";
+
 const options: CommandOptions = new CommandOptions([
-  /code-?ami/i,
+  "code-ami",
 ]).setCategoriesPermissions(categoriesPermissions);
 
 const answer: String = `​Mon code ami Switch est ${switchFriendCode}`;
 
 export default class SwitchFriendCodeCommand extends SimpleCommand {
   constructor(enabled: boolean = true) {
-    super(options, answer, enabled);
+    super(mainTrigger, options, answer, enabled);
   }
 }

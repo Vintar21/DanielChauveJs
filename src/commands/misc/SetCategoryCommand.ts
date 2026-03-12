@@ -19,11 +19,16 @@ import { User } from "../../utils/user/User";
 import CommandOptions from "../options/CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
 
+const mainTrigger: string = "setGame";
+
 const rolesPermissions: Permissions<Role> = getVipOnlyRolesPermissions();
 
 const options: CommandOptions = new CommandOptions([
-  /(set|update)?game/i,
-  /(set|update)?category?/i,
+  "updateGame",
+  "game",
+  "setCategory",
+  "updateCategory",
+  "category",
 ]).setRolesPermission(rolesPermissions);
 
 // Change the current category and handling some aliases for some games
@@ -145,7 +150,7 @@ export default class SetCategory extends AArgumentsCommand {
     }
   }
   constructor(enabled: boolean = true) {
-    super(options, enabled);
+    super(mainTrigger, options, enabled);
   }
 
   private getClassicPokemonRegex(

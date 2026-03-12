@@ -14,5 +14,9 @@ export default interface ICommand {
 
   getPrefix(): string;
 
+  getName(): string;
+
+  getAllStringTriggers(): string[];
+
   isEnabled(): boolean;
 }
