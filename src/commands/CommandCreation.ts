@@ -23,7 +23,8 @@ export const commands: Array<ICommand> = [];
  * Note: If you need more complex/specific commands, change SimpleCommand by something else (see other example commands or create your own template by extending ACommand like in src/commands/misc)
  */
 const myCommand: ICommand = new SimpleCommand(
-  new CommandOptions([/mycomm?and/i, /thecomm?and/i]).setGlobalCooldown(10),
+  "myCommand",
+  new CommandOptions([/thecomm?and/i]).setGlobalCooldown(10),
   "This is an example command answer.",
   true,
 );

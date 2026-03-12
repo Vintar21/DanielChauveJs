@@ -7,15 +7,17 @@ import { DiscordMessage, TWITCH_ARGUMENT } from "../DiscordConstants";
 import ADiscordCommand from "./ADiscordCommand";
 import DiscordCommandOptions from "./options/DiscordCommandOptions";
 
+const mainTrigger: string = "say";
+
 const rolesPermissions = getModOnlyRolesPermissions();
 
-const options = new DiscordCommandOptions(["say"])
+const options = new DiscordCommandOptions([])
   .setRolesPermission(rolesPermissions)
   .setReplyToUser(false);
 
 class SayCommand extends ADiscordCommand {
   constructor(enabled: boolean = true) {
-    super(options, enabled);
+    super(mainTrigger, options, enabled);
   }
 
   public execute(

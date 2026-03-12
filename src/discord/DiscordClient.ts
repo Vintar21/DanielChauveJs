@@ -18,9 +18,6 @@ import { choose, hours, log, minutes, pluralize } from "../utils/CommonUtils";
 import { NEW_LINE, SPACE } from "../utils/StringConstants";
 import { User } from "../utils/user/User";
 import ADiscordCommand from "./commands/ADiscordCommand";
-import { liveCommand } from "./commands/LiveCommand";
-import { sayCommand } from "./commands/SayCommand";
-import { rollBg3ServCommand } from "./commands/RollBg3ServCommand";
 import {
   CATEGORY_PLACEHOLDER,
   DEFAULT_MESSAGE,
@@ -28,6 +25,7 @@ import {
   TAG_EVERYONE,
   twitchEmbedTemplate,
 } from "./DiscordConstants";
+import { twitchRelatedDiscordCommands } from "./AllDiscordCommands";
 
 export default class DiscordClient extends Client {
   private twitchAnnouncesChannel: GuildBasedChannel;
@@ -37,11 +35,7 @@ export default class DiscordClient extends Client {
   private cooldownBetweenLiveAnnounces: number = hours(8);
   private lastLiveAnnounce: number = 0;
 
-  private commands: ADiscordCommand[] = [
-    sayCommand,
-    liveCommand,
-    rollBg3ServCommand,
-  ];
+  private commands: Map<string, ADiscordCommand> = new Map();
 
   private checkInterval: number = minutes(5);
 
@@ -54,6 +48,9 @@ export default class DiscordClient extends Client {
         GatewayIntentBits.MessageContent,
       ],
     });
+    twitchRelatedDiscordCommands.forEach((command) =>
+      this.commands.set(command.getName(), command),
+    );
   }
 
   private async getStreamCategoryName(): Promise<string> {
@@ -103,11 +100,14 @@ export default class DiscordClient extends Client {
         );
 
         if (parts.length > 0) {
-          const parsedCommand = parts[0].toLowerCase();
+          const parsedCommand = parts[0].toLowerCase().normalize();
 
-          const foundCommand = this.commands.find((command) =>
+          const foundCommand = this.commands.get(parsedCommand);
+
+          // TODO: handle RegExp aliases
+          /*const foundCommand = this.commands.find((command) =>
             command.match(parsedCommand),
-          );
+          );*/
           if (foundCommand && (await foundCommand.canExecute(user, message))) {
             foundCommand.execute(message, user, false);
           }

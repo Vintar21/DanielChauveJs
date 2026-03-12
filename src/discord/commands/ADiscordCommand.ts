@@ -7,6 +7,8 @@ import { DiscordMessage } from "../DiscordConstants";
 import DiscordCommandOptions from "./options/DiscordCommandOptions";
 
 export default abstract class ADiscordCommand {
+  protected name;
+
   protected options: DiscordCommandOptions;
 
   protected userCooldowns: Map<UserId, number> = new Map();
@@ -15,9 +17,14 @@ export default abstract class ADiscordCommand {
   protected usersUseCount: Map<UserId, number> = new Map();
   protected globalUseCount: number = 0;
 
-  constructor(options: DiscordCommandOptions, enabled: boolean = true) {
+  constructor(
+    name: string,
+    options: DiscordCommandOptions,
+    enabled: boolean = true,
+  ) {
     options.enabled = enabled;
     this.options = options;
+    this.name = this.options.canUsePrefix() ? this.options.prefix + name : name;
   }
 
   public abstract execute(
@@ -166,6 +173,26 @@ export default abstract class ADiscordCommand {
       message?.content !== null &&
       message?.content.length > 0
     );
+  }
+
+  public getName(): string {
+    return this.name;
+  }
+
+  public getTriggers(): Trigger[] {
+    return [this.name, ...this.options.getTriggers()];
+  }
+
+  public getAllStringTriggers(): string[] {
+    const stringTriggers: string[] = [];
+    this.getTriggers()
+      .filter(
+        (trigger) => typeof trigger === "string" || trigger instanceof String,
+      )
+      .forEach((stringTrigger) =>
+        stringTriggers.push(stringTrigger.toString()),
+      );
+    return stringTriggers;
   }
 
   public isEnabled(): boolean {

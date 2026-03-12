@@ -5,15 +5,17 @@ import { DiscordMessage } from "../DiscordConstants";
 import ADiscordCommand from "./ADiscordCommand";
 import DiscordCommandOptions from "./options/DiscordCommandOptions";
 
+const mainTrigger: string = "live";
+
 const rolesPermissions = getModOnlyRolesPermissions();
 
-const options = new DiscordCommandOptions(["live"])
+const options = new DiscordCommandOptions([])
   .setRolesPermission(rolesPermissions)
   .setReplyToUser(false);
 
 class LiveCommand extends ADiscordCommand {
   constructor(enabled: boolean = true) {
-    super(options, enabled);
+    super(mainTrigger, options, enabled);
   }
 
   public async execute(
