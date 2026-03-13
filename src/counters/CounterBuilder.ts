@@ -26,12 +26,10 @@ export default class CounterBuilder {
   // Change this default value if you don't have a database
   private storage: CounterStorage = CounterStorages.DATABASE;
 
-  private static INSTANCE: CounterBuilder = new CounterBuilder();
-
   private constructor() {}
 
   public static getInstance(): CounterBuilder {
-    return CounterBuilder.INSTANCE;
+    return new CounterBuilder();
   }
 
   public name(name: string): CounterBuilder {

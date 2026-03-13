@@ -8,6 +8,9 @@ import { User } from "../../utils/user/User";
 import GenericCounterCommand from "../counters/GenericCountCommand";
 import CommandOptions from "../options/CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
+import CountersManager from "../../counters/CountersManager";
+import { storage } from "googleapis/build/src/apis/storage";
+import { CounterStorages } from "../../counters/CounterUtils";
 
 const mainTrigger: string = "count";
 
@@ -55,7 +58,9 @@ export default class CountCommand extends AArgumentsCommand {
         return;
       }
 
-      const builder = CounterBuilder.getInstance().name(counterName);
+      const builder = CounterBuilder.getInstance()
+        .name(counterName)
+        .setStorage(CounterStorages.GSHEET);
 
       if (args.length >= 2 && !isNaN(Number(args[1]))) {
         builder.start(Number(args[1]));
@@ -63,7 +68,7 @@ export default class CountCommand extends AArgumentsCommand {
 
       // Creating the counter
       const counter = builder.build();
-      allCounters.push(counter);
+      CountersManager.addCounter(counter);
 
       // Creating the command
       const command = new GenericCounterCommand(counter);
