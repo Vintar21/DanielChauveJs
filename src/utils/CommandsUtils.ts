@@ -1,9 +1,10 @@
 import { MessageEvent } from "@twurple/easy-bot";
 import { MainApp } from "../app";
 import Counter from "../counters/Counter";
-import { EXCLAMATION_POINT, SLASH } from "../utils/StringConstants";
+import { EXCLAMATION_POINT, SLASH, SPACE } from "../utils/StringConstants";
 import TwitchClient from "../twitch/TwitchClient";
 import { choose } from "./CommonUtils";
+import { Category } from "./CategoriesConstants";
 
 export const COMMAND_PREFIX = EXCLAMATION_POINT;
 export const TWITCH_UNAUTHORIZED_PREFIXES = [SLASH];
@@ -37,6 +38,7 @@ export function formatCommandMessage(
   message: String,
   event: MessageEvent,
   randomParts: Map<string, string[]>,
+  category: Category,
 ): String {
   const twitchClient: TwitchClient = MainApp.getTwitchClient();
   randomParts.forEach(
@@ -45,6 +47,11 @@ export function formatCommandMessage(
 
   return message
     .replaceAll(Placeholders.BROADCASTER, twitchClient.getBroadcaster().name)
+    .replaceAll(Placeholders.CATEGORY, category)
+    .replaceAll(
+      Placeholders.INPUT,
+      event.text.split(SPACE).slice(1).join(SPACE),
+    )
     .replaceAll(Placeholders.USER, event.userName);
 }
 

@@ -26,6 +26,16 @@ export function getCategoryPermissions(
   return categoriesPermissions;
 }
 
+// Unallow all categories by default except the ones given
+export function getCategoriesPermissions(
+  categories: Category[],
+): Permissions<Category> {
+  const categoriesPermissions: Permissions<Category> =
+    getNoCategoriesPermissions();
+  categoriesPermissions.allowEach(categories);
+  return categoriesPermissions;
+}
+
 // Allow all categories except non-game categories (non-exhaustive)
 export function getGamesCategoriesPermissions(): Permissions<Category> {
   const gameCategoriesPermissions: Permissions<Category> =
@@ -69,6 +79,7 @@ export const NOT_GAMES: Category[] = [
   SPORT,
   STUDYING,
   TALKSHOWS,
+  TABLETOP_RPG,
 ];
 
 // Game categories

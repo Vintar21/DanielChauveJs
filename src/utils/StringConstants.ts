@@ -5,6 +5,8 @@ export const PIPE: string = "|";
 export const DOT: string = ".";
 export const EXCLAMATION_POINT: string = "!";
 export const INTERROGATION_POINT: string = "?";
+export const SIMPLE_QUOTE: string = "'";
+export const DOUBLE_QUOTE: string = '"';
 export const SEMI_COLUMN: string = ";";
 export const COLUMN: string = ":";
 export const COMMA: string = ",";
@@ -14,6 +16,7 @@ export const AT: string = "@";
 export const START_REGEX: string = "^";
 export const SPACED_COMMA: string = COMMA + SPACE;
 export const NEW_LINE: string = "\r\n";
+export const SKIP_LINE: string = "\n";
 export const TWITCH_CHANNEL_PREFIX: string = "https://www.twitch.tv/";
 
 export const END_PUNCTUATIONS: string[] = [

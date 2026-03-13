@@ -3,6 +3,7 @@ import { MainApp } from "../../app";
 import TwitchClient from "../../twitch/TwitchClient";
 import {
   formatCommandMessage,
+  Placeholders,
   Trigger,
   UNLIMITED,
 } from "../../utils/CommandsUtils";
@@ -37,18 +38,23 @@ export default abstract class ACommand implements ICommand {
     ignoreCooldowns: boolean,
   ): void;
 
-  protected replyOrSend(
+  protected async replyOrSend(
     user: User,
     event: MessageEvent,
     ignoreCooldowns: boolean,
     message: String,
     canTagUser: boolean = true,
-  ) {
+  ): Promise<void> {
     const twitchClient: TwitchClient = MainApp.getTwitchClient();
     // Automatically format message if it contains random parts
     message =
       this.options.formatMessage || this.randomParts.size > 0
-        ? formatCommandMessage(message, event, this.randomParts)
+        ? formatCommandMessage(
+            message,
+            event,
+            this.randomParts,
+            await twitchClient.getCurrentGame(),
+          )
         : message;
     if (this.canReplyToUser(event)) {
       twitchClient.reply(message, event);
@@ -202,6 +208,26 @@ export default abstract class ACommand implements ICommand {
 
   public getPrefix(): string {
     return this.options.prefix;
+  }
+
+  public setRandomPart1(randomPart: string[]) {
+    this.randomParts.set(Placeholders.RANDOM_PART_1, randomPart);
+  }
+
+  public setRandomPart2(randomPart: string[]) {
+    this.randomParts.set(Placeholders.RANDOM_PART_2, randomPart);
+  }
+
+  public setRandomPart3(randomPart: string[]) {
+    this.randomParts.set(Placeholders.RANDOM_PART_3, randomPart);
+  }
+
+  public setRandomPart4(randomPart: string[]) {
+    this.randomParts.set(Placeholders.RANDOM_PART_4, randomPart);
+  }
+
+  public setRandomPart5(randomPart: string[]) {
+    this.randomParts.set(Placeholders.RANDOM_PART_5, randomPart);
   }
 
   public getName(): string {
