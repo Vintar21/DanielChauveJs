@@ -114,6 +114,8 @@ export default class GoogleSheetManager {
     );
     const range = SIMPLE_COMMANDS_RANGE + (nbCommands + 1).toString();
     const simpleCommands = await this.getDatas(SIMPLE_COMMANDS_SHEET, range);
+    // For log purpose
+    const addedCommands: string[] = [];
     simpleCommands.forEach((row) => {
       const name: string = row[0]?.trim()?.normalize()?.toLowerCase();
       const aliases: string[] = row[1]?.split(SKIP_LINE) ?? [];
@@ -183,10 +185,11 @@ export default class GoogleSheetManager {
         if (rand4) command.setRandomPart4(rand4);
         if (rand5) command.setRandomPart5(rand5);
 
-        log(`Adding Simple Command "${name}" from GSheet`);
         ATwitchClient.commandsManager.addCommand(command);
+        addedCommands.push(command.getName());
       }
     });
+    log(`Adding Simple Command [${addedCommands}] from GSheet`);
   }
 
   private parseCategories(categoriesToParse: string): Category[] {

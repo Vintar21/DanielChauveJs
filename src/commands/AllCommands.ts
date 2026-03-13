@@ -3,6 +3,7 @@ import BluePrinceDayCounterCommand from "./counters/BluePrinceDayCounterCommand"
 import DeathCounterCommand from "./counters/DeathCounterCommand";
 import AnswerRandomMessage from "./misc/AnswerRandomMessage";
 import ChooseFromGSheetCommand from "./misc/ChooseFromGSheetCommand";
+import CountCommand from "./misc/CountCommand";
 import MarkerCommand from "./misc/MarkerCommand";
 import MultiCommand from "./misc/MultiCommand";
 import PollCommand from "./misc/PollCommand";
@@ -79,6 +80,7 @@ export const chooseFromGsheetCommand: ChooseFromGSheetCommand =
   new ChooseFromGSheetCommand();
 export const setCategoryCommand: SetCategoryCommand = new SetCategoryCommand();
 export const setTitleCommand: SetTitleCommand = new SetTitleCommand();
+export const countCommand: CountCommand = new CountCommand();
 
 // In a separate array because it should be added in last !
 export const answerRandomMessage: AnswerRandomMessage =
@@ -88,6 +90,7 @@ export const allMiscCommands: Array<ICommand> = [
   markerCommand,
   multiCommand,
   pollCommand,
+  countCommand,
   predictionCommand,
   setCategoryCommand,
   setTitleCommand,
