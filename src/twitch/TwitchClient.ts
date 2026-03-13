@@ -26,6 +26,7 @@ import { onMessage } from "./TwitchEventHandlers";
 
 export default class TwitchClient extends ATwitchClient {
   private static INSTANCE: TwitchClient;
+  protected listener: EventSubWsListener;
 
   constructor() {
     super();
@@ -88,9 +89,14 @@ export default class TwitchClient extends ATwitchClient {
 
     ATwitchClient.broadcaster = _broadcaster;
 
+    this.listener = new EventSubWsListener({
+      apiClient: this.getApi(),
+    });
+    this.listener.start();
+
     // ChannelPointListener
     ATwitchClient.channelPointsListener =
-      await ChannelPointsListener.getInstanceAndInit(this);
+      await ChannelPointsListener.getInstanceAndInit(this, this.listener);
 
     // TimerManager
     ATwitchClient.timerManager = TimerManager.getInstanceAndInit();
@@ -109,13 +115,9 @@ export default class TwitchClient extends ATwitchClient {
       ATwitchClient.botApp.onMessage(onMessage);
 
       ATwitchClient.botApp.onRaid(this.onRaid);
-      const onStreamListener = new EventSubWsListener({
-        apiClient: this.getApi(),
-      });
 
       // Can I use same listener for everything ?
-      onStreamListener.start();
-      onStreamListener.onStreamOnline(
+      this.listener.onStreamOnline(
         this.getBroadcasterId(),
         this.onStreamOnline,
       );

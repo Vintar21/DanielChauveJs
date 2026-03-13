@@ -340,7 +340,7 @@ Retourne la moyenne de tous les `!roll` effectués par `<username>` s'il y en a.
 
 - `!roll reset`
 
-**Rôles:** Modérateurs
+**Rôles:** Modérateurice
 
 **Cooldowns:** 30 secondes
 
@@ -355,6 +355,26 @@ Reset les cooldowns et la valeur du MVP pour la commande `!roll` pour ce stream.
 **Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
 
 Donne le liens de mes résaux sociaux.
+
+### SetGame
+
+- `!setGame <category>` `!updateGame <category>` `!setCategory <category>` `!updateCategory <category>` `!game <category>` `!category <category>`
+
+**Rôles:** VIP, Modérateurice
+
+**Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
+
+Mets à jour la catégorie du stream avec une certaine flexibilité et des alias, par exemple `!setGame botw` changera la catégorie pour "The Legend of Zelda: Breath of the Wild".
+
+### SetTitle
+
+- `!setTitle <title>` `!updateTitle <title>` `!title <title>`
+
+**Rôles:** Modérateurice
+
+**Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
+
+Mets à jour le titre du stream en conservant les infos générales placées après un séparateur (`|` par défaut). Par exemple, si le titre du stream est "Nouveau stream aujourd'hui ! | Pour plus d'infos: !discord !commands" et qu'on utilise `!setTitle Un nouveau titre !`. le titre du stream deviendra alors "Un nouveau titre ! | Pour plus d'infos: !discord !commands".
 
 ### Smash or Pass
 
@@ -413,9 +433,9 @@ _N.B.: Plus tard il y aura la possibilité d'ajouter des messages plus ou moins 
 
 - `/live`
 
-**Channel:** 👨‍🦲daniel
+**Channel:** N'importe où
 
-**Rôles:** _Aucun pour l'instant_
+**Rôles:** Modérateurice
 
 Force le post d'une annonce de live dans le channel dédié.
 
@@ -423,16 +443,16 @@ Force le post d'une annonce de live dans le channel dédié.
 
 - `/say twitch <message>`
 
-**Channel:** 👨‍🦲daniel
+**Channel:** N'importe où
 
-**Rôles:** _Aucun pour l'instant_
+**Rôles:** Modérateurice
 
 Envoie un message en tant que DanielChauve sur la chaîne twitch du diffuseur.
 
 - `/say <channel> <message>`
 
-**Channel:** 👨‍🦲daniel
+**Channel:** N'importe où
 
-**Rôles:** _Aucun pour l'instant_
+**Rôles:** Modérateurice
 
 Envoie un message en tant que @DanielChauve dans le channel Discord correspondant.

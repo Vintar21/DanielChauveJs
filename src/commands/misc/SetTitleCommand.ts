@@ -13,6 +13,7 @@ const rolesPermissions: Permissions<Role> = getModOnlyRolesPermissions();
 
 const options: CommandOptions = new CommandOptions([
   "title",
+  "updateTitle",
 ]).setRolesPermission(rolesPermissions);
 
 export default class SetTitleCommand extends AArgumentsCommand {

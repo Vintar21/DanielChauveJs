@@ -32,13 +32,12 @@ export default class ChannelPointsListener {
 
   public static async getInstanceAndInit(
     twitchClient: TwitchClient,
+    listener: EventSubWsListener,
   ): Promise<ChannelPointsListener> {
     var instance = ChannelPointsListener.instance;
     if (instance === undefined) {
       instance = new ChannelPointsListener();
-      ChannelPointsListener.listener = new EventSubWsListener({
-        apiClient: twitchClient.getApi(),
-      });
+      ChannelPointsListener.listener = listener;
       await instance.init(twitchClient.getBroadcasterId());
     }
     return instance;

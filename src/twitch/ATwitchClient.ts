@@ -24,9 +24,9 @@ import CommandsManager from "../commands/CommandsManager";
 import { channel } from "../config/ConfigLoader";
 import CountersManager from "../counters/CountersManager";
 import TimerManager from "../timers/TimerManager";
-import { EMPTY, SPACE } from "../utils/StringConstants";
 import { Category } from "../utils/CategoriesConstants";
-import { error, warn } from "../utils/CommonUtils";
+import { warn } from "../utils/CommonUtils";
+import { EMPTY, SPACE } from "../utils/StringConstants";
 
 export default abstract class ATwitchClient {
   protected static botApp: Bot;
