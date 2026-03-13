@@ -7,7 +7,7 @@ import {
   Trigger,
   UNLIMITED,
 } from "../../utils/CommandsUtils";
-import { AT, SPACE } from "../../utils/StringConstants";
+import { AT, EMPTY, SPACE } from "../../utils/StringConstants";
 import { isNotAUser, User, UserId } from "../../utils/user/User";
 import CommandOptions from "../options/CommandOptions";
 import ICommand from "./ICommand";
@@ -105,8 +105,6 @@ export default abstract class ACommand implements ICommand {
         }
       }) !== undefined
     );
-    /*_.find(triggers, (trigger: RegExp) => trigger.test(input)) !== undefined
-    );*/
   }
 
   public async canExecute(user: User): Promise<boolean> {
@@ -243,6 +241,13 @@ export default abstract class ACommand implements ICommand {
     this.getTriggers()
       .filter(
         (trigger) => typeof trigger === "string" || trigger instanceof String,
+      )
+      .filter(
+        (stringTrigger) =>
+          stringTrigger &&
+          stringTrigger !== EMPTY &&
+          stringTrigger !== SPACE &&
+          stringTrigger !== this.options.prefix,
       )
       .forEach((stringTrigger) =>
         stringTriggers.push(stringTrigger.toString()),

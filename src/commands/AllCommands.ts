@@ -23,16 +23,6 @@ import QuadHdCommand from "./simple/QuadHdCommand";
 import SocialMediasCommand from "./simple/SocialMediasCommand";
 import SwitchFriendCodeCommand from "./simple/SwitchFriendCodeCommand";
 import YoutubeCommand from "./simple/YoutubeCommand";
-import CthulhuCommand from "./simple/jdr/CthulhuCommand";
-import GianniCommand from "./simple/jdr/GianniCommand";
-import GustaveCommand from "./simple/jdr/GustaveCommand";
-import MarlaCommand from "./simple/jdr/MarlaCommand";
-import MartaCommand from "./simple/jdr/MartaCommand";
-import MichelCommand from "./simple/jdr/MichelCommand";
-import PeterCommand from "./simple/jdr/PeterCommand";
-import SidoniaCommand from "./simple/jdr/SidoniaCommand";
-import SummaryCommand from "./simple/jdr/SummaryCommand";
-import ThelmaCommand from "./simple/jdr/ThelmaCommand";
 import ACounterCommand from "./templates/ACounterCommand";
 import ICommand from "./templates/ICommand";
 import FakeBanCommand from "./trolls/FakeBanCommand";
@@ -66,40 +56,7 @@ export const allSimpleCommands: Array<ICommand> = [
   switchFriendCodeCommand,
 ];
 
-// Jdr Commands
-export const gianniCommand: GianniCommand = new GianniCommand();
-export const gustaveCommand: GustaveCommand = new GustaveCommand();
-export const marlaCommand: MarlaCommand = new MarlaCommand();
-export const martaCommand: MartaCommand = new MartaCommand();
-export const michelCommand: MichelCommand = new MichelCommand();
-export const peterCommand: PeterCommand = new PeterCommand();
-export const sidoniaCommand: SidoniaCommand = new SidoniaCommand();
-export const thelmaCommand: ThelmaCommand = new ThelmaCommand();
-
-export const cthulhuCommand: CthulhuCommand = new CthulhuCommand();
-export const summaryCommand: SummaryCommand = new SummaryCommand(true);
-
-export const pjCommands: Array<ICommand> = [
-  gianniCommand,
-  gustaveCommand,
-  marlaCommand,
-  martaCommand,
-  michelCommand,
-  peterCommand,
-  sidoniaCommand,
-  thelmaCommand,
-];
-
-export const allJdrCommands: Array<ICommand> = [
-  ...pjCommands,
-  cthulhuCommand,
-  summaryCommand,
-];
-
-allSimpleCommands.concat(allJdrCommands);
-
 // No prefix commands
-
 export const allNoPrefixSimpleCommands: Array<ICommand> = [];
 
 // ----- Multiple Answers Commands -----

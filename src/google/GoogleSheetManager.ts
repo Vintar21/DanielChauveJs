@@ -115,7 +115,7 @@ export default class GoogleSheetManager {
     const range = SIMPLE_COMMANDS_RANGE + (nbCommands + 1).toString();
     const simpleCommands = await this.getDatas(SIMPLE_COMMANDS_SHEET, range);
     simpleCommands.forEach((row) => {
-      const name: string = row[0];
+      const name: string = row[0]?.trim()?.normalize()?.toLowerCase();
       const aliases: string[] = row[1]?.split(SKIP_LINE) ?? [];
       const enabled: boolean = row[2];
       const answers: string[] = row[3]?.split(SKIP_LINE) ?? [];
@@ -130,10 +130,13 @@ export default class GoogleSheetManager {
       const rand4: string[] = row[12]?.split(SKIP_LINE);
       const rand5: string[] = row[13]?.split(SKIP_LINE);
 
-      if (enabled) {
+      if (enabled && name) {
         const categories: Category[] = this.parseCategories(categoriesToParse);
+        const filteredAliases = aliases
+          .map((alias) => alias.trim().normalize().toLowerCase())
+          .filter((alias) => alias && alias !== EMPTY);
 
-        const options: CommandOptions = new CommandOptions(aliases);
+        const options: CommandOptions = new CommandOptions(filteredAliases);
         // Caution: inline ifs
         if (hasPlaceholders) options.hasPlaceholders();
         if (categories.length > 0)

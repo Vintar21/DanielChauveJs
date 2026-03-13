@@ -40,8 +40,6 @@ export default class CommandsManager {
       return potentialCommand;
     }
 
-    this.commandsMap.forEach((command, name) => command.match(message, game));
-
     return Array.from(this.commandsMap.values()).find((command) =>
       command.match(message, game),
     );
