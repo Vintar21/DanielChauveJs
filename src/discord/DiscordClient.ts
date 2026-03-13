@@ -17,6 +17,7 @@ import SqlManager from "../database/SqlManager";
 import { choose, hours, log, minutes, pluralize } from "../utils/CommonUtils";
 import { NEW_LINE, SPACE } from "../utils/StringConstants";
 import { User } from "../utils/user/User";
+import { twitchRelatedDiscordCommands } from "./AllDiscordCommands";
 import ADiscordCommand from "./commands/ADiscordCommand";
 import {
   CATEGORY_PLACEHOLDER,
@@ -25,7 +26,6 @@ import {
   TAG_EVERYONE,
   twitchEmbedTemplate,
 } from "./DiscordConstants";
-import { twitchRelatedDiscordCommands } from "./AllDiscordCommands";
 
 export default class DiscordClient extends Client {
   private twitchAnnouncesChannel: GuildBasedChannel;

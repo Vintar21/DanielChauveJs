@@ -33,7 +33,6 @@ import PeterCommand from "./simple/jdr/PeterCommand";
 import SidoniaCommand from "./simple/jdr/SidoniaCommand";
 import SummaryCommand from "./simple/jdr/SummaryCommand";
 import ThelmaCommand from "./simple/jdr/ThelmaCommand";
-import BanBestViewersBotCommand from "./simple/no-prefix/BanBestViewersBotCommand";
 import ACounterCommand from "./templates/ACounterCommand";
 import ICommand from "./templates/ICommand";
 import FakeBanCommand from "./trolls/FakeBanCommand";
@@ -100,12 +99,8 @@ export const allJdrCommands: Array<ICommand> = [
 allSimpleCommands.concat(allJdrCommands);
 
 // No prefix commands
-export const banBestViewersBotCommand: BanBestViewersBotCommand =
-  new BanBestViewersBotCommand();
 
-export const allNoPrefixSimpleCommands: Array<ICommand> = [
-  banBestViewersBotCommand,
-];
+export const allNoPrefixSimpleCommands: Array<ICommand> = [];
 
 // ----- Multiple Answers Commands -----
 
