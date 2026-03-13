@@ -9,6 +9,10 @@
       "web": "vintar.fr"
     }
   ],
+  "scripts": {
+    "start": "node ./dist/app.js",
+    "test": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./scripts/generateJs.ps1 && npm start"
+  },
   "dependencies": {
     "@twurple/api": "^8.0.3",
     "@twurple/auth": "^8.0.3",
