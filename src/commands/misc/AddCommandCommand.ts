@@ -1,4 +1,5 @@
 import { MessageEvent } from "@twurple/easy-bot";
+import { allCounters } from "../../counters/AllCounters";
 import CounterBuilder from "../../counters/CounterBuilder";
 import CountersManager from "../../counters/CountersManager";
 import { CounterStorages } from "../../counters/CounterUtils";
@@ -9,13 +10,17 @@ import { User } from "../../utils/user/User";
 import GenericCounterCommand from "../counters/GenericCountCommand";
 import CommandOptions from "../options/CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
+import MultipleAnswersCommand from "../templates/MultipleAnswersCommand";
+import GoogleSheetManager from "../../google/GoogleSheetManager";
+import { MainApp } from "../../app";
+import { SPACE } from "../../utils/StringConstants";
 
-const mainTrigger: string = "count";
+const mainTrigger: string = "addCommand";
 
 const rolesPermissions: Permissions<Role> = getModOnlyRolesPermissions();
 
 const options: CommandOptions = new CommandOptions([
-  "counter",
+  "addCommande",
 ]).setRolesPermission(rolesPermissions);
 
 export default class CountCommand extends AArgumentsCommand {
@@ -29,55 +34,49 @@ export default class CountCommand extends AArgumentsCommand {
     args: String[],
     ignoreCooldowns: boolean,
   ): Promise<void> {
-    if (args.length === 0) {
+    if (args.length <= 1) {
       this.replyOrSend(
         user,
         event,
         ignoreCooldowns,
-        "Faut que tu me donne au moins le nom du compteur à créé chef",
+        "Faut que tu me donne au moins le nom de la commande et un texte qui va avec bg",
       );
       return;
-    } else if (args.length >= 1) {
-      const counterName = args[0].trim().normalize();
+    } else {
+      const commandName = args[0].trim().normalize();
 
       // TODO: map of counters
-      const formatedCounterName = counterName.toLowerCase();
-      const existingCounter =
-        CountersManager.counters.get(formatedCounterName) ||
+      const formatedCounterName = commandName.toLowerCase();
+      const existingCommand =
         ATwitchClient.commandsManager.commandsMap.get(formatedCounterName);
 
-      if (existingCounter) {
+      if (existingCommand) {
         this.replyOrSend(
           user,
           event,
           ignoreCooldowns,
-          `Y a déjà un compteur qui s'appelle ${existingCounter.getName()}, faut trouver autre chose désolé :/`,
+          `Y a déjà une commande qui s'appelle ${existingCommand.getName()}, faut trouver autre chose désolé :/`,
         );
         return;
       }
 
-      const builder = CounterBuilder.getInstance()
-        .name(counterName)
-        .setStorage(CounterStorages.GSHEET);
-
-      if (args.length >= 2 && !isNaN(Number(args[1]))) {
-        builder.start(Number(args[1]));
-      }
-
-      // Creating the counter
-      const counter = builder.build();
-      CountersManager.addCounter(counter);
+      const answer = args.slice(1).join(SPACE).toString();
+      const options = new CommandOptions([]);
 
       // Creating the command
-      const command = new GenericCounterCommand(counter);
+      const command = new MultipleAnswersCommand(commandName, options, [
+        answer,
+      ]);
+
       // TODO: Save the command and the counter
       ATwitchClient.commandsManager.addCommand(command);
+      MainApp.getGoogleSheetManager().addCommand(command);
 
       this.replyOrSend(
         user,
         event,
         ignoreCooldowns,
-        `Le compteur !${counterName} a été créé, il commence à ${counter.getStartValue()} !`,
+        `La commande !${commandName} a été créée !`,
       );
     }
   }

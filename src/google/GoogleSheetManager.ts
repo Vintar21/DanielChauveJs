@@ -39,6 +39,7 @@ import {
   SIMPLE_COMMANDS_SHEET,
   SPREADSHEET_SCOPE,
 } from "./GoogleConstants";
+import ICommand from "../commands/templates/ICommand";
 
 // TODO: write a method to select a discord announce from GSheet
 export default class GoogleSheetManager {
@@ -70,6 +71,32 @@ export default class GoogleSheetManager {
       return undefined;
 
     return Number(counterLine[2]);
+  }
+
+  public async addCommand(command: MultipleAnswersCommand) {
+    const nbCommands: number = Number(
+      await this.getDatas(SIMPLE_COMMANDS_SHEET, SIMPLE_COMMANDS_NUMBER_CELL),
+    );
+    // Because of formatting (checkboxes), we have to give the exact line and do an update
+    const range = `'${SIMPLE_COMMANDS_SHEET}'!A${nbCommands + 2}`;
+    this.sheets.spreadsheets.values.update({
+      spreadsheetId: googleSpreadSheetId,
+      range,
+      valueInputOption: "RAW",
+      requestBody: {
+        values: [
+          [
+            command.getName().replaceAll(command.getPrefix(), EMPTY),
+            EMPTY,
+            true,
+            command.getAnswers().join(SKIP_LINE),
+            false,
+            EMPTY,
+            GSheetCommandRoles.EVERYONE,
+          ],
+        ],
+      },
+    });
   }
 
   public async updateCounter(

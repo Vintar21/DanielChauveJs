@@ -20,10 +20,11 @@ const rolesModificationPermissions = getFollowerOnlyRolesPermissions();
 const categoriesPermissions = getCategoryPermissions(BLUE_PRINCE);
 
 const options: CounterCommandOptions = new CounterCommandOptions([
-  /jours?/i,
-  /days?/i,
-  /blue-?prince?/i,
-  /deaths?/i,
+  "jours",
+  "days",
+  "day",
+  "bluePrince",
+  "blue-prince",
 ])
   .setCounterModificationPermissions(rolesModificationPermissions)
   .setCategoriesPermissions(categoriesPermissions)

@@ -232,6 +232,10 @@ export default abstract class ACommand implements ICommand {
     return this.name;
   }
 
+  public getOptions(): CommandOptions {
+    return this.options;
+  }
+
   public getTriggers(): Trigger[] {
     return [this.name, ...this.options.getTriggers()];
   }

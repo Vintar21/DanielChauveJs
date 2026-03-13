@@ -13,7 +13,7 @@ const options: CommandOptions = new CommandOptions([/.+/i])
   .dontUsePrefix()
   .setRolesPermission(rolesPermissions);
 
-const answers: String[] = [
+const answers: string[] = [
   "J'en ai vu des avis désastreux mais alors celui-ci...",
   "Les TERMES !",
   "Ca intéresse qui ?",

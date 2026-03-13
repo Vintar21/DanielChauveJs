@@ -15,6 +15,7 @@ import SmashOrPassCommand from "./multiple-answers/SmashOrPassCommand";
 import ACounterCommand from "./templates/ACounterCommand";
 import ICommand from "./templates/ICommand";
 import FakeBanCommand from "./trolls/FakeBanCommand";
+import AddCommandCommand from "./misc/AddCommandCommand";
 
 // No prefix commands
 export const allNoPrefixSimpleCommands: Array<ICommand> = [];
@@ -40,6 +41,7 @@ export const chooseFromGsheetCommand: ChooseFromGSheetCommand =
 export const setCategoryCommand: SetCategoryCommand = new SetCategoryCommand();
 export const setTitleCommand: SetTitleCommand = new SetTitleCommand();
 export const countCommand: CountCommand = new CountCommand();
+export const addCommandCommand: AddCommandCommand = new AddCommandCommand();
 
 // In a separate array because it should be added in last !
 export const answerRandomMessage: AnswerRandomMessage =
@@ -50,6 +52,7 @@ export const allMiscCommands: Array<ICommand> = [
   multiCommand,
   pollCommand,
   countCommand,
+  addCommandCommand,
   predictionCommand,
   setCategoryCommand,
   setTitleCommand,
