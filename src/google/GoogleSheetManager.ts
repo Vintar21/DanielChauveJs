@@ -32,6 +32,7 @@ import {
   COUNTERS_SHEET,
   COUNTERS_VALUE_COLUMN,
   FIRST_COUNTERS_ROW,
+  GENERAL_COMMANDS_SHEET,
   GSheetCommandRoles,
   SIMPLE_COMMANDS_NUMBER_CELL,
   SIMPLE_COMMANDS_RANGE,
@@ -108,12 +109,20 @@ export default class GoogleSheetManager {
     }
   }
 
-  public async importSimpleCommands() {
+  public async importSimpleCustomCommands(): Promise<void> {
+    return this.importSimpleCommands(SIMPLE_COMMANDS_SHEET);
+  }
+
+  public async importGeneralCommands(): Promise<void> {
+    return this.importSimpleCommands(GENERAL_COMMANDS_SHEET);
+  }
+
+  public async importSimpleCommands(sheetName: string): Promise<void> {
     const nbCommands: number = Number(
-      await this.getDatas(SIMPLE_COMMANDS_SHEET, SIMPLE_COMMANDS_NUMBER_CELL),
+      await this.getDatas(sheetName, SIMPLE_COMMANDS_NUMBER_CELL),
     );
     const range = SIMPLE_COMMANDS_RANGE + (nbCommands + 1).toString();
-    const simpleCommands = await this.getDatas(SIMPLE_COMMANDS_SHEET, range);
+    const simpleCommands = await this.getDatas(sheetName, range);
     // For log purpose
     const addedCommands: string[] = [];
     simpleCommands.forEach((row) => {
@@ -203,9 +212,10 @@ export default class GoogleSheetManager {
       specialCategories.forEach((category) => categories.push(category));
     }
     categoriesToParse
-      .split(COMMA)
-      .filter((category) => category && category !== EMPTY)
-      .forEach((category) => categories.push(category));
+      ?.split(COMMA)
+      ?.filter((category) => category && category !== EMPTY)
+      ?.forEach((category) => categories.push(category));
+
     return categories;
   }
 

@@ -13,33 +13,6 @@ export const botClientId = twitchConfig["bot-client-id"];
 export const botAccessToken = twitchConfig["bot-access-token"];
 export const channel = twitchConfig.channel;
 
-// Links
-const linksConfig = loadSpecificConfig("Links");
-
-export const commandsManualLink =
-  linksConfig["commands-manual-link"] ?? undefined;
-
-//-- social medias
-const socialMedias = linksConfig["social-media-links"] ?? undefined;
-export const discordLink = socialMedias.discord ?? undefined;
-export const youtubeLink = socialMedias.youtube ?? undefined;
-export const instagramLink = socialMedias.instagram ?? undefined;
-export const blueskyLink = socialMedias.bluesky ?? undefined;
-export const rankoneLink = socialMedias.rankone ?? undefined;
-export const speedrunComLink = socialMedias["speedrun.com"] ?? undefined;
-export const gitLink = socialMedias.github ?? undefined;
-export const switchFriendCode = socialMedias["switch-friend-code"] ?? undefined;
-
-//-- clips
-const clips = linksConfig.clips ?? undefined;
-export const chaiseClip = clips.chaise ?? undefined;
-export const pbCelesteVOD = clips["pb-celeste"] ?? undefined;
-
-//-- other Links
-const otherLinks = linksConfig["other-links"] ?? undefined;
-export const docRollLink = otherLinks["docroll-sheet"] ?? undefined;
-export const tutosCelestePlaylist = otherLinks["tutos-celeste"] ?? undefined;
-
 // OBS
 const obsConfig = loadSpecificConfig("Obs");
 const obsWebSocket = obsConfig["obs-websocket"] ?? undefined;

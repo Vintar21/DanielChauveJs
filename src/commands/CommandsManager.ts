@@ -5,7 +5,6 @@ import {
   allMiscCommands,
   allMultipleAnswersCommands,
   allNoPrefixSimpleCommands,
-  allSimpleCommands,
   lastAddedCommands,
   pollCommand,
 } from "./AllCommands";
@@ -72,9 +71,6 @@ export default class CommandsManager {
     // Misc Commands (more used, so they're better first)
     this.addCommands(allMiscCommands);
 
-    // Simple Commands
-    this.addCommands(allSimpleCommands);
-
     // Multiple Answers Commands
     this.addCommands(allMultipleAnswersCommands);
 
@@ -90,6 +86,7 @@ export default class CommandsManager {
     this.addCommands(lastAddedCommands);
 
     // Import commands from GSheet
-    MainApp.getGoogleSheetManager().importSimpleCommands();
+    MainApp.getGoogleSheetManager().importGeneralCommands();
+    MainApp.getGoogleSheetManager().importSimpleCustomCommands();
   }
 }
