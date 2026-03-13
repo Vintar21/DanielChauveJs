@@ -220,12 +220,12 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
     return super.match(input, game, formatMessage);
   }
 
-  public replyOrSend(
+  public async replyOrSend(
     user: User,
     event: MessageEvent,
     ignoreCooldowns: boolean,
     message: String,
-  ): void {
+  ): Promise<void> {
     super.replyOrSend(
       user,
       event,

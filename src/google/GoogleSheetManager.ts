@@ -1,17 +1,41 @@
 import { JWT } from "google-auth-library";
 import { google, sheets_v4 } from "googleapis";
+import CommandOptions from "../commands/options/CommandOptions";
+import MultipleAnswersCommand from "../commands/templates/MultipleAnswersCommand";
 import {
   googleApiMail,
   googlePrivateKey,
   googleSpreadSheetId,
 } from "../config/ConfigLoader";
-import { choose, warn } from "../utils/CommonUtils";
-import { EMPTY } from "../utils/StringConstants";
+import ATwitchClient from "../twitch/ATwitchClient";
+import {
+  Category,
+  getCategoriesPermissions,
+} from "../utils/CategoriesConstants";
+import { choose, log, warn } from "../utils/CommonUtils";
+import {
+  getBroadcasterOnlyRolesPermissions,
+  getDefaultRolesPermissions,
+  getFollowerOnlyRolesPermissions,
+  getModOnlyRolesPermissions,
+  getSubOnlyRolesPermissions,
+  getVipOnlyRolesPermissions,
+} from "../utils/RoleUtils";
+import {
+  COMMA,
+  DOUBLE_QUOTE,
+  EMPTY,
+  SKIP_LINE,
+} from "../utils/StringConstants";
 import {
   COUNTERS_RANGE,
   COUNTERS_SHEET,
   COUNTERS_VALUE_COLUMN,
   FIRST_COUNTERS_ROW,
+  GSheetCommandRoles,
+  SIMPLE_COMMANDS_NUMBER_CELL,
+  SIMPLE_COMMANDS_RANGE,
+  SIMPLE_COMMANDS_SHEET,
   SPREADSHEET_SCOPE,
 } from "./GoogleConstants";
 
@@ -35,7 +59,7 @@ export default class GoogleSheetManager {
     counterName: string,
     categoryName: string | undefined,
   ): Promise<number> {
-    const countersData = await this.getDatas(COUNTERS_SHEET, "A2:C");
+    const countersData = await this.getDatas(COUNTERS_SHEET, COUNTERS_RANGE);
     const counterLine = countersData.find(
       (row) =>
         row[0] === counterName && (!categoryName || row[1] === categoryName),
@@ -82,6 +106,101 @@ export default class GoogleSheetManager {
         },
       });
     }
+  }
+
+  public async importSimpleCommands() {
+    const nbCommands: number = Number(
+      await this.getDatas(SIMPLE_COMMANDS_SHEET, SIMPLE_COMMANDS_NUMBER_CELL),
+    );
+    const range = SIMPLE_COMMANDS_RANGE + (nbCommands + 1).toString();
+    const simpleCommands = await this.getDatas(SIMPLE_COMMANDS_SHEET, range);
+    simpleCommands.forEach((row) => {
+      const name: string = row[0];
+      const aliases: string[] = row[1]?.split(SKIP_LINE) ?? [];
+      const enabled: boolean = row[2];
+      const answers: string[] = row[3]?.split(SKIP_LINE) ?? [];
+      const hasPlaceholders: boolean = row[4];
+      var categoriesToParse: string = row[5];
+      const minRole: string = row[6];
+      const globalCooldownInSec: number = row[7];
+      const userCooldownInSec: number = row[8];
+      const rand1: string[] = row[9]?.split(SKIP_LINE);
+      const rand2: string[] = row[10]?.split(SKIP_LINE);
+      const rand3: string[] = row[11]?.split(SKIP_LINE);
+      const rand4: string[] = row[12]?.split(SKIP_LINE);
+      const rand5: string[] = row[13]?.split(SKIP_LINE);
+
+      if (enabled) {
+        const categories: Category[] = this.parseCategories(categoriesToParse);
+
+        const options: CommandOptions = new CommandOptions(aliases);
+        // Caution: inline ifs
+        if (hasPlaceholders) options.hasPlaceholders();
+        if (categories.length > 0)
+          options.setCategoriesPermissions(
+            getCategoriesPermissions(categories),
+          );
+        if (globalCooldownInSec) options.setGlobalCooldown(globalCooldownInSec);
+        if (userCooldownInSec) options.setUserCooldown(userCooldownInSec);
+
+        // There is a role
+        if (minRole && minRole !== EMPTY) {
+          switch (minRole) {
+            case GSheetCommandRoles.FOLLOWER:
+              options.setRolesPermission(getFollowerOnlyRolesPermissions());
+              break;
+            case GSheetCommandRoles.SUB:
+              options.setRolesPermission(getSubOnlyRolesPermissions());
+              break;
+            case GSheetCommandRoles.VIP:
+              options.setRolesPermission(getVipOnlyRolesPermissions());
+              break;
+            case GSheetCommandRoles.MOD:
+              options.setRolesPermission(getModOnlyRolesPermissions());
+              break;
+            case GSheetCommandRoles.BROADCASTER:
+              options.setRolesPermission(getBroadcasterOnlyRolesPermissions());
+              break;
+            default:
+              options.setRolesPermission(getDefaultRolesPermissions());
+          }
+        }
+
+        // By default MultipleAnswers
+        const command = new MultipleAnswersCommand(
+          name,
+          options,
+          answers,
+          enabled,
+        );
+        // Caution: inline ifs
+        if (rand1) command.setRandomPart1(rand1);
+        if (rand2) command.setRandomPart2(rand2);
+        if (rand3) command.setRandomPart3(rand3);
+        if (rand4) command.setRandomPart4(rand4);
+        if (rand5) command.setRandomPart5(rand5);
+
+        log(`Adding Simple Command "${name}" from GSheet`);
+        ATwitchClient.commandsManager.addCommand(command);
+      }
+    });
+  }
+
+  private parseCategories(categoriesToParse: string): Category[] {
+    // At least one category name contains a comma or a special character
+    const categories: Category[] = [];
+    if (categoriesToParse && categoriesToParse.includes(DOUBLE_QUOTE)) {
+      const specialCategories = [
+        ...categoriesToParse.matchAll(/"(.+?)"/gi),
+      ].map((regexpArray) => regexpArray[1]);
+      categoriesToParse = categoriesToParse.replaceAll(/".+?",?/gi, EMPTY);
+      specialCategories.forEach((category) => categories.push(category));
+    }
+    categoriesToParse
+      .split(COMMA)
+      .filter((category) => category && category !== EMPTY)
+      .forEach((category) => categories.push(category));
+    return categories;
   }
 
   public async getRandomWord(

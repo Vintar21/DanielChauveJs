@@ -1,3 +1,4 @@
+import { MainApp } from "../app";
 import { SPACE } from "../utils/StringConstants";
 import {
   allCounterCommands,
@@ -90,5 +91,8 @@ export default class CommandsManager {
 
     // Response to random message in chat (should be the last added)
     this.addCommands(lastAddedCommands);
+
+    // Import commands from GSheet
+    MainApp.getGoogleSheetManager().importSimpleCommands();
   }
 }

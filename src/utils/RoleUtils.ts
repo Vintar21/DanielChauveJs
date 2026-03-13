@@ -38,33 +38,69 @@ export function getDefaultRolesPermissions(): Permissions<Role> {
   return defaultRolesPermissions;
 }
 
-// Broadcaster = BYPASS | Mod = ALLOWED | Others = UNALLOWED Default = UNALLOWED
+// Broadcaster = BYPASS | NoRole = UNALLOWED | Others = ALLOWED | Default = UNALLOWED
+export function getFollowerOnlyRolesPermissions(): Permissions<Role> {
+  const followerOnlyRolesPermissions: Permissions<Role> = new Permissions();
+  followerOnlyRolesPermissions.unallowDefault();
+  followerOnlyRolesPermissions.bypass(Roles.BROADCASTER);
+  followerOnlyRolesPermissions.allowEach([
+    Roles.MOD,
+    Roles.VIP,
+    Roles.SUB,
+    Roles.FOLLOWER,
+  ]);
+  followerOnlyRolesPermissions.unallow(Roles.NO_ROLE);
+  return followerOnlyRolesPermissions;
+}
+
+// Broadcaster = BYPASS | NoRole, Followers = UNALLOWED | Others = ALLOWED | Default = UNALLOWED
+export function getSubOnlyRolesPermissions(): Permissions<Role> {
+  const subOnlyRolesPermissions: Permissions<Role> = new Permissions();
+  subOnlyRolesPermissions.unallowDefault();
+  subOnlyRolesPermissions.bypass(Roles.BROADCASTER);
+  subOnlyRolesPermissions.allowEach([Roles.MOD, Roles.VIP, Roles.SUB]);
+  subOnlyRolesPermissions.unallowEach([Roles.NO_ROLE, Roles.FOLLOWER]);
+  return subOnlyRolesPermissions;
+}
+
+// Broadcaster = BYPASS | Mod & VIP = ALLOWED | Others = UNALLOWED | Default = UNALLOWED
+export function getVipOnlyRolesPermissions(): Permissions<Role> {
+  const vipOnlyPermissions: Permissions<Role> = new Permissions();
+  vipOnlyPermissions.unallowDefault();
+  vipOnlyPermissions.bypass(Roles.BROADCASTER);
+  vipOnlyPermissions.allowEach([Roles.MOD, Roles.VIP]);
+  vipOnlyPermissions.unallowEach([Roles.SUB, Roles.FOLLOWER, Roles.NO_ROLE]);
+  return vipOnlyPermissions;
+}
+
+// Broadcaster = BYPASS | Mod = ALLOWED | Others = UNALLOWED | Default = UNALLOWED
 export function getModOnlyRolesPermissions(): Permissions<Role> {
-  const defaultRolesPermissions: Permissions<Role> = new Permissions();
-  defaultRolesPermissions.unallowDefault();
-  defaultRolesPermissions.bypass(Roles.BROADCASTER);
-  defaultRolesPermissions.allow(Roles.MOD);
-  defaultRolesPermissions.unallowEach([
+  const modOnlyRolesPermissions: Permissions<Role> = new Permissions();
+  modOnlyRolesPermissions.unallowDefault();
+  modOnlyRolesPermissions.bypass(Roles.BROADCASTER);
+  modOnlyRolesPermissions.allow(Roles.MOD);
+  modOnlyRolesPermissions.unallowEach([
     Roles.VIP,
     Roles.SUB,
     Roles.FOLLOWER,
     Roles.NO_ROLE,
   ]);
-  return defaultRolesPermissions;
+  return modOnlyRolesPermissions;
 }
 
-// Broadcaster = BYPASS | Mod & VIP = ALLOWED | Others = UNALLOWED Default = UNALLOWED
-export function getVipOnlyRolesPermissions(): Permissions<Role> {
-  const defaultRolesPermissions: Permissions<Role> = new Permissions();
-  defaultRolesPermissions.unallowDefault();
-  defaultRolesPermissions.bypass(Roles.BROADCASTER);
-  defaultRolesPermissions.allowEach([Roles.MOD, Roles.VIP]);
-  defaultRolesPermissions.unallowEach([
+// Broadcaster = BYPASS | Others = UNALLOWED | Default = UNALLOWED
+export function getBroadcasterOnlyRolesPermissions(): Permissions<Role> {
+  const modOnlyRolesPermissions: Permissions<Role> = new Permissions();
+  modOnlyRolesPermissions.unallowDefault();
+  modOnlyRolesPermissions.bypass(Roles.BROADCASTER);
+  modOnlyRolesPermissions.unallowEach([
+    Roles.MOD,
+    Roles.VIP,
     Roles.SUB,
     Roles.FOLLOWER,
     Roles.NO_ROLE,
   ]);
-  return defaultRolesPermissions;
+  return modOnlyRolesPermissions;
 }
 
 export function isBroadcaster(
