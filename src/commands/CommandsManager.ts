@@ -12,8 +12,7 @@ import {
 import ICommand from "./templates/ICommand";
 
 export default class CommandsManager {
-  //private static commands: Array<ICommand> = new Array<ICommand>();
-  private commandsMap: Map<string, ICommand> = new Map();
+  commandsMap: Map<string, ICommand> = new Map();
 
   private static instance: CommandsManager = new CommandsManager();
 

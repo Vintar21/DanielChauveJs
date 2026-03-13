@@ -68,7 +68,7 @@ export default class SqlManager {
   }
 
   // TODO: Can it really be null ?
-  private static isValideQueryAgregator(
+  public static isValideQueryAgregator(
     queryAgregator: QueryAggregatorResults,
   ): boolean {
     return (
@@ -239,7 +239,7 @@ export default class SqlManager {
     return queryAgregator;
   }
 
-  private static async executeQuery(
+  public static async executeQuery(
     query: string,
   ): Promise<QueryAggregatorResults> {
     if (canUseSqlBase) {

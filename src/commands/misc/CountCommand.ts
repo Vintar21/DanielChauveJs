@@ -1,6 +1,8 @@
 import { MessageEvent } from "@twurple/easy-bot";
 import { allCounters } from "../../counters/AllCounters";
 import CounterBuilder from "../../counters/CounterBuilder";
+import CountersManager from "../../counters/CountersManager";
+import { CounterStorages } from "../../counters/CounterUtils";
 import ATwitchClient from "../../twitch/ATwitchClient";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
@@ -8,9 +10,6 @@ import { User } from "../../utils/user/User";
 import GenericCounterCommand from "../counters/GenericCountCommand";
 import CommandOptions from "../options/CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
-import CountersManager from "../../counters/CountersManager";
-import { storage } from "googleapis/build/src/apis/storage";
-import { CounterStorages } from "../../counters/CounterUtils";
 
 const mainTrigger: string = "count";
 
@@ -43,10 +42,10 @@ export default class CountCommand extends AArgumentsCommand {
       const counterName = args[0].trim().normalize();
 
       // TODO: map of counters
-      const existingCounter = allCounters.find(
-        (counter) =>
-          counter.getName().toLowerCase() === counterName.toLowerCase(),
-      );
+      const formatedCounterName = counterName.toLowerCase();
+      const existingCounter =
+        CountersManager.counters.get(formatedCounterName) ||
+        ATwitchClient.commandsManager.commandsMap.get(formatedCounterName);
 
       if (existingCounter) {
         this.replyOrSend(

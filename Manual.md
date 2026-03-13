@@ -82,6 +82,16 @@ Donne un lien vers une liste des commandes ou un manuel du bot.
 
 Précise où retrouver ma config.
 
+### Count
+
+- `!count <counterName>` `!counter <counterName>`
+
+**Rôles:** Modérateurice
+
+**Cooldowns:** 3 secondes par utilisateur ou 1 seconde au global
+
+Crée un nouveau compteur avec le nom donné. Le nom ne doit pas déjà exister dans un compteur ou une autre commande. Ce compteur et la ccommande associée ne seront pas chargés au prochain lancement du bot.
+
 ### Credit
 
 - `!crédits` `!badges` `!emotes` `!artistes`
@@ -456,3 +466,14 @@ Envoie un message en tant que DanielChauve sur la chaîne twitch du diffuseur.
 **Rôles:** Modérateurice
 
 Envoie un message en tant que @DanielChauve dans le channel Discord correspondant.
+
+### Sql
+
+- `/sql <sqlQuery>`
+
+**Channel:** N'importe où
+
+**Rôles:** Modérateurice
+
+Exécute la requête SQL donnée et retourne le résultat dans un fichier csv uploadé sur Discord.
+_Attention, aucune vérification n'est effectuée !_

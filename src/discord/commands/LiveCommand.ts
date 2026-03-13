@@ -2,7 +2,7 @@ import { MainApp } from "../../app";
 import { getModOnlyRolesPermissions } from "../../utils/RoleUtils";
 import { User } from "../../utils/user/User";
 import { DiscordMessage } from "../DiscordConstants";
-import ADiscordCommand from "./ADiscordCommand";
+import ADiscordCommand from "./templates/ADiscordCommand";
 import DiscordCommandOptions from "./options/DiscordCommandOptions";
 
 const mainTrigger: string = "live";

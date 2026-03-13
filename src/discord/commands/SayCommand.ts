@@ -4,7 +4,7 @@ import { getModOnlyRolesPermissions } from "../../utils/RoleUtils";
 import { EMPTY, SPACE } from "../../utils/StringConstants";
 import { User } from "../../utils/user/User";
 import { DiscordMessage, TWITCH_ARGUMENT } from "../DiscordConstants";
-import ADiscordCommand from "./ADiscordCommand";
+import ADiscordCommand from "./templates/ADiscordCommand";
 import DiscordCommandOptions from "./options/DiscordCommandOptions";
 
 const mainTrigger: string = "say";
@@ -20,11 +20,11 @@ class SayCommand extends ADiscordCommand {
     super(mainTrigger, options, enabled);
   }
 
-  public execute(
+  public async execute(
     message: DiscordMessage,
     user: User,
     ignoreCooldowns: boolean = false,
-  ): void {
+  ): Promise<void> {
     const args = this.getArgs(message);
     if (args.length > 1) {
       const channelId = args[0].toLowerCase().replaceAll(/[<>#]/g, EMPTY);
