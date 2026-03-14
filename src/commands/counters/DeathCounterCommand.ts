@@ -16,8 +16,9 @@ categoriesPermissions.unallowEach([BLUE_PRINCE, TRACKMANIA]);
 
 // TODO: not only regexp in COunterCommandOptions
 const options: CounterCommandOptions = new CounterCommandOptions([
-  /morts?/i,
-  /deaths?/i,
+  "morts",
+  "deaths",
+  "death",
 ])
   .canInitIfNoCounterForCategory()
   .setCategoriesPermissions(categoriesPermissions) as CounterCommandOptions;

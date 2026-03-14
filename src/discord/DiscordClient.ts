@@ -18,7 +18,7 @@ import { choose, hours, log, minutes, pluralize } from "../utils/CommonUtils";
 import { NEW_LINE, SPACE } from "../utils/StringConstants";
 import { User } from "../utils/user/User";
 import { allDiscordCommands } from "./AllDiscordCommands";
-import ADiscordCommand from "./commands/ADiscordCommand";
+import ADiscordCommand from "./commands/templates/ADiscordCommand";
 import {
   CATEGORY_PLACEHOLDER,
   DEFAULT_MESSAGE,

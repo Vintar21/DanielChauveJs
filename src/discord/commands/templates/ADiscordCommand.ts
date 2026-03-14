@@ -1,10 +1,10 @@
-import { MainApp } from "../../app";
-import TwitchClient from "../../twitch/TwitchClient";
-import { Trigger } from "../../utils/CommandsUtils";
-import { SPACE } from "../../utils/StringConstants";
-import { User, UserId } from "../../utils/user/User";
-import { DiscordMessage } from "../DiscordConstants";
-import DiscordCommandOptions from "./options/DiscordCommandOptions";
+import { MainApp } from "../../../app";
+import TwitchClient from "../../../twitch/TwitchClient";
+import { Trigger } from "../../../utils/CommandsUtils";
+import { SPACE } from "../../../utils/StringConstants";
+import { User, UserId } from "../../../utils/user/User";
+import { DiscordMessage } from "../../DiscordConstants";
+import DiscordCommandOptions from "../options/DiscordCommandOptions";
 
 export default abstract class ADiscordCommand {
   protected name;
@@ -31,7 +31,7 @@ export default abstract class ADiscordCommand {
     message: DiscordMessage,
     user: User,
     ignoreCooldowns: boolean,
-  ): void;
+  ): Promise<void>;
 
   protected getArgs(message: DiscordMessage): string[] {
     const parts = message.content.trim().split(SPACE);
@@ -53,6 +53,27 @@ export default abstract class ADiscordCommand {
       message.reply(response);
     } else {
       message.channel.send(response);
+    }
+
+    if (!ignoreCooldowns) {
+      this.updateCooldowns(user.userId);
+    }
+  }
+
+  protected async replyOrSendWithFile(
+    message: DiscordMessage,
+    response: string,
+    filePath: string,
+    user: User,
+    ignoreCooldowns: boolean,
+  ): Promise<void> {
+    const twitchClient: TwitchClient = MainApp.getTwitchClient();
+    const responseWithFile = { content: response, files: [filePath] };
+
+    if (this.canReplyToUser(message)) {
+      await message.reply(responseWithFile);
+    } else {
+      await message.channel.send(responseWithFile);
     }
 
     if (!ignoreCooldowns) {

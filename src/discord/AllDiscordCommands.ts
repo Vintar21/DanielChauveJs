@@ -1,11 +1,13 @@
-import { sayCommand } from "./commands/SayCommand";
 import { liveCommand } from "./commands/LiveCommand";
 import { rollBg3ServCommand } from "./commands/RollBg3ServCommand";
-import ADiscordCommand from "./commands/ADiscordCommand";
+import { sayCommand } from "./commands/SayCommand";
+import { sqlCommand } from "./commands/SqlCommand";
+import ADiscordCommand from "./commands/templates/ADiscordCommand";
 
 export const twitchRelatedDiscordCommands: ADiscordCommand[] = [
   sayCommand,
   liveCommand,
+  sqlCommand,
 ];
 
 export const jdrRelatedDiscordCommands: ADiscordCommand[] = [

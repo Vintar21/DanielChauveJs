@@ -11,7 +11,7 @@ export default class CounterCommandOptions extends CommandOptions {
   counterModificationPermissions: Permissions<Role> =
     getModOnlyRolesPermissions();
 
-  constructor(triggers: Array<RegExp>) {
+  constructor(triggers: Array<RegExp | string>) {
     super(triggers);
     // Greater global cooldowns to avoid several modifications for the same thing because of stream delay
     this.globalCooldown = seconds(3);

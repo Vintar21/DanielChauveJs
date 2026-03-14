@@ -32,12 +32,14 @@ import {
   COUNTERS_SHEET,
   COUNTERS_VALUE_COLUMN,
   FIRST_COUNTERS_ROW,
+  GENERAL_COMMANDS_SHEET,
   GSheetCommandRoles,
   SIMPLE_COMMANDS_NUMBER_CELL,
   SIMPLE_COMMANDS_RANGE,
   SIMPLE_COMMANDS_SHEET,
   SPREADSHEET_SCOPE,
 } from "./GoogleConstants";
+import ICommand from "../commands/templates/ICommand";
 
 // TODO: write a method to select a discord announce from GSheet
 export default class GoogleSheetManager {
@@ -69,6 +71,32 @@ export default class GoogleSheetManager {
       return undefined;
 
     return Number(counterLine[2]);
+  }
+
+  public async addCommand(command: MultipleAnswersCommand) {
+    const nbCommands: number = Number(
+      await this.getDatas(SIMPLE_COMMANDS_SHEET, SIMPLE_COMMANDS_NUMBER_CELL),
+    );
+    // Because of formatting (checkboxes), we have to give the exact line and do an update
+    const range = `'${SIMPLE_COMMANDS_SHEET}'!A${nbCommands + 2}`;
+    this.sheets.spreadsheets.values.update({
+      spreadsheetId: googleSpreadSheetId,
+      range,
+      valueInputOption: "RAW",
+      requestBody: {
+        values: [
+          [
+            command.getName().replaceAll(command.getPrefix(), EMPTY),
+            EMPTY,
+            true,
+            command.getAnswers().join(SKIP_LINE),
+            false,
+            EMPTY,
+            GSheetCommandRoles.EVERYONE,
+          ],
+        ],
+      },
+    });
   }
 
   public async updateCounter(
@@ -108,14 +136,24 @@ export default class GoogleSheetManager {
     }
   }
 
-  public async importSimpleCommands() {
+  public async importSimpleCustomCommands(): Promise<void> {
+    return this.importSimpleCommands(SIMPLE_COMMANDS_SHEET);
+  }
+
+  public async importGeneralCommands(): Promise<void> {
+    return this.importSimpleCommands(GENERAL_COMMANDS_SHEET);
+  }
+
+  public async importSimpleCommands(sheetName: string): Promise<void> {
     const nbCommands: number = Number(
-      await this.getDatas(SIMPLE_COMMANDS_SHEET, SIMPLE_COMMANDS_NUMBER_CELL),
+      await this.getDatas(sheetName, SIMPLE_COMMANDS_NUMBER_CELL),
     );
     const range = SIMPLE_COMMANDS_RANGE + (nbCommands + 1).toString();
-    const simpleCommands = await this.getDatas(SIMPLE_COMMANDS_SHEET, range);
+    const simpleCommands = await this.getDatas(sheetName, range);
+    // For log purpose
+    const addedCommands: string[] = [];
     simpleCommands.forEach((row) => {
-      const name: string = row[0];
+      const name: string = row[0]?.trim()?.normalize()?.toLowerCase();
       const aliases: string[] = row[1]?.split(SKIP_LINE) ?? [];
       const enabled: boolean = row[2];
       const answers: string[] = row[3]?.split(SKIP_LINE) ?? [];
@@ -130,10 +168,13 @@ export default class GoogleSheetManager {
       const rand4: string[] = row[12]?.split(SKIP_LINE);
       const rand5: string[] = row[13]?.split(SKIP_LINE);
 
-      if (enabled) {
+      if (enabled && name) {
         const categories: Category[] = this.parseCategories(categoriesToParse);
+        const filteredAliases = aliases
+          .map((alias) => alias.trim().normalize().toLowerCase())
+          .filter((alias) => alias && alias !== EMPTY);
 
-        const options: CommandOptions = new CommandOptions(aliases);
+        const options: CommandOptions = new CommandOptions(filteredAliases);
         // Caution: inline ifs
         if (hasPlaceholders) options.hasPlaceholders();
         if (categories.length > 0)
@@ -180,10 +221,11 @@ export default class GoogleSheetManager {
         if (rand4) command.setRandomPart4(rand4);
         if (rand5) command.setRandomPart5(rand5);
 
-        log(`Adding Simple Command "${name}" from GSheet`);
         ATwitchClient.commandsManager.addCommand(command);
+        addedCommands.push(command.getName());
       }
     });
+    log(`Adding Simple Command [${addedCommands}] from GSheet`);
   }
 
   private parseCategories(categoriesToParse: string): Category[] {
@@ -197,9 +239,10 @@ export default class GoogleSheetManager {
       specialCategories.forEach((category) => categories.push(category));
     }
     categoriesToParse
-      .split(COMMA)
-      .filter((category) => category && category !== EMPTY)
-      .forEach((category) => categories.push(category));
+      ?.split(COMMA)
+      ?.filter((category) => category && category !== EMPTY)
+      ?.forEach((category) => categories.push(category));
+
     return categories;
   }
 

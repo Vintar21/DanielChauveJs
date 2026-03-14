@@ -1,31 +1,30 @@
 import { MessageEvent } from "@twurple/easy-bot";
 import { MainApp } from "../../app";
-import { Placeholders } from "../../utils/CommandsUtils";
 import Counter from "../../counters/Counter";
-import { minutes } from "../../utils/CommonUtils";
-import { getDefaultRolesPermissions, Roles } from "../../utils/RoleUtils";
-import { User } from "../../utils/user/User";
-import CounterCommandOptions from "../options/CounterCommanOptions";
-import ACounterCommand from "../templates/ACounterCommand";
 import {
   BLUE_PRINCE,
   getCategoryPermissions,
 } from "../../utils/CategoriesConstants";
+import { Placeholders } from "../../utils/CommandsUtils";
+import { minutes } from "../../utils/CommonUtils";
+import { getFollowerOnlyRolesPermissions } from "../../utils/RoleUtils";
+import { User } from "../../utils/user/User";
+import CounterCommandOptions from "../options/CounterCommanOptions";
+import ACounterCommand from "../templates/ACounterCommand";
 
 const mainTrigger = "jour";
 
-// TODO: FollowerOnlyPermissions
 // Example of another counter commands
-const rolesModificationPermissions = getDefaultRolesPermissions();
-rolesModificationPermissions.unallow(Roles.NO_ROLE);
+const rolesModificationPermissions = getFollowerOnlyRolesPermissions();
 
 const categoriesPermissions = getCategoryPermissions(BLUE_PRINCE);
 
 const options: CounterCommandOptions = new CounterCommandOptions([
-  /jours?/i,
-  /days?/i,
-  /blue-?prince?/i,
-  /deaths?/i,
+  "jours",
+  "days",
+  "day",
+  "bluePrince",
+  "blue-prince",
 ])
   .setCounterModificationPermissions(rolesModificationPermissions)
   .setCategoriesPermissions(categoriesPermissions)

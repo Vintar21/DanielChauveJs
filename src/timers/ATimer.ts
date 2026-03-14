@@ -1,10 +1,12 @@
 import ACommand from "../commands/templates/ACommand";
+import ATwitchClient from "../twitch/ATwitchClient";
 import TwitchClient from "../twitch/TwitchClient";
 import { NO_MSG } from "../utils/CommandsUtils";
 import { EMPTY } from "../utils/StringConstants";
 import { timerUser } from "../utils/user/User";
 import { TimerMessage } from "./TimerMessage";
 import TimerOptions from "./TimerOptions";
+
 export default abstract class ATimer {
   protected options: TimerOptions;
   protected timerFinished: boolean = false;
@@ -19,6 +21,15 @@ export default abstract class ATimer {
   }
 
   public start(): void {
+    this.messages = this.messages.map((message) => {
+      if (message instanceof String) {
+        return (
+          ATwitchClient.commandsManager.commandsMap.get(message.toString()) ??
+          message
+        );
+      }
+      return message;
+    });
     setTimeout(() => this.timeoutReached(), this.options.getMinTimeElapsed());
   }
 
@@ -53,7 +64,7 @@ export default abstract class ATimer {
       if (messageToSend instanceof ACommand) {
         messageToSend.execute(timerUser, NO_MSG, true);
       } else if (messageToSend !== EMPTY) {
-        TwitchClient.send(messageToSend);
+        TwitchClient.send(messageToSend.toString());
       }
 
       this.messages = [messageToSend].concat(this.messages);

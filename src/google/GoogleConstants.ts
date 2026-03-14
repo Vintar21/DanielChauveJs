@@ -17,8 +17,10 @@ export const GSheetCommandRoles = Object.freeze({
   EVERYONE: "Everyone",
 });
 
-// ----- Simple Commands
 export const SIMPLE_COMMANDS_SHEET = "Simple Commands";
+export const GENERAL_COMMANDS_SHEET = "General Commands";
+
+// ----- Simple Commands
 export const SIMPLE_COMMANDS_NUMBER_CELL = "Z2";
 export const SIMPLE_COMMANDS_RANGE = "A2:N";
 

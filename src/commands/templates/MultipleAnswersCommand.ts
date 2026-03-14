@@ -5,12 +5,12 @@ import ACommand from "./ACommand";
 import CommandOptions from "../options/CommandOptions";
 
 export default class MultipleAnswersCommand extends ACommand {
-  protected responses: String[];
+  protected responses: string[];
 
   constructor(
     name: string,
     options: CommandOptions,
-    responses: String[],
+    responses: string[],
     enabled: boolean = true,
   ) {
     super(name, options, enabled);
@@ -23,5 +23,9 @@ export default class MultipleAnswersCommand extends ACommand {
     ignoreCooldowns: boolean,
   ): void {
     this.replyOrSend(user, event, ignoreCooldowns, choose(this.responses));
+  }
+
+  public getAnswers(): string[] {
+    return this.responses;
   }
 }

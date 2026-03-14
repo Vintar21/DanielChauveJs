@@ -1,4 +1,3 @@
-import { server } from "typescript";
 import { discordServerIdBg3 } from "../../config/ConfigLoader";
 import { getDefaultRolesPermissions } from "../../utils/RoleUtils";
 import { User } from "../../utils/user/User";
@@ -6,8 +5,8 @@ import {
   DiscordMessage,
   getDefaultServerPermissions,
 } from "../DiscordConstants";
-import ADiscordCommand from "./ADiscordCommand";
 import DiscordCommandOptions from "./options/DiscordCommandOptions";
+import ADiscordCommand from "./templates/ADiscordCommand";
 
 const mainTrigger: string = "roll";
 

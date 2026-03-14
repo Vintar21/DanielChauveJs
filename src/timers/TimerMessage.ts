@@ -1,3 +1,3 @@
-import ACommand from "../commands/templates/ACommand";
+import ICommand from "../commands/templates/ICommand";
 
-export type TimerMessage = String | ACommand;
+export type TimerMessage = String | ICommand;

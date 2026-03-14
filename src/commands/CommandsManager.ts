@@ -5,15 +5,13 @@ import {
   allMiscCommands,
   allMultipleAnswersCommands,
   allNoPrefixSimpleCommands,
-  allSimpleCommands,
   lastAddedCommands,
   pollCommand,
 } from "./AllCommands";
 import ICommand from "./templates/ICommand";
 
 export default class CommandsManager {
-  //private static commands: Array<ICommand> = new Array<ICommand>();
-  private commandsMap: Map<string, ICommand> = new Map();
+  commandsMap: Map<string, ICommand> = new Map();
 
   private static instance: CommandsManager = new CommandsManager();
 
@@ -39,8 +37,6 @@ export default class CommandsManager {
     if (potentialCommand && potentialCommand.match(message, game)) {
       return potentialCommand;
     }
-
-    this.commandsMap.forEach((command, name) => command.match(message, game));
 
     return Array.from(this.commandsMap.values()).find((command) =>
       command.match(message, game),
@@ -75,9 +71,6 @@ export default class CommandsManager {
     // Misc Commands (more used, so they're better first)
     this.addCommands(allMiscCommands);
 
-    // Simple Commands
-    this.addCommands(allSimpleCommands);
-
     // Multiple Answers Commands
     this.addCommands(allMultipleAnswersCommands);
 
@@ -93,6 +86,7 @@ export default class CommandsManager {
     this.addCommands(lastAddedCommands);
 
     // Import commands from GSheet
-    MainApp.getGoogleSheetManager().importSimpleCommands();
+    MainApp.getGoogleSheetManager().importGeneralCommands();
+    MainApp.getGoogleSheetManager().importSimpleCustomCommands();
   }
 }

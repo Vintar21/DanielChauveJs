@@ -1,11 +1,12 @@
-import {
-  discordCommand,
-  socialMediasCommand,
-  youtubeCommand,
-} from "../commands/AllCommands";
+import ATwitchClient from "../twitch/ATwitchClient";
 import ATimer from "./ATimer";
 import { TimerMessage } from "./TimerMessage";
 import TimerOptions from "./TimerOptions";
+
+// Commands names to insert in the timer
+const discordCommand = "discord";
+const youtubeCommand = "youtube";
+const socialMediasCommand = "rs";
 
 export default class MainTimer extends ATimer {
   private static messages: TimerMessage[] = [
