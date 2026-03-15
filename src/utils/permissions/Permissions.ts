@@ -1,3 +1,5 @@
+import { isString } from "../CommonUtils";
+
 export type Right = number;
 export class Permissions<T> {
   static BYPASS: Right = 1;
@@ -23,9 +25,8 @@ export class Permissions<T> {
   // Prefer using getRightOrDefault instead
   public getRight(element: T): Right | undefined {
     element =
-      (element instanceof String || typeof element === "string") &&
-      !this.caseSensitive
-        ? (element.toLowerCase() as T)
+      isString(element) && !this.caseSensitive
+        ? (element.toString().toLowerCase() as T)
         : element;
     return this.permissionsMap.get(element);
   }
@@ -58,9 +59,8 @@ export class Permissions<T> {
 
   public setPermission(element: T, permission: Right): void {
     element =
-      (element instanceof String || typeof element === "string") &&
-      !this.caseSensitive
-        ? (element.toLowerCase() as T)
+      isString(element) && !this.caseSensitive
+        ? (element.toString().toLowerCase() as T)
         : element;
     this.permissionsMap.set(element, permission);
   }

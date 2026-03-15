@@ -105,7 +105,7 @@ export default class CommandOptions {
 
   // Default behavior, you prbably don't need to use it
   public noPlaceholder(): CommandOptions {
-    this.formatMessage = true;
+    this.formatMessage = false;
     return this;
   }
 

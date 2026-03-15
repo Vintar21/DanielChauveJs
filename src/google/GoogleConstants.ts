@@ -1,4 +1,6 @@
 export const SPREADSHEET_SCOPE = "https://www.googleapis.com/auth/spreadsheets";
+export const TRUE_STRING = "TRUE";
+export const FALSE_STRING = "FALSE";
 
 // Counters
 export const COUNTERS_SHEET = "Counters";

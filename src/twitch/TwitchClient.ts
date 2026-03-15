@@ -37,7 +37,7 @@ export default class TwitchClient extends ATwitchClient {
    * - Integrate more methods here like createPoll, getUserByName etc...
    * - Try to remove unnecessary use of static
    **/
-  public static getInstanceAndInit() {
+  public static getInstanceAndInit(): TwitchClient {
     if (!TwitchClient.INSTANCE) {
       TwitchClient.INSTANCE = new TwitchClient();
       TwitchClient.INSTANCE.init(true);
@@ -98,12 +98,13 @@ export default class TwitchClient extends ATwitchClient {
     ATwitchClient.channelPointsListener =
       await ChannelPointsListener.getInstanceAndInit(this, this.listener);
 
+    // TwitchCommandsManager
+    this.setCommandsManager(CommandsManager.getInstance());
+    await this.getCommandsManager().init();
+
     // TimerManager
     ATwitchClient.timerManager = TimerManager.getInstanceAndInit();
     ATwitchClient.timerManager.startAllTimers();
-
-    // TwitchCommandsManager
-    ATwitchClient.commandsManager = CommandsManager.getInstanceAndInit();
 
     // CountersManager
     ATwitchClient.countersManager = CountersManager.initAllCounters();
@@ -188,7 +189,8 @@ export default class TwitchClient extends ATwitchClient {
       await MainApp.obsManager.connect();
     }
     // In fact, no need to reaffect CommandManager
-    ATwitchClient.commandsManager = CommandsManager.getInstanceAndInit();
+    this.setCommandsManager(CommandsManager.getInstance());
+    await this.getCommandsManager().init();
     TwitchClient.raidersIdWaiting = [];
     TwitchClient.shoutedOutIds.clear();
 

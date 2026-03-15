@@ -1,6 +1,6 @@
 import { MessageEvent } from "@twurple/easy-bot";
 import { MainApp } from "../app";
-import { log } from "../utils/CommonUtils";
+import { isString, log } from "../utils/CommonUtils";
 import { getGreaterRole, Roles } from "../utils/RoleUtils";
 import { User } from "../utils/user/User";
 import TwitchClient from "./TwitchClient";
@@ -21,7 +21,8 @@ export const onMessage = async (event: MessageEvent) => {
     userId,
     getGreaterRole(event.getUser(), twitchClient.getBroadcasterApp()),
   );
-  TwitchClient.commandsManager
+  MainApp.getTwitchClient()
+    .getCommandsManager()
     .getTriggeredCommand(message, await game)
     .then((triggeredCommand) => {
       triggeredCommand?.canExecute(user).then((canExecute) => {
@@ -46,8 +47,8 @@ async function filterMessage(message: string, user: User): Promise<void> {
   if ((await user.getGreaterRole()) === Roles.NO_ROLE) {
     const isBestViewerScam = bestViewersBotMessages.find((expression) => {
       var matching = false;
-      if (typeof expression === "string") {
-        matching = message.includes(expression);
+      if (isString(expression)) {
+        matching = message.includes(expression.toString());
       } else if (expression instanceof RegExp) {
         matching = message.match(expression) !== null;
       }

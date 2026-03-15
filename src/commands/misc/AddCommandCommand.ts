@@ -1,19 +1,13 @@
 import { MessageEvent } from "@twurple/easy-bot";
-import { allCounters } from "../../counters/AllCounters";
-import CounterBuilder from "../../counters/CounterBuilder";
-import CountersManager from "../../counters/CountersManager";
-import { CounterStorages } from "../../counters/CounterUtils";
-import ATwitchClient from "../../twitch/ATwitchClient";
+import { MainApp } from "../../app";
+import { COMMAND_PREFIX } from "../../utils/CommandsUtils";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
+import { SPACE } from "../../utils/StringConstants";
 import { User } from "../../utils/user/User";
-import GenericCounterCommand from "../counters/GenericCountCommand";
 import CommandOptions from "../options/CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
 import MultipleAnswersCommand from "../templates/MultipleAnswersCommand";
-import GoogleSheetManager from "../../google/GoogleSheetManager";
-import { MainApp } from "../../app";
-import { SPACE } from "../../utils/StringConstants";
 
 const mainTrigger: string = "addCommand";
 
@@ -46,9 +40,10 @@ export default class CountCommand extends AArgumentsCommand {
       const commandName = args[0].trim().normalize();
 
       // TODO: map of counters
-      const formatedCounterName = commandName.toLowerCase();
-      const existingCommand =
-        ATwitchClient.commandsManager.commandsMap.get(formatedCounterName);
+      const formatedCounterName = COMMAND_PREFIX + commandName.toLowerCase();
+      const existingCommand = MainApp.getTwitchClient()
+        .getCommandsManager()
+        .commandsMap.get(formatedCounterName);
 
       if (existingCommand) {
         this.replyOrSend(
@@ -69,7 +64,7 @@ export default class CountCommand extends AArgumentsCommand {
       ]);
 
       // TODO: Save the command and the counter
-      ATwitchClient.commandsManager.addCommand(command);
+      MainApp.getTwitchClient().getCommandsManager().addCommand(command);
       MainApp.getGoogleSheetManager().addCommand(command);
 
       this.replyOrSend(

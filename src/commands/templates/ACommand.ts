@@ -11,6 +11,7 @@ import { AT, EMPTY, SPACE } from "../../utils/StringConstants";
 import { isNotAUser, User, UserId } from "../../utils/user/User";
 import CommandOptions from "../options/CommandOptions";
 import ICommand from "./ICommand";
+import { isString } from "../../utils/CommonUtils";
 
 export default abstract class ACommand implements ICommand {
   // The command name used for call the command "!name", you could add aliases in options.triggers
@@ -243,9 +244,7 @@ export default abstract class ACommand implements ICommand {
   public getAllStringTriggers(): string[] {
     const stringTriggers: string[] = [];
     this.getTriggers()
-      .filter(
-        (trigger) => typeof trigger === "string" || trigger instanceof String,
-      )
+      .filter((trigger) => isString(trigger))
       .filter(
         (stringTrigger) =>
           stringTrigger &&

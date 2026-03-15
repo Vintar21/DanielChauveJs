@@ -33,7 +33,7 @@ export default abstract class ATwitchClient {
   protected static broadcasterApp: Bot;
   protected static broadcaster: HelixUser;
 
-  static commandsManager: CommandsManager;
+  private commandsManager: CommandsManager;
   static channelPointsListener: ChannelPointsListener;
   static timerManager: TimerManager = TimerManager.getInstanceAndInit();
   static countersManager: CountersManager;
@@ -183,8 +183,13 @@ export default abstract class ATwitchClient {
     return ATwitchClient.broadcasterApp;
   }
 
-  public static getCommandsManager(): CommandsManager {
-    return ATwitchClient.commandsManager;
+  public getCommandsManager(): CommandsManager {
+    return this.commandsManager;
+  }
+
+  // TODO fairte autrement nan ?
+  public setCommandsManager(commandManager: CommandsManager) {
+    this.commandsManager = commandManager;
   }
 
   public static getChannelPointsListener(): ChannelPointsListener {
