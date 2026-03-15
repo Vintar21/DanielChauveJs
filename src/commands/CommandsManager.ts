@@ -17,8 +17,8 @@ export default class CommandsManager {
 
   private constructor() {}
 
-  public static getInstanceAndInit(): CommandsManager {
-    CommandsManager.instance.init();
+  public static async getInstanceAndInit(): Promise<CommandsManager> {
+    await CommandsManager.instance.init();
     return CommandsManager.instance;
   }
 
@@ -58,7 +58,7 @@ export default class CommandsManager {
   }
 
   // Shouldn't init yourself, use getInstanceAndInit instead
-  protected init(): void {
+  public async init(): Promise<void> {
     // Init only once
     if (this.commandsMap.size > 0) {
       this.commandsMap.forEach((command) => command.reset());
@@ -86,7 +86,7 @@ export default class CommandsManager {
     this.addCommands(lastAddedCommands);
 
     // Import commands from GSheet
-    MainApp.getGoogleSheetManager().importGeneralCommands();
-    MainApp.getGoogleSheetManager().importSimpleCustomCommands();
+    await MainApp.getGoogleSheetManager().importGeneralCommands();
+    await MainApp.getGoogleSheetManager().importSimpleCustomCommands();
   }
 }

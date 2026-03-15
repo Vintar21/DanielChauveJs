@@ -18,6 +18,7 @@ export const SPACED_COMMA: string = COMMA + SPACE;
 export const NEW_LINE: string = "\r\n";
 export const SKIP_LINE: string = "\n";
 export const TWITCH_CHANNEL_PREFIX: string = "https://www.twitch.tv/";
+export const STRING_TYPE: string = "string";
 
 export const END_PUNCTUATIONS: string[] = [
   DOT,

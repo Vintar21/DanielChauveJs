@@ -45,14 +45,18 @@ export function formatCommandMessage(
     (value, key) => (message = message.replaceAll(key, choose(value))),
   );
 
+  if (event && event !== null) {
+    message = message
+      .replaceAll(
+        Placeholders.INPUT,
+        event.text.split(SPACE).slice(1).join(SPACE),
+      )
+      .replaceAll(Placeholders.USER, event.userName);
+  }
+
   return message
     .replaceAll(Placeholders.BROADCASTER, twitchClient.getBroadcaster().name)
-    .replaceAll(Placeholders.CATEGORY, category)
-    .replaceAll(
-      Placeholders.INPUT,
-      event.text.split(SPACE).slice(1).join(SPACE),
-    )
-    .replaceAll(Placeholders.USER, event.userName);
+    .replaceAll(Placeholders.CATEGORY, category);
 }
 
 export function formatCounterMessage(

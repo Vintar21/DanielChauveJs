@@ -7,6 +7,7 @@ import {
   FontColor,
   LIGHT_PUNCTUATIONS,
   SPACE,
+  STRING_TYPE,
 } from "./StringConstants";
 
 export function choose<T>(strings: Array<T>): T {
@@ -95,6 +96,10 @@ export function lowerFirst(input: String): String {
     return input.toLowerCase();
   }
   return input[0].toLowerCase() + input.slice(1);
+}
+
+export function isString(object: any): boolean {
+  return object instanceof String || typeof object === STRING_TYPE;
 }
 
 // Not used

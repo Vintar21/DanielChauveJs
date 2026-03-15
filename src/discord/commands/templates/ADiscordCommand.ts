@@ -1,6 +1,7 @@
 import { MainApp } from "../../../app";
 import TwitchClient from "../../../twitch/TwitchClient";
 import { Trigger } from "../../../utils/CommandsUtils";
+import { isString } from "../../../utils/CommonUtils";
 import { SPACE } from "../../../utils/StringConstants";
 import { User, UserId } from "../../../utils/user/User";
 import { DiscordMessage } from "../../DiscordConstants";
@@ -207,9 +208,7 @@ export default abstract class ADiscordCommand {
   public getAllStringTriggers(): string[] {
     const stringTriggers: string[] = [];
     this.getTriggers()
-      .filter(
-        (trigger) => typeof trigger === "string" || trigger instanceof String,
-      )
+      .filter((trigger) => isString(trigger))
       .forEach((stringTrigger) =>
         stringTriggers.push(stringTrigger.toString()),
       );

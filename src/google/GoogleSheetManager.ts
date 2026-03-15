@@ -38,8 +38,10 @@ import {
   SIMPLE_COMMANDS_RANGE,
   SIMPLE_COMMANDS_SHEET,
   SPREADSHEET_SCOPE,
+  TRUE_STRING,
 } from "./GoogleConstants";
 import ICommand from "../commands/templates/ICommand";
+import { MainApp } from "../app";
 
 // TODO: write a method to select a discord announce from GSheet
 export default class GoogleSheetManager {
@@ -157,7 +159,7 @@ export default class GoogleSheetManager {
       const aliases: string[] = row[1]?.split(SKIP_LINE) ?? [];
       const enabled: boolean = row[2];
       const answers: string[] = row[3]?.split(SKIP_LINE) ?? [];
-      const hasPlaceholders: boolean = row[4];
+      const hasPlaceholders: boolean = row[4] === TRUE_STRING;
       var categoriesToParse: string = row[5];
       const minRole: string = row[6];
       const globalCooldownInSec: number = row[7];
@@ -221,11 +223,11 @@ export default class GoogleSheetManager {
         if (rand4) command.setRandomPart4(rand4);
         if (rand5) command.setRandomPart5(rand5);
 
-        ATwitchClient.commandsManager.addCommand(command);
+        MainApp.getTwitchClient().getCommandsManager().addCommand(command);
         addedCommands.push(command.getName());
       }
     });
-    log(`Adding Simple Command [${addedCommands}] from GSheet`);
+    log(`Adding Simple Commands [${addedCommands}] from GSheet`);
   }
 
   private parseCategories(categoriesToParse: string): Category[] {

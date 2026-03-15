@@ -15,6 +15,7 @@ import ACounterCommand from "../templates/ACounterCommand";
 const mainTrigger = "jour";
 
 // Example of another counter commands
+// TODO: CHANGE THAT not only follower
 const rolesModificationPermissions = getFollowerOnlyRolesPermissions();
 
 const categoriesPermissions = getCategoryPermissions(BLUE_PRINCE);

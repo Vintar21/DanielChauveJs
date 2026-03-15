@@ -1,7 +1,9 @@
+import { MainApp } from "../app";
 import ACommand from "../commands/templates/ACommand";
 import ATwitchClient from "../twitch/ATwitchClient";
 import TwitchClient from "../twitch/TwitchClient";
 import { NO_MSG } from "../utils/CommandsUtils";
+import { isString, log } from "../utils/CommonUtils";
 import { EMPTY } from "../utils/StringConstants";
 import { timerUser } from "../utils/user/User";
 import { TimerMessage } from "./TimerMessage";
@@ -22,10 +24,11 @@ export default abstract class ATimer {
 
   public start(): void {
     this.messages = this.messages.map((message) => {
-      if (message instanceof String) {
+      if (isString(message)) {
         return (
-          ATwitchClient.commandsManager.commandsMap.get(message.toString()) ??
-          message
+          MainApp.getTwitchClient()
+            .getCommandsManager()
+            .commandsMap.get(message.toString()) ?? message
         );
       }
       return message;

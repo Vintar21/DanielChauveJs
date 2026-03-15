@@ -1,8 +1,9 @@
 import { MessageEvent } from "@twurple/easy-bot";
+import { MainApp } from "../../app";
 import CounterBuilder from "../../counters/CounterBuilder";
 import CountersManager from "../../counters/CountersManager";
 import { CounterStorages } from "../../counters/CounterUtils";
-import ATwitchClient from "../../twitch/ATwitchClient";
+import { COMMAND_PREFIX } from "../../utils/CommandsUtils";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import { User } from "../../utils/user/User";
@@ -41,10 +42,12 @@ export default class CountCommand extends AArgumentsCommand {
       const counterName = args[0].trim().normalize();
 
       // TODO: map of counters
-      const formatedCounterName = counterName.toLowerCase();
+      const formatedCounterName = COMMAND_PREFIX + counterName.toLowerCase();
       const existingCounter =
         CountersManager.counters.get(formatedCounterName) ||
-        ATwitchClient.commandsManager.commandsMap.get(formatedCounterName);
+        MainApp.getTwitchClient()
+          .getCommandsManager()
+          .commandsMap.get(formatedCounterName);
 
       if (existingCounter) {
         this.replyOrSend(
@@ -71,7 +74,7 @@ export default class CountCommand extends AArgumentsCommand {
       // Creating the command
       const command = new GenericCounterCommand(counter);
       // TODO: Save the command and the counter
-      ATwitchClient.commandsManager.addCommand(command);
+      MainApp.getTwitchClient().getCommandsManager().addCommand(command);
 
       this.replyOrSend(
         user,
