@@ -145,19 +145,17 @@ export default abstract class ADiscordCommand {
       return true;
     }
 
-    return user.getGreaterRole().then((role) => {
-      // Role permissions
-      if (this.options.rolesPermissions.isUnallowed(role)) {
-        return false;
-      } else if (this.options.rolesPermissions.canBypass(role)) {
-        return true;
-      }
+    // Role permissions
+    if (this.options.rolesPermissions.isUnallowed(user.role)) {
+      return false;
+    } else if (this.options.rolesPermissions.canBypass(user.role)) {
+      return true;
+    }
 
-      return (
-        this.isGlobalCooldownFinished() &&
-        this.isUserCooldownFinished(user.userId)
-      );
-    });
+    return (
+      this.isGlobalCooldownFinished() &&
+      this.isUserCooldownFinished(user.userId)
+    );
   }
 
   protected updateCooldowns(userId: UserId): void {

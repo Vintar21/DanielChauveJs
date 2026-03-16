@@ -1,15 +1,14 @@
-import { _ } from "../../utils/ImportConstants";
 import CommandOptions from "../options/CommandOptions";
-import SimpleCommand from "./SimpleCommand";
+import MultipleAnswersCommand from "./MultipleAnswersCommand";
 
-export default class NoPrefixSimpleCommand extends SimpleCommand {
+export default class NoPrefixSimpleCommand extends MultipleAnswersCommand {
   constructor(
     name: string,
     options: CommandOptions,
-    response: String,
+    response: string,
     enabled: boolean = true,
   ) {
     options.dontUsePrefix().canUseFullMessage();
-    super(name, options, response, enabled);
+    super(name, options, [response], enabled);
   }
 }

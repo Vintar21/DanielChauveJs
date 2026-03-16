@@ -1,16 +1,22 @@
-import { MessageEvent } from "@twurple/easy-bot/lib";
+import { ChatMessage } from "@twurple/chat";
 import { User } from "../../utils/user/User";
 
 export default interface ICommand {
   match(input: string, game: string): boolean;
 
-  execute(user: User, event: MessageEvent, ignoreCooldowns?: boolean): void;
+  matchAliases(input: string, game: string, formatMessage?: boolean): boolean;
+
+  execute(
+    user: User,
+    chatMessage: ChatMessage,
+    ignoreCooldowns?: boolean,
+  ): void;
 
   reset(): void;
 
   canExecute(user: User): Promise<boolean>;
 
-  canReplyToUser(event: MessageEvent): boolean;
+  canReplyToUser(chatMessage: ChatMessage): boolean;
 
   getPrefix(): string;
 

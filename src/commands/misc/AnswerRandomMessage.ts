@@ -1,10 +1,10 @@
-import { MessageEvent } from "@twurple/easy-bot";
-import { User } from "../../utils/user/User";
+import { ChatMessage } from "@twurple/chat/lib";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getDefaultRolesPermissions, Role, Roles } from "../../utils/RoleUtils";
+import { EMPTY } from "../../utils/StringConstants";
+import { User } from "../../utils/user/User";
 import CommandOptions from "../options/CommandOptions";
 import MultipleAnswersCommand from "../templates/MultipleAnswersCommand";
-import { EMPTY } from "../../utils/StringConstants";
 
 const rolesPermissions: Permissions<Role> = getDefaultRolesPermissions();
 rolesPermissions.unallow(Roles.BROADCASTER);
@@ -31,11 +31,11 @@ export default class AnswerRandomMessage extends MultipleAnswersCommand {
 
   public execute(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     ignoreCooldowns: boolean,
   ): void {
     if (Math.random() < this.proba) {
-      super.execute(user, event, ignoreCooldowns);
+      super.execute(user, chatMessage, ignoreCooldowns);
     }
   }
 }

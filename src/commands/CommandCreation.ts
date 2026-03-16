@@ -1,6 +1,6 @@
 import CommandOptions from "./options/CommandOptions";
 import ICommand from "./templates/ICommand";
-import SimpleCommand from "./templates/SimpleCommand";
+//import SimpleCommand from "./templates/SimpleCommand";
 
 // Not sure to keep this file, it's a draft
 
@@ -22,13 +22,15 @@ export const commands: Array<ICommand> = [];
  *
  * Note: If you need more complex/specific commands, change SimpleCommand by something else (see other example commands or create your own template by extending ACommand like in src/commands/misc)
  */
+
+/*
 const myCommand: ICommand = new SimpleCommand(
   "myCommand",
   new CommandOptions([/thecomm?and/i]).setGlobalCooldown(10),
   "This is an example command answer.",
   true,
 );
-commands.push(myCommand);
+commands.push(myCommand);*/
 
 // TODO: MultipleAnswersCommand
 

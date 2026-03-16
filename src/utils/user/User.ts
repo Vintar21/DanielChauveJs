@@ -3,16 +3,12 @@ import { Role } from "../RoleUtils";
 export class User {
   public username: string;
   public userId: UserId;
-  public role: Promise<Role>;
+  public role: Role;
 
-  constructor(username: string, userId: UserId, role: Promise<Role>) {
+  constructor(username: string, userId: UserId, role: Role) {
     this.username = username;
     this.userId = userId;
     this.role = role;
-  }
-
-  public getGreaterRole(): Promise<Role> {
-    return this.role;
   }
 }
 

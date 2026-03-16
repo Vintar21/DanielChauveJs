@@ -1,13 +1,13 @@
 import { HelixPrediction } from "@twurple/api";
-import { MessageEvent } from "@twurple/easy-bot";
+import { ChatMessage } from "@twurple/chat";
 import { MainApp } from "../../app";
-import { User } from "../../utils/user/User";
+import { log, minutes } from "../../utils/CommonUtils";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import { SPACE } from "../../utils/StringConstants";
+import { User } from "../../utils/user/User";
 import CommandOptions from "../options/CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
-import { log, minutes } from "../../utils/CommonUtils";
 
 const CANCEL_PREDICTION = "cancel";
 const LOCK_PREDICTION = "stop";
@@ -24,6 +24,9 @@ const options: CommandOptions = new CommandOptions([
 ]).setRolesPermission(rolesPermissions);
 
 export default class PredictionCommand extends AArgumentsCommand {
+  protected static MAX_PREDICTION_TITLE_LENGTH: number = 45;
+  protected static MAX_TIME_PREDICTION: number = minutes(30, true);
+
   private autoLockTime: number = minutes(5, true); // Max 1800s = 30min
   private defaultOutcomes: string[] = ["Oui", "Non"];
   private title: string = "Est-ce que ça va arriver ?";
@@ -37,7 +40,7 @@ export default class PredictionCommand extends AArgumentsCommand {
     autoLockTime: number,
     outcomes: string[],
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     ignoreCooldowns: boolean,
   ) {
     const twitchClient = MainApp.getTwitchClient();
@@ -54,7 +57,7 @@ export default class PredictionCommand extends AArgumentsCommand {
         );
         this.replyOrSend(
           user,
-          event,
+          chatMessage,
           ignoreCooldowns,
           "Prédiction créée, à vos votes !",
         );
@@ -91,7 +94,7 @@ export default class PredictionCommand extends AArgumentsCommand {
     args: String[],
     lastPrediction: HelixPrediction,
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     ignoreCooldowns: boolean,
   ): boolean {
     if (args.length === 1) {
@@ -108,7 +111,7 @@ export default class PredictionCommand extends AArgumentsCommand {
               .then(() => {
                 this.replyOrSend(
                   user,
-                  event,
+                  chatMessage,
                   ignoreCooldowns,
                   "Prédiction annulée !",
                 );
@@ -127,7 +130,7 @@ export default class PredictionCommand extends AArgumentsCommand {
                 .then(() => {
                   this.replyOrSend(
                     user,
-                    event,
+                    chatMessage,
                     ignoreCooldowns,
                     "Votes terminés !",
                   );
@@ -142,7 +145,7 @@ export default class PredictionCommand extends AArgumentsCommand {
 
   protected async executeWithArgs(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     args: String[],
     ignoreCooldowns: boolean,
   ): Promise<void> {
@@ -159,13 +162,13 @@ export default class PredictionCommand extends AArgumentsCommand {
             args,
             lastPrediction,
             user,
-            event,
+            chatMessage,
             ignoreCooldowns,
           )
         ) {
           this.replyOrSend(
             user,
-            event,
+            chatMessage,
             ignoreCooldowns,
             "Il y a déjà une prédiction en cours Sadge",
           );
@@ -184,7 +187,10 @@ export default class PredictionCommand extends AArgumentsCommand {
         // Check if the first parameter is the time of the prediction
         var timeArg = Number(args[0]);
         if (!isNaN(timeArg) && timeArg > 0) {
-          timeArg = timeArg > minutes(30, true) ? minutes(30, true) : timeArg; // Twitch max duration is 1800s (30min)
+          timeArg =
+            timeArg > PredictionCommand.MAX_TIME_PREDICTION
+              ? PredictionCommand.MAX_TIME_PREDICTION
+              : timeArg;
           timeArg = timeArg <= 30 ? minutes(timeArg, true) : timeArg; // If the given time is less or equal than 30, we consider it's in minutes and convert it to seconds
           autoLockTime = timeArg;
           args = args.slice(1);
@@ -199,12 +205,12 @@ export default class PredictionCommand extends AArgumentsCommand {
         }
       }
 
-      if (title.length > 45) {
+      if (title.length > PredictionCommand.MAX_PREDICTION_TITLE_LENGTH) {
         this.replyOrSend(
           user,
-          event,
+          chatMessage,
           ignoreCooldowns,
-          "Le titre de la prédiction est trop long (max 45 caractères) Sadge",
+          `Le titre de la prédiction est trop long (max ${PredictionCommand.MAX_PREDICTION_TITLE_LENGTH} caractères) Sadge`,
         );
         return;
       }
@@ -215,7 +221,7 @@ export default class PredictionCommand extends AArgumentsCommand {
         autoLockTime,
         outcomes,
         user,
-        event,
+        chatMessage,
         ignoreCooldowns,
       );
     });

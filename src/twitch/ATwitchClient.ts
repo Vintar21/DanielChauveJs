@@ -15,10 +15,12 @@ import {
   HelixPredictionApi,
   HelixStream,
   HelixStreamApi,
+  HelixSubscriptionApi,
   HelixUser,
   HelixUserApi,
 } from "@twurple/api";
-import { Bot, MessageEvent } from "@twurple/easy-bot";
+import { ChatClient, ChatMessage } from "@twurple/chat";
+import { Bot } from "@twurple/easy-bot";
 import ChannelPointsListener from "../channel-points-rewards/ChannelPointsListener";
 import CommandsManager from "../commands/CommandsManager";
 import { channel } from "../config/ConfigLoader";
@@ -32,6 +34,10 @@ export default abstract class ATwitchClient {
   protected static botApp: Bot;
   protected static broadcasterApp: Bot;
   protected static broadcaster: HelixUser;
+  protected static bot: HelixUser;
+
+  // Public for test purpose
+  public static chatClient: ChatClient;
 
   private commandsManager: CommandsManager;
   static channelPointsListener: ChannelPointsListener;
@@ -98,9 +104,8 @@ export default abstract class ATwitchClient {
     }
   }
 
-  public reply(message: String, event: MessageEvent): void {
-    // use bot.reply instead ? How ?
-    event.reply(message.toString());
+  public reply(message: String, chatMessage: ChatMessage): void {
+    ATwitchClient.botApp.reply(channel, message.toString(), chatMessage);
   }
 
   /*----- API calls -----*/
@@ -165,6 +170,10 @@ export default abstract class ATwitchClient {
     return this.getApi().streams;
   }
 
+  public getSubscriptionsApi(): HelixSubscriptionApi {
+    return this.getApi().subscriptions;
+  }
+
   public getUsersApi(): HelixUserApi {
     return this.getApi().users;
   }
@@ -179,8 +188,20 @@ export default abstract class ATwitchClient {
     return this.getBroadcaster().id;
   }
 
+  public getBot(): HelixUser {
+    return ATwitchClient.bot;
+  }
+
+  public getBotId(): string {
+    return this.getBot().id;
+  }
+
   public getBroadcasterApp(): Bot {
     return ATwitchClient.broadcasterApp;
+  }
+
+  public getBotApp(): Bot {
+    return ATwitchClient.botApp;
   }
 
   public getCommandsManager(): CommandsManager {

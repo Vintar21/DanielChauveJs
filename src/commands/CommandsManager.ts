@@ -1,4 +1,5 @@
 import { MainApp } from "../app";
+import { isString } from "../utils/CommonUtils";
 import { SPACE } from "../utils/StringConstants";
 import {
   allCounterCommands,
@@ -39,7 +40,7 @@ export default class CommandsManager {
     }
 
     return Array.from(this.commandsMap.values()).find((command) =>
-      command.match(message, game),
+      command.matchAliases(message, game),
     );
   }
 

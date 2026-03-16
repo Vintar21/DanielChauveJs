@@ -1,4 +1,4 @@
-import { MessageEvent } from "@twurple/easy-bot";
+import { ChatMessage } from "@twurple/chat";
 import { MainApp } from "../../app";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
@@ -23,16 +23,20 @@ export default class SetTitleCommand extends AArgumentsCommand {
     */
   protected static TITLE_SEPARATOR = PIPE;
 
+  constructor(enabled: boolean = true) {
+    super(mainTrigger, options, enabled);
+  }
+
   protected async executeWithArgs(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     args: String[],
     ignoreCooldowns: boolean,
   ): Promise<void> {
     if (args.length === 0) {
       this.replyOrSend(
         user,
-        event,
+        chatMessage,
         ignoreCooldowns,
         "Essaie de trouver un titre avant de vouloir le changer...",
       );
@@ -60,21 +64,17 @@ export default class SetTitleCommand extends AArgumentsCommand {
     if (isTitleUpdated) {
       this.replyOrSend(
         user,
-        event,
+        chatMessage,
         ignoreCooldowns,
         `Titre changé pour: "${newTitle}" chef 👌`,
       );
     } else {
       this.replyOrSend(
         user,
-        event,
+        chatMessage,
         ignoreCooldowns,
         `Désolé, je ne peux pas mettre ce titre Sadge`,
       );
     }
-  }
-
-  constructor(enabled: boolean = true) {
-    super(mainTrigger, options, enabled);
   }
 }

@@ -1,11 +1,11 @@
-import { MessageEvent } from "@twurple/easy-bot";
+import { ChatMessage } from "@twurple/chat";
 import { channel } from "../../config/ConfigLoader";
-import { User } from "../../utils/user/User";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getVipOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import { SLASH, SPACE } from "../../utils/StringConstants";
-import ACommand from "../templates/ACommand";
+import { User } from "../../utils/user/User";
 import CommandOptions from "../options/CommandOptions";
+import ACommand from "../templates/ACommand";
 
 const mainTrigger: string = "multi";
 
@@ -28,10 +28,10 @@ export default class MultiCommand extends ACommand {
 
   public execute(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     ignoreCooldowns: boolean,
   ): void {
-    const messageParts: string[] = event.text.trim().split(SPACE);
+    const messageParts: string[] = chatMessage.text.trim().split(SPACE);
     // [!multi, firstchannel, ...]
     if (messageParts.length > 1) {
       this.channels.concat(messageParts.slice(1));
@@ -41,6 +41,6 @@ export default class MultiCommand extends ACommand {
       MultiCommand.linkPrefix +
       this.channels.join(SLASH);
     // TODO: Pin the message
-    this.replyOrSend(user, event, ignoreCooldowns, message);
+    this.replyOrSend(user, chatMessage, ignoreCooldowns, message);
   }
 }

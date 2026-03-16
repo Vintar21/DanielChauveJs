@@ -16,6 +16,7 @@
   "dependencies": {
     "@twurple/api": "^8.0.3",
     "@twurple/auth": "^8.0.3",
+    "@twurple/chat": "^8.0.3",
     "@twurple/easy-bot": "^8.0.3",
     "@twurple/eventsub-ws": "^8.0.3",
     "@types/mssql": "^9.1.9",

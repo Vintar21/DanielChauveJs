@@ -24,6 +24,7 @@ import {
   TOCTOC_REWARD_ID,
 } from "./ChannelPointsConstants";
 
+// TODO Rename in ChannelPointsManager + no need to have listener in attribute
 export default class ChannelPointsListener {
   private static listener: EventSubWsListener;
   private static instance: ChannelPointsListener;
@@ -45,7 +46,7 @@ export default class ChannelPointsListener {
 
   // Use getInstanceAndInit instead
   protected async init(broadcasterId: string): Promise<void> {
-    ChannelPointsListener.listener.start();
+    //ChannelPointsListener.listener.start();
     ChannelPointsListener.listener.onChannelRedemptionAdd(
       broadcasterId,
       this.onRedemptionRedeemed,
@@ -101,11 +102,8 @@ export default class ChannelPointsListener {
     const username: string = event.userName;
     const userId: number = parseInt(event.userId);
     const input: string = event.input;
-    const twitchClient: TwitchClient = MainApp.getTwitchClient();
-    const role: Promise<Role> = getGreaterRole(
-      event.getUser(),
-      twitchClient.getBroadcasterApp(),
-    );
+    const role: Role = await getGreaterRole(event.getUser());
+
     log(`Redemption event received: ${event.id} by ${username} (${userId})`);
     switch (event.rewardId) {
       case REROLL_REWARD_ID:

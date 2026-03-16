@@ -1,3 +1,4 @@
+import { addRollMessageCommand } from "./commands/AddRollMessageCommand";
 import { liveCommand } from "./commands/LiveCommand";
 import { rollBg3ServCommand } from "./commands/RollBg3ServCommand";
 import { sayCommand } from "./commands/SayCommand";
@@ -8,6 +9,7 @@ export const twitchRelatedDiscordCommands: ADiscordCommand[] = [
   sayCommand,
   liveCommand,
   sqlCommand,
+  addRollMessageCommand,
 ];
 
 export const jdrRelatedDiscordCommands: ADiscordCommand[] = [

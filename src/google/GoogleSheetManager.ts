@@ -1,5 +1,6 @@
 import { JWT } from "google-auth-library";
 import { google, sheets_v4 } from "googleapis";
+import { MainApp } from "../app";
 import CommandOptions from "../commands/options/CommandOptions";
 import MultipleAnswersCommand from "../commands/templates/MultipleAnswersCommand";
 import {
@@ -7,7 +8,6 @@ import {
   googlePrivateKey,
   googleSpreadSheetId,
 } from "../config/ConfigLoader";
-import ATwitchClient from "../twitch/ATwitchClient";
 import {
   Category,
   getCategoriesPermissions,
@@ -40,8 +40,6 @@ import {
   SPREADSHEET_SCOPE,
   TRUE_STRING,
 } from "./GoogleConstants";
-import ICommand from "../commands/templates/ICommand";
-import { MainApp } from "../app";
 
 // TODO: write a method to select a discord announce from GSheet
 export default class GoogleSheetManager {

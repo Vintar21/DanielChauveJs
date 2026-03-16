@@ -1,6 +1,5 @@
 import { Permissions } from "../permissions/Permissions";
-import { UserId } from "./User";
-import { botsUser } from "./User";
+import { botsUser, User, UserId } from "./User";
 
 // Allow everyone except registered bots (Moobot, Nightbot, streamelements)
 export function getDefaultUsersPermissions(): Permissions<UserId> {
@@ -9,3 +8,6 @@ export function getDefaultUsersPermissions(): Permissions<UserId> {
   defaultUsersPermissions.unallowEach(botsUser.map((user) => user.userId));
   return defaultUsersPermissions;
 }
+
+// TODO: change UserId for String
+export const usersCache: Map<UserId, User> = new Map();
