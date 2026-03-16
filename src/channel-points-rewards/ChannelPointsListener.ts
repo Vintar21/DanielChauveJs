@@ -10,7 +10,7 @@ import ObsManager from "../obs/ObsManager";
 import TwitchClient from "../twitch/TwitchClient";
 import { choose, log } from "../utils/CommonUtils";
 import { CHILD_LAUGH_SOUND, playSound } from "../utils/MediaUtils";
-import { getGreaterRole, Role } from "../utils/RoleUtils";
+import { getGreaterRole, getUserWithRole, Role } from "../utils/RoleUtils";
 import { User } from "../utils/user/User";
 import {
   CAMERA_EFFECT_REWARD_ID,

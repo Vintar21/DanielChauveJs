@@ -10,7 +10,7 @@ import { EventSubStreamOnlineEvent } from "@twurple/eventsub-base/lib/events/Eve
 import { EventSubWsListener } from "@twurple/eventsub-ws";
 import { MainApp } from "../app";
 import ChannelPointsListener from "../channel-points-rewards/ChannelPointsListener";
-import { allCounterCommands } from "../commands/AllCommands";
+import { allCounterCommands, rollCommand } from "../commands/AllCommands";
 import CommandsManager from "../commands/CommandsManager";
 import {
   botAccessToken,
@@ -162,6 +162,9 @@ export default class TwitchClient extends ATwitchClient {
         const user = await this.getUsersApi().getUserByName(username);
         const watchStreak = Number(matchResult[1]);
         log(`Watch streak: ${username} = ${matchResult[1]}`);
+        if (!isNaN(watchStreak) && user !== null) {
+          rollCommand.addModifier(Number(user.id), watchStreak * 10);
+        }
       }
     });
     log("Twitch Client ready !");

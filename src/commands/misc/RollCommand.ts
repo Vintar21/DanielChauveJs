@@ -1,4 +1,4 @@
-import { MessageEvent } from "@twurple/easy-bot";
+import { ChatMessage } from "@twurple/chat";
 import { MainApp } from "../../app";
 import SqlManager from "../../database/SqlManager";
 import { FOLLOWER_COUNT_MESSAGE, NO_MSG } from "../../utils/CommandsUtils";
@@ -8,7 +8,7 @@ import {
   ROLLED_1000_SOUND,
   ROLLED_1_SOUND,
 } from "../../utils/MediaUtils";
-import { getGreaterRole, Roles } from "../../utils/RoleUtils";
+import { Roles } from "../../utils/RoleUtils";
 import { AT, EMPTY, SPACE } from "../../utils/StringConstants";
 import { isNotAUser, undefinedUser, User, UserId } from "../../utils/user/User";
 import { resetMvpCommand } from "../AllCommands";
@@ -41,7 +41,9 @@ export default class RollCommand extends AArgumentsCommand {
   private static RANGE_MAX: number = 1000;
   private static ROLL_MAX_USE_PER_USER: number = 1;
 
-  private currentMVP: Mvp = new Mvp(undefinedUser, 0);
+  private currentMVP: Mvp = new Mvp(undefinedUser, undefined);
+
+  private userModifiers: Map<UserId, number> = new Map();
 
   constructor(enabled: boolean = true) {
     super(mainTrigger, options, enabled);
@@ -63,6 +65,7 @@ export default class RollCommand extends AArgumentsCommand {
     log("Reset MVP !");
     super.reset();
     this.currentMVP = new Mvp(undefinedUser, 0);
+    this.userModifiers.clear();
     MainApp.getObsManager().resetObsMvpSource();
   }
 
@@ -94,6 +97,19 @@ export default class RollCommand extends AArgumentsCommand {
       log(`No custom message for ${value}`);
       var averageMessage;
       const average = await SqlManager.averageRollForUserId(user.userId);
+
+      // Out of range values that can be reached thanks to modifiers
+      if (value === 0) {
+        return SPACE + "Zéro pointé, ça te va bien tiens.";
+      } else if (value < 0) {
+        return (
+          SPACE +
+          "Mdrr t'as réussi à faire un score négatif, c'est dire ton level."
+        );
+      } else if (value > RollCommand.RANGE_MAX) {
+        return SPACE + "Hey ! Mais c'est de la triche !";
+      }
+
       if (average) {
         if (value > average) {
           averageMessage = "Bon bah au moins c'est mieux que d'habitude...";
@@ -126,7 +142,7 @@ export default class RollCommand extends AArgumentsCommand {
 
   protected async executeNoArg(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     ignoreCooldowns: boolean,
   ): Promise<void> {
     const twitchClient = MainApp.getTwitchClient();
@@ -141,9 +157,12 @@ export default class RollCommand extends AArgumentsCommand {
     }
 
     var value: number = this.roll();
+    if (this.userHasModifier(user.userId)) {
+      value += this.userModifiers.get(user.userId);
+    }
     var response: string = `${user.username} lance son dé et fait... ${value} !`;
     this.insertValue(user.userId, user.username, value);
-    if (value > this.currentMVP.score) {
+    if (!this.currentMVP.score || value > this.currentMVP.score) {
       if (isNotAUser(this.currentMVP.user)) {
         // No current MVP
         response += ` Et iel devient notre premièr·e MVP du stream !!!`;
@@ -181,7 +200,7 @@ export default class RollCommand extends AArgumentsCommand {
     response += customMessage;
 
     // Ignore cooldown so the user can use !roll stat just after
-    super.replyOrSend(user, event, true, response);
+    super.replyOrSend(user, chatMessage, true, response);
 
     // Manually update cooldowns
     this.globalUseCount += 1;
@@ -197,30 +216,43 @@ export default class RollCommand extends AArgumentsCommand {
   // TODO: MesssageUtils avec les parties de message
   protected async executeWithArgs(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     args: String[],
     ignoreCooldowns: boolean,
   ): Promise<void> {
     if (args.length === 0) {
-      return this.executeNoArg(user, event, ignoreCooldowns);
+      return this.executeNoArg(user, chatMessage, ignoreCooldowns);
     } else {
       const twitchClient = MainApp.getTwitchClient();
 
       if (args[0] === RESET_ARG) {
-        const role = await getGreaterRole(
-          twitchClient.getUsersApi().getUserById(user.userId),
-          twitchClient.getBroadcasterApp(),
-        );
-        if (role === Roles.BROADCASTER || role === Roles.MOD) {
-          return resetMvpCommand.execute(user, event, true);
+        if (user.role >= Roles.MOD) {
+          return resetMvpCommand.execute(user, chatMessage, true);
         } else {
           this.replyOrSend(
             user,
-            event,
+            chatMessage,
             ignoreCooldowns,
             "Mdrr tu te prends pour qui à vouloir reset le MVP ? T'as pas les droits nullos.",
           );
         }
+      } else if (user.role >= Roles.MOD && args[0] === "bonus") {
+        if (args.length === 1 || isNaN(Number(args[1]))) {
+          this.replyOrSend(
+            user,
+            chatMessage,
+            ignoreCooldowns,
+            "Va falloir me donner un bonus valide le sang",
+          );
+          return;
+        }
+        this.addModifier(user.userId, Number(args[1]));
+        this.replyOrSend(
+          user,
+          chatMessage,
+          ignoreCooldowns,
+          `Je t'ai ajouté ${Number(args[1])} en bonus !`,
+        );
       } else if (STATS_ARG.test(args[0].toString())) {
         if (args.length > 1) {
           const givenUser = args[1].toString().replaceAll(AT, EMPTY);
@@ -235,7 +267,7 @@ export default class RollCommand extends AArgumentsCommand {
           if (!possibleUser || possibleUser === null) {
             this.replyOrSend(
               user,
-              event,
+              chatMessage,
               ignoreCooldowns,
               "Je sais pas de qui tu parles, fais un effort.",
             );
@@ -246,14 +278,14 @@ export default class RollCommand extends AArgumentsCommand {
             if (!average) {
               this.replyOrSend(
                 user,
-                event,
+                chatMessage,
                 ignoreCooldowns,
                 `Y a pas de stats pour ${possibleUser.name}, la honte LUL`,
               );
             } else {
               this.replyOrSend(
                 user,
-                event,
+                chatMessage,
                 ignoreCooldowns,
                 `${possibleUser.name} a une moyenne de ${average}... Comme on dit, c'est pas la moyenne qui compte mais la façon de !roll...`,
               );
@@ -264,14 +296,14 @@ export default class RollCommand extends AArgumentsCommand {
           if (!average) {
             this.replyOrSend(
               user,
-              event,
+              chatMessage,
               ignoreCooldowns,
               `T'as pas de stats BG (pas le dé qui roule le plus loin vot' pote)`,
             );
           } else {
             this.replyOrSend(
               user,
-              event,
+              chatMessage,
               ignoreCooldowns,
               `T'as une moyenne de ${average}... Comme on dit, c'est pas la moyenne qui compte mais ta façon de !roll...`,
             );
@@ -284,5 +316,25 @@ export default class RollCommand extends AArgumentsCommand {
 
   public getCurrentMvp(): Mvp {
     return this.currentMVP;
+  }
+
+  public userHasModifier(userId: UserId): boolean {
+    return this.userModifiers.get(userId) !== undefined;
+  }
+
+  public addModifier(userId: UserId, modifier: number): void {
+    // TODO: if user has already rolled, update the values
+    log(`Adding modifier for ${userId}: ${modifier}`);
+    if (this.userHasModifier(userId)) {
+      const currentModifier = this.userModifiers.get(userId);
+      modifier += currentModifier;
+      log(`Modifier updated: ${currentModifier} => ${modifier}`);
+    }
+    this.userModifiers.set(userId, modifier);
+  }
+
+  public clearModifier(userId: UserId): void {
+    this.userModifiers.set(userId, 0);
+    log(`Roll modifiers clear for ${userId}`);
   }
 }

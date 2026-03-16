@@ -1,4 +1,4 @@
-import { MessageEvent } from "@twurple/easy-bot";
+import { ChatMessage } from "@twurple/chat";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
 import { undefinedUser, User } from "../../utils/user/User";
@@ -22,21 +22,21 @@ export default class ResetMvpCommand extends ACommand {
 
   public execute(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     ignoreCooldowns: boolean,
   ): void {
     const currentMvp = rollCommand.getCurrentMvp();
     if (currentMvp.user === undefinedUser && currentMvp.score === 0) {
       this.replyOrSend(
         user,
-        event,
+        chatMessage,
         true,
         "Calmos, y a même pas encore de MVP cowboy !",
       );
     } else {
       // Reset OBS source and current MVP for the RollCommand
       rollCommand.reset();
-      this.replyOrSend(user, event, true, "Le MVP a été reset chef !");
+      this.replyOrSend(user, chatMessage, true, "Le MVP a été reset chef !");
     }
   }
 }

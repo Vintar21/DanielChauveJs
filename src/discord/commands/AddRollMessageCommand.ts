@@ -3,13 +3,14 @@ import { getModOnlyRolesPermissions } from "../../utils/RoleUtils";
 import { SPACE } from "../../utils/StringConstants";
 import { User } from "../../utils/user/User";
 import { DiscordMessage } from "../DiscordConstants";
-import ADiscordCommand from "./ADiscordCommand";
 import DiscordCommandOptions from "./options/DiscordCommandOptions";
+import ADiscordCommand from "./templates/ADiscordCommand";
+
+const mainTrigger: string = "addRollMessage";
 
 const permissions = getModOnlyRolesPermissions();
 
 const options = new DiscordCommandOptions([
-  "addRollMessage",
   "addCustomMessage",
   "addCustomRollMessage",
 ])
@@ -18,7 +19,7 @@ const options = new DiscordCommandOptions([
 
 class AddRollMessageCommand extends ADiscordCommand {
   constructor(enabled: boolean = true) {
-    super(options, enabled);
+    super(mainTrigger, options, enabled);
   }
 
   public async execute(
