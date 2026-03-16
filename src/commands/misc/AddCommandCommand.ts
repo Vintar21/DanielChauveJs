@@ -8,6 +8,7 @@ import { User } from "../../utils/user/User";
 import CommandOptions from "../options/CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
 import MultipleAnswersCommand from "../templates/MultipleAnswersCommand";
+import { ChatMessage } from "@twurple/chat";
 
 const mainTrigger: string = "addCommand";
 
@@ -24,14 +25,14 @@ export default class CountCommand extends AArgumentsCommand {
 
   protected async executeWithArgs(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     args: String[],
     ignoreCooldowns: boolean,
   ): Promise<void> {
     if (args.length <= 1) {
       this.replyOrSend(
         user,
-        event,
+        chatMessage,
         ignoreCooldowns,
         "Faut que tu me donne au moins le nom de la commande et un texte qui va avec bg",
       );
@@ -39,7 +40,6 @@ export default class CountCommand extends AArgumentsCommand {
     } else {
       const commandName = args[0].trim().normalize();
 
-      // TODO: map of counters
       const formatedCounterName = COMMAND_PREFIX + commandName.toLowerCase();
       const existingCommand = MainApp.getTwitchClient()
         .getCommandsManager()
@@ -48,7 +48,7 @@ export default class CountCommand extends AArgumentsCommand {
       if (existingCommand) {
         this.replyOrSend(
           user,
-          event,
+          chatMessage,
           ignoreCooldowns,
           `Y a déjà une commande qui s'appelle ${existingCommand.getName()}, faut trouver autre chose désolé :/`,
         );
@@ -69,7 +69,7 @@ export default class CountCommand extends AArgumentsCommand {
 
       this.replyOrSend(
         user,
-        event,
+        chatMessage,
         ignoreCooldowns,
         `La commande !${commandName} a été créée !`,
       );

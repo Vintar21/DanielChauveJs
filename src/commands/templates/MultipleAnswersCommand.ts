@@ -1,8 +1,8 @@
-import { MessageEvent } from "@twurple/easy-bot";
-import { User } from "../../utils/user/User";
+import { ChatMessage } from "@twurple/chat";
 import { choose } from "../../utils/CommonUtils";
-import ACommand from "./ACommand";
+import { User } from "../../utils/user/User";
 import CommandOptions from "../options/CommandOptions";
+import ACommand from "./ACommand";
 
 export default class MultipleAnswersCommand extends ACommand {
   protected responses: string[];
@@ -19,10 +19,15 @@ export default class MultipleAnswersCommand extends ACommand {
 
   public execute(
     user: User,
-    event: MessageEvent,
-    ignoreCooldowns: boolean,
+    chatMessage: ChatMessage,
+    ignoreCooldowns?: boolean,
   ): void {
-    this.replyOrSend(user, event, ignoreCooldowns, choose(this.responses));
+    this.replyOrSend(
+      user,
+      chatMessage,
+      ignoreCooldowns,
+      choose(this.responses),
+    );
   }
 
   public getAnswers(): string[] {

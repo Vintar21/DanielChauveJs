@@ -80,9 +80,7 @@ function doesAuthorHasRole(message: DiscordMessage, roleId: string): boolean {
   return message.guild.roles.cache.get(roleId)?.members.has(message.author.id);
 }
 
-export async function getGreaterDiscordRole(
-  message: DiscordMessage,
-): Promise<Role> {
+export function getGreaterDiscordRole(message: DiscordMessage): Role {
   const isBot = BOT_ROLES.find((roleId) => doesAuthorHasRole(message, roleId));
   if (isBot) {
     // No role for bots for the moment

@@ -1,11 +1,11 @@
-import { MessageEvent } from "@twurple/easy-bot";
+import { ChatMessage } from "@twurple/chat";
 import { MainApp } from "../../app";
 import Counter from "../../counters/Counter";
 import CounterBuilder from "../../counters/CounterBuilder";
 import SqlManager from "../../database/SqlManager";
 import { Placeholders, formatCounterMessage } from "../../utils/CommandsUtils";
 import { log } from "../../utils/CommonUtils";
-import { getGreaterRole } from "../../utils/RoleUtils";
+import { getUserWithRole, Role } from "../../utils/RoleUtils";
 import { MINUS, PLUS } from "../../utils/StringConstants";
 import { User } from "../../utils/user/User";
 import CounterCommandOptions from "../options/CounterCommanOptions";
@@ -67,82 +67,102 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
 
   protected plusArg(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     ignoreCooldowns: boolean,
     step: number = this.counter.getStep(),
   ) {
     this.counter.add(step);
-    this.replyOrSend(user, event, ignoreCooldowns, this.modifyCounterMessage);
+    this.replyOrSend(
+      user,
+      chatMessage,
+      ignoreCooldowns,
+      this.modifyCounterMessage,
+    );
   }
 
   protected minusArg(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     ignoreCooldowns: boolean,
     step: number = this.counter.getStep(),
   ) {
     this.counter.substract(step);
-    this.replyOrSend(user, event, ignoreCooldowns, this.modifyCounterMessage);
+    this.replyOrSend(
+      user,
+      chatMessage,
+      ignoreCooldowns,
+      this.modifyCounterMessage,
+    );
   }
 
   protected setArg(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     ignoreCooldowns: boolean,
     value: number,
   ) {
     this.counter.setValue(value);
-    this.replyOrSend(user, event, ignoreCooldowns, this.modifyCounterMessage);
+    this.replyOrSend(
+      user,
+      chatMessage,
+      ignoreCooldowns,
+      this.modifyCounterMessage,
+    );
   }
 
   protected resetArg(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     ignoreCooldowns: boolean,
   ) {
     this.counter.resetValue();
-    this.replyOrSend(user, event, ignoreCooldowns, this.resetCounterMessage);
+    this.replyOrSend(
+      user,
+      chatMessage,
+      ignoreCooldowns,
+      this.resetCounterMessage,
+    );
   }
 
   protected freezeArg(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     ignoreCooldowns: boolean,
   ) {
     this.counter.freeze();
-    this.replyOrSend(user, event, ignoreCooldowns, this.freezeMessage);
+    this.replyOrSend(user, chatMessage, ignoreCooldowns, this.freezeMessage);
   }
 
   protected unfreezeArg(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     ignoreCooldowns: boolean,
   ) {
     this.counter.unfreeze();
-    this.replyOrSend(user, event, ignoreCooldowns, this.unfreezeMessage);
+    this.replyOrSend(user, chatMessage, ignoreCooldowns, this.unfreezeMessage);
   }
 
   protected executeWithArgs(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     args: String[],
     ignoreCooldowns: boolean,
   ): Promise<void> {
-    this.canModifyCounter(event).then((canModifyCounter) => {
+    this.canModifyCounter(chatMessage).then((canModifyCounter) => {
       if (args.length === 0) {
         // If the behavior is always triggers, do it otherwise, just send the message containing the current counter value
         if (this.options.shouldAlwaysTriggerBehavior && canModifyCounter) {
           this.counter.triggerCounter();
           this.replyOrSend(
             user,
-            event,
+            chatMessage,
             ignoreCooldowns,
             this.modifyCounterMessage,
           );
         } else {
           this.replyOrSend(
             user,
-            event,
+            chatMessage,
             ignoreCooldowns,
             this.getCounterMessage,
           );
@@ -153,19 +173,19 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
         // Simple cases !counter +, !counter -, !counter reset
         switch (arg) {
           case PLUS:
-            this.plusArg(user, event, ignoreCooldowns);
+            this.plusArg(user, chatMessage, ignoreCooldowns);
             return;
           case MINUS:
-            this.minusArg(user, event, ignoreCooldowns);
+            this.minusArg(user, chatMessage, ignoreCooldowns);
             return;
           case RESET_COUNTER_ARG:
-            this.resetArg(user, event, ignoreCooldowns);
+            this.resetArg(user, chatMessage, ignoreCooldowns);
             return;
           case FREEZE_COUNTER_ARG:
-            this.freezeArg(user, event, ignoreCooldowns);
+            this.freezeArg(user, chatMessage, ignoreCooldowns);
             return;
           case UNFREEZE_COUNTER_ARG:
-            this.unfreezeArg(user, event, ignoreCooldowns);
+            this.unfreezeArg(user, chatMessage, ignoreCooldowns);
             return;
         }
 
@@ -173,10 +193,10 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
         const customStep = Number(arg.substring(1));
         if (!isNaN(customStep)) {
           if (arg.startsWith(PLUS)) {
-            this.plusArg(user, event, ignoreCooldowns, customStep);
+            this.plusArg(user, chatMessage, ignoreCooldowns, customStep);
             return;
           } else if (arg.startsWith(MINUS)) {
-            this.minusArg(user, event, ignoreCooldowns, customStep);
+            this.minusArg(user, chatMessage, ignoreCooldowns, customStep);
             return;
           }
         }
@@ -184,19 +204,15 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
         // Set value directly
         const newValue = Number(arg);
         if (!isNaN(newValue)) {
-          this.setArg(user, event, ignoreCooldowns, newValue);
+          this.setArg(user, chatMessage, ignoreCooldowns, newValue);
         }
       }
     });
     return;
   }
 
-  private async canModifyCounter(event: MessageEvent): Promise<boolean> {
-    const twitchClient = MainApp.getTwitchClient();
-    const role = await getGreaterRole(
-      event.getUser(),
-      twitchClient.getBroadcasterApp(),
-    );
+  private async canModifyCounter(chatMessage: ChatMessage): Promise<boolean> {
+    const role: Role = (await getUserWithRole(chatMessage.userInfo)).role;
     return !this.options.counterModificationPermissions.isUnallowed(role);
   }
 
@@ -220,15 +236,39 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
     return super.match(input, game, formatMessage);
   }
 
+  public matchAliases(
+    input: string,
+    game: string,
+    formatMessage?: boolean,
+  ): boolean {
+    if (this.counter.isCategoryRelated()) {
+      if (game === this.counter.getCategory()) {
+        return super.matchAliases(input, game, formatMessage);
+      } else if (this.countersMap.has(game)) {
+        this.counter = this.countersMap.get(game);
+        return super.matchAliases(input, game, formatMessage);
+      } else if (game && this.options.initIfNoCounterForCategory) {
+        this.counter = CounterBuilder.getInstance()
+          .from(this.counter)
+          .category(game)
+          .build();
+        this.countersMap.set(game, this.counter);
+        return super.matchAliases(input, game, formatMessage);
+      }
+      return false;
+    }
+    return super.matchAliases(input, game, formatMessage);
+  }
+
   public async replyOrSend(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     ignoreCooldowns: boolean,
     message: String,
   ): Promise<void> {
     super.replyOrSend(
       user,
-      event,
+      chatMessage,
       ignoreCooldowns,
       formatCounterMessage(message, this.counter),
     );

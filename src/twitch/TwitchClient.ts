@@ -3,13 +3,15 @@ import {
   refreshUserToken,
   StaticAuthProvider,
 } from "@twurple/auth";
+import { ChatClient, ChatUser } from "@twurple/chat";
 import { Bot, RaidEvent } from "@twurple/easy-bot";
+import { EventSubAutoModMessageHoldV2Event } from "@twurple/eventsub-base";
 import { EventSubStreamOnlineEvent } from "@twurple/eventsub-base/lib/events/EventSubStreamOnlineEvent";
 import { EventSubWsListener } from "@twurple/eventsub-ws";
 import { MainApp } from "../app";
 import ChannelPointsListener from "../channel-points-rewards/ChannelPointsListener";
-import CommandsManager from "../commands/CommandsManager";
 import { allCounterCommands } from "../commands/AllCommands";
+import CommandsManager from "../commands/CommandsManager";
 import {
   botAccessToken,
   botClientId,
@@ -21,8 +23,10 @@ import {
 import CountersManager from "../counters/CountersManager";
 import TimerManager from "../timers/TimerManager";
 import { log, minutes, seconds, warn } from "../utils/CommonUtils";
+import { User } from "../utils/user/User";
 import ATwitchClient from "./ATwitchClient";
-import { onMessage } from "./TwitchEventHandlers";
+import { filterMessage, onChatMessage } from "./TwitchEventHandlers";
+import { getGreaterRole } from "../utils/RoleUtils";
 
 export default class TwitchClient extends ATwitchClient {
   private static INSTANCE: TwitchClient;
@@ -81,13 +85,22 @@ export default class TwitchClient extends ATwitchClient {
         authProvider: botAuthProvider,
         channels: [channel],
       });
+
+      ATwitchClient.chatClient = new ChatClient({
+        authProvider: botAuthProvider,
+        channels: [channel],
+      });
+      ATwitchClient.chatClient.connect();
     }
 
     const _broadcaster = await this.getApi().users.getUserByName(channel);
+    // Can't I get this automatically ?
+    const _bot = await this.getApi().users.getUserByName("DanielChauve");
 
-    if (_broadcaster === null) return;
+    if (_broadcaster === null || _bot === null) return;
 
     ATwitchClient.broadcaster = _broadcaster;
+    ATwitchClient.bot = _bot;
 
     this.listener = new EventSubWsListener({
       apiClient: this.getApi(),
@@ -113,16 +126,44 @@ export default class TwitchClient extends ATwitchClient {
     if (assignHandlers) {
       // TODO not onMessage but onChatMessage...
       // + TwitchEventHandler may not be sufficient do it directly in this client
-      ATwitchClient.botApp.onMessage(onMessage);
 
+      ATwitchClient.chatClient.onMessage(onChatMessage);
+
+      //ATwitchClient.botApp.onMessage(onMessage);
+      /*this.listener.onChannelChatMessage(
+        this.getBroadcaster(),
+        this.getBroadcasterId(),
+        this.onChatMessage,
+      );*/
       ATwitchClient.botApp.onRaid(this.onRaid);
 
-      // Can I use same listener for everything ?
       this.listener.onStreamOnline(
         this.getBroadcasterId(),
         this.onStreamOnline,
       );
+
+      // TODO: use Daniel account as second param (no token found ? => intents ?)
+      this.listener.onAutoModMessageHoldV2(
+        this.getBroadcasterId(),
+        this.getBroadcasterId(),
+        this.onMessageHeld,
+      );
     }
+
+    // Watch streak listener through IRC
+    ATwitchClient.chatClient.irc.onAnyMessage(async (msg) => {
+      const matchResult = msg.rawLine.match(
+        /msg-param-category=watch-streak;.*;msg-param-value=(\d+)/gi,
+      );
+
+      if (matchResult && matchResult !== null) {
+        // remove the #
+        const username = msg.rawParamValues[0].slice(1);
+        const user = await this.getUsersApi().getUserByName(username);
+        const watchStreak = Number(matchResult[1]);
+        log(`Watch streak: ${username} = ${matchResult[1]}`);
+      }
+    });
     log("Twitch Client ready !");
   }
 
@@ -188,7 +229,7 @@ export default class TwitchClient extends ATwitchClient {
     if (!MainApp.obsManager.isReady()) {
       await MainApp.obsManager.connect();
     }
-    // In fact, no need to reaffect CommandManager
+    // In fact, no need to reaffect CommandManager => ERROR here
     this.setCommandsManager(CommandsManager.getInstance());
     await this.getCommandsManager().init();
     TwitchClient.raidersIdWaiting = [];
@@ -212,5 +253,17 @@ export default class TwitchClient extends ATwitchClient {
     ATwitchClient.send(
       "Je suis toujours en phase de test, n'hésitez pas à me mettre à l'épreuve !",
     );
+  }
+
+  // Not working
+  private async onMessageHeld(
+    event: EventSubAutoModMessageHoldV2Event,
+  ): Promise<void> {
+    const user = new User(
+      event.userName,
+      Number(event.userId),
+      await getGreaterRole(event.getUser()),
+    );
+    filterMessage(event.messageText, user);
   }
 }

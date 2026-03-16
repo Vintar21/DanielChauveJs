@@ -1,9 +1,9 @@
-import MultipleAnswersCommand from "./MultipleAnswersCommand";
-import CommandOptions from "../options/CommandOptions";
-import { User } from "../../utils/user/User";
-import { MessageEvent } from "@twurple/easy-bot";
-import { EMPTY, SPACE } from "../../utils/StringConstants";
+import { ChatMessage } from "@twurple/chat";
 import { Placeholders } from "../../utils/CommandsUtils";
+import { EMPTY, SPACE } from "../../utils/StringConstants";
+import { User } from "../../utils/user/User";
+import CommandOptions from "../options/CommandOptions";
+import MultipleAnswersCommand from "./MultipleAnswersCommand";
 
 export default class DilemmaCommand extends MultipleAnswersCommand {
   private possibilities: String[];
@@ -21,15 +21,15 @@ export default class DilemmaCommand extends MultipleAnswersCommand {
 
   public execute(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     ignoreCooldowns: boolean,
   ): void {
     this.responses = [];
-    const text = event.text.trim().split(SPACE).slice(1).join(SPACE);
+    const text = chatMessage.text.trim().split(SPACE).slice(1).join(SPACE);
     if (text === EMPTY) {
       this.replyOrSend(
         user,
-        event,
+        chatMessage,
         ignoreCooldowns,
         "Il faut que tu précise quoi parce que sinon on comprend pas... Stare",
       );
@@ -38,6 +38,6 @@ export default class DilemmaCommand extends MultipleAnswersCommand {
     this.possibilities.forEach((possibility) => {
       this.responses.push(possibility.replaceAll(Placeholders.INPUT, text));
     });
-    super.execute(user, event, ignoreCooldowns);
+    super.execute(user, chatMessage, ignoreCooldowns);
   }
 }

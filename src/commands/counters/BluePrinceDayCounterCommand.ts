@@ -1,4 +1,4 @@
-import { MessageEvent } from "@twurple/easy-bot";
+import { ChatMessage } from "@twurple/chat";
 import { MainApp } from "../../app";
 import Counter from "../../counters/Counter";
 import {
@@ -29,7 +29,7 @@ const options: CounterCommandOptions = new CounterCommandOptions([
 ])
   .setCounterModificationPermissions(rolesModificationPermissions)
   .setCategoriesPermissions(categoriesPermissions)
-  .setGlobalCooldown(minutes(2)) as CounterCommandOptions;
+  .setGlobalCooldown(minutes(2, true)) as CounterCommandOptions;
 
 export default class BluePrinceDayCounterCommand extends ACounterCommand {
   protected getCounterMessage: string = `On est au jour ${Placeholders.COUNTER} dans ${Placeholders.CATEGORY}, je considère être très avancé alors attention aux spoils vintarLoveC`;
@@ -41,22 +41,22 @@ export default class BluePrinceDayCounterCommand extends ACounterCommand {
 
   protected plusArg(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     ignoreCooldowns: boolean,
     step?: number,
   ): void {
-    super.plusArg(user, event, ignoreCooldowns, step);
+    super.plusArg(user, chatMessage, ignoreCooldowns, step);
     this.addMarker();
     this.updateTitle();
   }
 
   protected setArg(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     ignoreCooldowns: boolean,
     value: number,
   ): void {
-    super.setArg(user, event, ignoreCooldowns, value);
+    super.setArg(user, chatMessage, ignoreCooldowns, value);
     this.addMarker();
     this.updateTitle();
   }

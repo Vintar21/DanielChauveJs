@@ -1,11 +1,11 @@
-import { MessageEvent } from "@twurple/easy-bot";
+import { ChatMessage } from "@twurple/chat";
+import { MainApp } from "../../app";
 import { Permissions } from "../../utils/permissions/Permissions";
 import { getModOnlyRolesPermissions, Role } from "../../utils/RoleUtils";
-import { User } from "../../utils/user/User";
-import ACommand from "../templates/ACommand";
-import CommandOptions from "../options/CommandOptions";
-import { MainApp } from "../../app";
 import { EMPTY } from "../../utils/StringConstants";
+import { User } from "../../utils/user/User";
+import CommandOptions from "../options/CommandOptions";
+import ACommand from "../templates/ACommand";
 
 const mainTrigger: string = "fruit";
 
@@ -23,7 +23,7 @@ export default class ChooseFromGSheetCommand extends ACommand {
 
   public async execute(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     ignoreCooldowns: boolean,
   ): Promise<void> {
     const fruit = await MainApp.getGoogleSheetManager().getRandomWord(
@@ -33,7 +33,7 @@ export default class ChooseFromGSheetCommand extends ACommand {
     if (fruit !== EMPTY) {
       this.replyOrSend(
         user,
-        event,
+        chatMessage,
         ignoreCooldowns,
         `Voici ton fruit: ${fruit}`,
       );

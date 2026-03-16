@@ -1,7 +1,10 @@
-import { HelixUser } from "@twurple/api/lib";
-import { Bot } from "@twurple/easy-bot/lib";
+import { HelixUser } from "@twurple/api";
+import { Bot } from "@twurple/easy-bot";
 import { MainApp } from "../app";
 import { Permissions } from "./permissions/Permissions";
+import { ChatMessage, ChatUser } from "@twurple/chat";
+import { usersCache } from "./user/UserUtils";
+import { User } from "./user/User";
 
 export type Role = number;
 
@@ -113,25 +116,27 @@ export function isBroadcaster(
 export async function isMod(
   broadcaster: HelixUser,
   user: HelixUser,
-  bot: Bot,
 ): Promise<boolean> {
-  return bot.api.moderation.checkUserMod(broadcaster.id, user.id);
+  return MainApp.getTwitchClient()
+    .getModerationApi()
+    .checkUserMod(broadcaster.id, user.id);
 }
 
 export async function isVip(
   broadcaster: HelixUser,
   user: HelixUser,
-  bot: Bot,
 ): Promise<boolean> {
-  return bot.api.channels.checkVipForUser(broadcaster.id, user.id);
+  return MainApp.getTwitchClient()
+    .getChannelsApi()
+    .checkVipForUser(broadcaster.id, user.id);
 }
 
 export async function isSub(
   broadcaster: HelixUser,
   user: HelixUser,
-  bot: Bot,
 ): Promise<boolean> {
-  return bot.api.subscriptions
+  return MainApp.getTwitchClient()
+    .getSubscriptionsApi()
     .getSubscriptionForUser(broadcaster.id, user.id)
     .then((r) => r !== null);
 }
@@ -139,29 +144,36 @@ export async function isSub(
 export async function isFollower(
   broadcaster: HelixUser,
   user: HelixUser,
-  bot: Bot,
 ): Promise<boolean> {
-  return bot.api.channels
+  return MainApp.getTwitchClient()
+    .getChannelsApi()
     .getChannelFollowers(broadcaster.id, user.id)
     .then((r) => r !== null && r?.data[0].followDate !== null);
 }
 
+// Try to remove this function and use only getUserWithRole
 export async function getGreaterRole(
   promisedUser: Promise<HelixUser>,
-  bot: Bot,
 ): Promise<Role> {
   var role: Role;
   const user = await promisedUser;
+
+  const userId = Number(user.id);
+  const userInCache = usersCache.get(userId);
+  if (userInCache) {
+    return userInCache.role;
+  }
+
   const twitchClient = MainApp.getTwitchClient();
   const broadcasterUser = await twitchClient.getBroadcaster();
 
   if (isBroadcaster(broadcasterUser, user)) {
     role = Roles.BROADCASTER;
-  } else if (await isMod(broadcasterUser, user, bot)) {
+  } else if (await isMod(broadcasterUser, user)) {
     role = Roles.MOD;
-  } else if (await isVip(broadcasterUser, user, bot)) {
+  } else if (await isVip(broadcasterUser, user)) {
     role = Roles.VIP;
-  } else if (await isSub(broadcasterUser, user, bot)) {
+  } else if (await isSub(broadcasterUser, user)) {
     role = Roles.SUB;
   } else if (await broadcasterUser.isFollowedBy(user.id)) {
     role = Roles.FOLLOWER;
@@ -171,10 +183,44 @@ export async function getGreaterRole(
   return role;
 }
 
+export async function getUserWithRole(chatUser: ChatUser): Promise<User> {
+  var role: Role;
+
+  const userId = Number(chatUser.userId);
+  const userInCache = usersCache.get(userId);
+  if (userInCache) {
+    return userInCache;
+  }
+
+  // Check the current role of the user for its message
+  if (chatUser.isBroadcaster) {
+    role = Roles.BROADCASTER;
+  } else if (chatUser.isMod || chatUser.isLeadMod) {
+    role = Roles.MOD;
+  } else if (chatUser.isVip) {
+    role = Roles.VIP;
+  } else if (chatUser.isSubscriber || chatUser.isFounder) {
+    role = Roles.SUB;
+  }
+
+  if (role) {
+    return new User(chatUser.userName, userId, role);
+  }
+
+  if (await MainApp.getTwitchClient().getBroadcaster().isFollowedBy(userId)) {
+    role = Roles.FOLLOWER;
+  } else {
+    role = Roles.NO_ROLE;
+  }
+
+  const user = new User(chatUser.userName, userId, role);
+  usersCache.set(userId, user);
+  return user;
+}
+
 // Too long because of all awaits
 export async function getUserRoles(
   promisedUser: Promise<HelixUser>,
-  bot: Bot,
 ): Promise<Role[]> {
   const roles: Role[] = [];
   const user = await promisedUser;
@@ -184,13 +230,13 @@ export async function getUserRoles(
   if (isBroadcaster(broadcasterUser, user)) {
     roles.push(Roles.BROADCASTER);
   }
-  if (await isMod(broadcasterUser, user, bot)) {
+  if (await isMod(broadcasterUser, user)) {
     roles.push(Roles.MOD);
   }
-  if (await isVip(broadcasterUser, user, bot)) {
+  if (await isVip(broadcasterUser, user)) {
     roles.push(Roles.VIP);
   }
-  if (await isSub(broadcasterUser, user, bot)) {
+  if (await isSub(broadcasterUser, user)) {
     roles.push(Roles.SUB);
   }
   if (await broadcasterUser.isFollowedBy(user.id)) {

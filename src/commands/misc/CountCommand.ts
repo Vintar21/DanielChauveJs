@@ -1,4 +1,4 @@
-import { MessageEvent } from "@twurple/easy-bot";
+import { ChatMessage } from "@twurple/chat";
 import { MainApp } from "../../app";
 import CounterBuilder from "../../counters/CounterBuilder";
 import CountersManager from "../../counters/CountersManager";
@@ -26,14 +26,14 @@ export default class CountCommand extends AArgumentsCommand {
 
   protected async executeWithArgs(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     args: String[],
     ignoreCooldowns: boolean,
   ): Promise<void> {
     if (args.length === 0) {
       this.replyOrSend(
         user,
-        event,
+        chatMessage,
         ignoreCooldowns,
         "Faut que tu me donne au moins le nom du compteur à créé chef",
       );
@@ -41,7 +41,6 @@ export default class CountCommand extends AArgumentsCommand {
     } else if (args.length >= 1) {
       const counterName = args[0].trim().normalize();
 
-      // TODO: map of counters
       const formatedCounterName = COMMAND_PREFIX + counterName.toLowerCase();
       const existingCounter =
         CountersManager.counters.get(formatedCounterName) ||
@@ -52,7 +51,7 @@ export default class CountCommand extends AArgumentsCommand {
       if (existingCounter) {
         this.replyOrSend(
           user,
-          event,
+          chatMessage,
           ignoreCooldowns,
           `Y a déjà un compteur qui s'appelle ${existingCounter.getName()}, faut trouver autre chose désolé :/`,
         );
@@ -78,7 +77,7 @@ export default class CountCommand extends AArgumentsCommand {
 
       this.replyOrSend(
         user,
-        event,
+        chatMessage,
         ignoreCooldowns,
         `Le compteur !${counterName} a été créé, il commence à ${counter.getStartValue()} !`,
       );

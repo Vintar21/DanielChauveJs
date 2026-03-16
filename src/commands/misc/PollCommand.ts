@@ -1,5 +1,5 @@
 import { HelixPoll } from "@twurple/api";
-import { MessageEvent } from "@twurple/easy-bot";
+import { ChatMessage } from "@twurple/chat";
 import { EventSubChannelPollEndEvent } from "@twurple/eventsub-base";
 import { EventSubWsListener } from "@twurple/eventsub-ws";
 import { MainApp } from "../../app";
@@ -35,6 +35,10 @@ const options: CommandOptions = new CommandOptions([
 ]).setRolesPermission(rolesPermissions);
 
 export default class PollCommand extends AArgumentsCommand {
+  protected static MAX_POLL_TITLE_LENGTH: number = 60;
+  protected static MAX_TIME_POLL: number = minutes(30, true);
+  protected static MAX_POLL_CHANNEL_POINT: number = 1000000;
+
   private defaultDuration: number = minutes(5, true); // Max 1800s = 30min
   private defaultChoices: string[] = ["D'accord", "Pas d'accord"];
   private title: string = "Vous en pensez quoi ?";
@@ -78,13 +82,15 @@ export default class PollCommand extends AArgumentsCommand {
     choices: string[],
     channelPointsPerVote: number,
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     ignoreCooldowns: boolean,
   ) {
     var pollData;
     if (channelPointsPerVote > 0) {
       channelPointsPerVote =
-        channelPointsPerVote > 1000000 ? 1000000 : channelPointsPerVote;
+        channelPointsPerVote > PollCommand.MAX_POLL_CHANNEL_POINT
+          ? PollCommand.MAX_POLL_CHANNEL_POINT
+          : channelPointsPerVote;
       pollData = {
         title,
         choices,
@@ -106,7 +112,7 @@ export default class PollCommand extends AArgumentsCommand {
         log(`Poll: ${title} [${choices}] | duration: ${duration}s`);
         this.replyOrSend(
           user,
-          event,
+          chatMessage,
           ignoreCooldowns,
           "Sondage créé, à vos votes !",
         );
@@ -143,7 +149,7 @@ export default class PollCommand extends AArgumentsCommand {
     args: String[],
     lastPoll: HelixPoll,
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     ignoreCooldowns: boolean,
   ): boolean {
     if (args.length === 1) {
@@ -158,7 +164,7 @@ export default class PollCommand extends AArgumentsCommand {
               .then(() => {
                 this.replyOrSend(
                   user,
-                  event,
+                  chatMessage,
                   ignoreCooldowns,
                   "Sondage terminé !",
                 );
@@ -172,7 +178,7 @@ export default class PollCommand extends AArgumentsCommand {
 
   protected async executeWithArgs(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     args: String[],
     ignoreCooldowns: boolean,
   ): Promise<void> {
@@ -185,11 +191,17 @@ export default class PollCommand extends AArgumentsCommand {
         // Check for particular parameters (cancel, lock, etc.)
         // If we've cancelled or locked it, we stop here
         if (
-          !this.handleCurrentPoll(args, lastPoll, user, event, ignoreCooldowns)
+          !this.handleCurrentPoll(
+            args,
+            lastPoll,
+            user,
+            chatMessage,
+            ignoreCooldowns,
+          )
         ) {
           this.replyOrSend(
             user,
-            event,
+            chatMessage,
             ignoreCooldowns,
             "Il y a déjà un sondage en cours Sadge",
           );
@@ -210,7 +222,10 @@ export default class PollCommand extends AArgumentsCommand {
         // Check if the first parameter is the time of the prediction
         var timeArg = Number(args[0]);
         if (!isNaN(timeArg) && timeArg > 0) {
-          timeArg = timeArg > minutes(30, true) ? minutes(30, true) : timeArg; // Twitch max duration is 1800s (30min)
+          timeArg =
+            timeArg > PollCommand.MAX_TIME_POLL
+              ? PollCommand.MAX_TIME_POLL
+              : timeArg;
           timeArg = timeArg <= 30 ? minutes(timeArg, true) : timeArg; // If the given time is less or equal than 30, we consider it's in minutes and convert it to seconds
           duration = timeArg;
           args = args.slice(1);
@@ -226,12 +241,12 @@ export default class PollCommand extends AArgumentsCommand {
         }
       }
 
-      if (title.length > 60) {
+      if (title.length > PollCommand.MAX_POLL_TITLE_LENGTH) {
         this.replyOrSend(
           user,
-          event,
+          chatMessage,
           ignoreCooldowns,
-          "Le titre du sondage est trop long (max 60 caractères) Sadge",
+          `Le titre du sondage est trop long (max ${PollCommand.MAX_POLL_TITLE_LENGTH} caractères) Sadge`,
         );
         return;
       }
@@ -243,7 +258,7 @@ export default class PollCommand extends AArgumentsCommand {
         choices,
         channelPoints,
         user,
-        event,
+        chatMessage,
         ignoreCooldowns,
       );
     });

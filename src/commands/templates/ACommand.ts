@@ -1,4 +1,4 @@
-import { MessageEvent } from "@twurple/easy-bot/lib";
+import { ChatMessage } from "@twurple/chat/lib";
 import { MainApp } from "../../app";
 import TwitchClient from "../../twitch/TwitchClient";
 import {
@@ -7,11 +7,11 @@ import {
   Trigger,
   UNLIMITED,
 } from "../../utils/CommandsUtils";
+import { isString, log } from "../../utils/CommonUtils";
 import { AT, EMPTY, SPACE } from "../../utils/StringConstants";
 import { isNotAUser, User, UserId } from "../../utils/user/User";
 import CommandOptions from "../options/CommandOptions";
 import ICommand from "./ICommand";
-import { isString } from "../../utils/CommonUtils";
 
 export default abstract class ACommand implements ICommand {
   // The command name used for call the command "!name", you could add aliases in options.triggers
@@ -35,13 +35,13 @@ export default abstract class ACommand implements ICommand {
 
   public abstract execute(
     user: User,
-    event: MessageEvent,
-    ignoreCooldowns: boolean,
+    chatMessage: ChatMessage,
+    ignoreCooldowns?: boolean,
   ): void;
 
   protected async replyOrSend(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     ignoreCooldowns: boolean,
     message: String,
     canTagUser: boolean = true,
@@ -52,13 +52,13 @@ export default abstract class ACommand implements ICommand {
       this.options.formatMessage || this.randomParts.size > 0
         ? formatCommandMessage(
             message,
-            event,
+            chatMessage,
             this.randomParts,
             await twitchClient.getCurrentGame(),
           )
         : message;
-    if (this.canReplyToUser(event)) {
-      twitchClient.reply(message, event);
+    if (this.canReplyToUser(chatMessage)) {
+      twitchClient.reply(message, chatMessage);
     } else if (this.options.sendAsAnnounce) {
       TwitchClient.send(message, true);
     } else if (isNotAUser(user) || !canTagUser) {
@@ -93,6 +93,24 @@ export default abstract class ACommand implements ICommand {
     const parts = formattedInput.split(SPACE);
 
     return this.internalMatch(parts[0], this.getTriggers());
+  }
+
+  public matchAliases(
+    input: string,
+    game: string,
+    formatMessage: boolean = true,
+  ): boolean {
+    const formattedInput = formatMessage ? input.trim() : input;
+
+    const regexAliases = this.getTriggers().filter(
+      (trigger) => !isString(trigger),
+    );
+    if (this.options.useFullMessage) {
+      return this.internalMatch(formattedInput, regexAliases);
+    }
+    const parts = formattedInput.split(SPACE);
+
+    return this.internalMatch(parts[0], regexAliases);
   }
 
   protected internalMatch(input: string, triggers: Array<Trigger>): boolean {
@@ -132,20 +150,18 @@ export default abstract class ACommand implements ICommand {
       return true;
     }
 
-    return user.getGreaterRole().then((role) => {
-      // Role permissions
-      if (this.options.rolesPermissions.isUnallowed(role)) {
-        return false;
-      } else if (this.options.rolesPermissions.canBypass(role)) {
-        return true;
-      }
-      return (
-        this.canUseGlobal() &&
-        this.canUseForUser(user.userId) &&
-        this.isGlobalCooldownFinished() &&
-        this.isUserCooldownFinished(user.userId)
-      );
-    });
+    // Role permissions
+    if (this.options.rolesPermissions.isUnallowed(user.role)) {
+      return false;
+    } else if (this.options.rolesPermissions.canBypass(user.role)) {
+      return true;
+    }
+    return (
+      this.canUseGlobal() &&
+      this.canUseForUser(user.userId) &&
+      this.isGlobalCooldownFinished() &&
+      this.isUserCooldownFinished(user.userId)
+    );
   }
 
   protected updateCooldowns(userId: UserId): void {
@@ -191,13 +207,13 @@ export default abstract class ACommand implements ICommand {
     );
   }
 
-  public canReplyToUser(event: MessageEvent): boolean {
+  public canReplyToUser(chatMessage: ChatMessage): boolean {
     return (
       this.options.replyToUser &&
       this.options.sendAsAnnounce === false &&
-      event?.text !== undefined &&
-      event?.text !== null &&
-      event?.text.length > 0
+      chatMessage?.text !== undefined &&
+      chatMessage?.text !== null &&
+      chatMessage?.text.length > 0
     );
   }
 

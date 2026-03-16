@@ -1,40 +1,52 @@
-import { MessageEvent } from "@twurple/easy-bot";
+import { ChatMessage } from "@twurple/chat";
 import { MainApp } from "../app";
 import { isString, log } from "../utils/CommonUtils";
-import { getGreaterRole, Roles } from "../utils/RoleUtils";
+import { getUserWithRole, Roles } from "../utils/RoleUtils";
+import { EMPTY } from "../utils/StringConstants";
 import { User } from "../utils/user/User";
 import TwitchClient from "./TwitchClient";
 
-export const onMessage = async (event: MessageEvent) => {
+export const onChatMessage = async (
+  channel: string,
+  username: string,
+  message: string,
+  chatMessage: ChatMessage,
+) => {
   const twitchClient = MainApp.getTwitchClient();
-  const message: string = event.text;
-  const username: string = event.userName;
-  // Do we really need it to be a number ?
-  const userId: number = parseInt(event.userId);
+
+  // Don't take into account bot own messages
+  if (twitchClient.getBotId() === chatMessage.userInfo.userId) {
+    log(`Bot response ${username}: ${message})`);
+    return;
+  }
+
+  log(
+    `Message received from [${chatMessage.userInfo.userId}] ${username}: ${message} ${chatMessage.isFirst ? "| First Message" : EMPTY} ${chatMessage.isRedemption ? " | Redemption" : EMPTY} ${chatMessage.isHighlight ? "| Highlight" : EMPTY}`,
+  );
+
+  const user: User = await getUserWithRole(chatMessage.userInfo);
+
+  if (chatMessage.isFirst) {
+    const moderated = filterMessage(message, user);
+    if (moderated) return;
+  }
+
+  // No command check in redemption, see ChannelPointListener
+  if (chatMessage.isRedemption) return;
+
   const game = twitchClient.getCurrentGame();
 
-  log(`Message received from [${userId}] ${username}: ${message}`);
-
   TwitchClient.timerManager.updateAllTimersOnMessage();
-  const user = new User(
-    username,
-    userId,
-    getGreaterRole(event.getUser(), twitchClient.getBroadcasterApp()),
-  );
   MainApp.getTwitchClient()
     .getCommandsManager()
     .getTriggeredCommand(message, await game)
     .then((triggeredCommand) => {
       triggeredCommand?.canExecute(user).then((canExecute) => {
         if (canExecute) {
-          triggeredCommand.execute(user, event);
+          triggeredCommand.execute(user, chatMessage);
         }
       });
     });
-
-  // Filter undesired message and make appropriate moderation action
-  // TODO: OnChatMessage => if isFirstMessage apply filter first then commands etc
-  filterMessage(message, user);
 };
 
 type BanWord = string | RegExp;
@@ -43,8 +55,12 @@ const bestViewersBotMessages: BanWord[] = [
   /(t[o0]p|best)\s*vieweu?rs?\s+[a-z0-9]\.ru/gi,
 ];
 
-async function filterMessage(message: string, user: User): Promise<void> {
-  if ((await user.getGreaterRole()) === Roles.NO_ROLE) {
+// Return true if message was filtered = message was moderated
+export async function filterMessage(
+  message: string,
+  user: User,
+): Promise<boolean> {
+  if (user.role === Roles.NO_ROLE) {
     const isBestViewerScam = bestViewersBotMessages.find((expression) => {
       var matching = false;
       if (isString(expression)) {
@@ -61,6 +77,9 @@ async function filterMessage(message: string, user: User): Promise<void> {
         reason: "Best viewer scam",
         user: user.userId,
       });
+      log(`User ${user.username} banned for best viewer scam`);
+      return true;
     }
   }
+  return false;
 }

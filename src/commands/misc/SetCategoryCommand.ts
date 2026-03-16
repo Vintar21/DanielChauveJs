@@ -1,4 +1,4 @@
-import { MessageEvent } from "@twurple/easy-bot";
+import { ChatMessage } from "@twurple/chat";
 import { MainApp } from "../../app";
 import {
   JUST_CHATTING,
@@ -33,16 +33,20 @@ const options: CommandOptions = new CommandOptions([
 
 // Change the current category and handling some aliases for some games
 export default class SetCategory extends AArgumentsCommand {
+  constructor(enabled: boolean = true) {
+    super(mainTrigger, options, enabled);
+  }
+
   protected async executeWithArgs(
     user: User,
-    event: MessageEvent,
+    chatMessage: ChatMessage,
     args: String[],
     ignoreCooldowns: boolean,
   ): Promise<void> {
     if (args.length === 0) {
       this.replyOrSend(
         user,
-        event,
+        chatMessage,
         ignoreCooldowns,
         "Bah donne une catégorie ptêtre nan ??",
       );
@@ -136,21 +140,18 @@ export default class SetCategory extends AArgumentsCommand {
     if (isCategoryUpdated) {
       this.replyOrSend(
         user,
-        event,
+        chatMessage,
         ignoreCooldowns,
         `Catégorie changée, on est sur ${detectedCategory} maintenant !`,
       );
     } else {
       this.replyOrSend(
         user,
-        event,
+        chatMessage,
         ignoreCooldowns,
         `J'ai pas trouvé la catégorie ${detectedCategory}, déso Sadge`,
       );
     }
-  }
-  constructor(enabled: boolean = true) {
-    super(mainTrigger, options, enabled);
   }
 
   private getClassicPokemonRegex(
