@@ -21,6 +21,8 @@ const options: CommandOptions = new CommandOptions([])
   //.setMaxUsePerUser(1)
   .setUserCooldown(15);
 
+const BONUS_ARG: string = "bonus";
+const MALUS_ARG: string = "malus";
 const RESET_ARG: string = "reset";
 const STATS_ARG: RegExp = /(stat(istique)?s?|moyennes?|means?|av(era)?ge?s?)/i;
 
@@ -157,10 +159,14 @@ export default class RollCommand extends AArgumentsCommand {
     }
 
     var value: number = this.roll();
-    if (this.userHasModifier(user.userId)) {
-      value += this.userModifiers.get(user.userId);
-    }
     var response: string = `${user.username} lance son dé et fait... ${value} !`;
+
+    if (this.userHasModifier(user.userId)) {
+      const rawValue = value;
+      const modifier = this.userModifiers.get(user.userId);
+      value += modifier;
+      response = `${user.username} lance son dé et fait... ${value} (${rawValue} ${modifier < 0 ? modifier : `+ ${modifier}`}) !`;
+    }
     this.insertValue(user.userId, user.username, value);
     if (!this.currentMVP.score || value > this.currentMVP.score) {
       if (isNotAUser(this.currentMVP.user)) {
@@ -225,6 +231,7 @@ export default class RollCommand extends AArgumentsCommand {
     } else {
       const twitchClient = MainApp.getTwitchClient();
 
+      // TODO: switch case
       if (args[0] === RESET_ARG) {
         if (user.role >= Roles.MOD) {
           return resetMvpCommand.execute(user, chatMessage, true);
@@ -236,8 +243,11 @@ export default class RollCommand extends AArgumentsCommand {
             "Mdrr tu te prends pour qui à vouloir reset le MVP ? T'as pas les droits nullos.",
           );
         }
-      } else if (user.role >= Roles.MOD && args[0] === "bonus") {
-        if (args.length === 1 || isNaN(Number(args[1]))) {
+      } else if (
+        user.role >= Roles.MOD &&
+        (args[0] === BONUS_ARG || args[0] === MALUS_ARG)
+      ) {
+        if (args.length === 1) {
           this.replyOrSend(
             user,
             chatMessage,
@@ -245,14 +255,35 @@ export default class RollCommand extends AArgumentsCommand {
             "Va falloir me donner un bonus valide le sang",
           );
           return;
+        } else if (args.length === 2) {
+          const modifier =
+            args[0] === BONUS_ARG ? Number(args[1]) : Number("-" + args[1]);
+          this.addModifier(user.userId, Number(args[1]));
+          this.replyOrSend(
+            user,
+            chatMessage,
+            ignoreCooldowns,
+            `Je t'ai ajouté ${modifier} en bonus, tu as maintenant un bonus total de ${this.userModifiers.get(user.userId)} !`,
+          );
+        } else if (args.length >= 3) {
+          const userIdRaw = await twitchClient
+            .getUsersApi()
+            .getUserByName(args[1].toString());
+          const userId =
+            !userIdRaw || userIdRaw === null ? undefined : Number(userIdRaw.id);
+          const modifier =
+            args[0] === BONUS_ARG ? Number(args[2]) : Number("-" + args[2]);
+          log(modifier);
+          if (!isNaN(modifier) && !isNaN(userId)) {
+            this.addModifier(userId, modifier);
+            this.replyOrSend(
+              user,
+              chatMessage,
+              ignoreCooldowns,
+              `J'ai ajouté ${modifier} en bonus à ${args[1]}, il a maintenant un bonus total de ${this.userModifiers.get(userId)} !`,
+            );
+          }
         }
-        this.addModifier(user.userId, Number(args[1]));
-        this.replyOrSend(
-          user,
-          chatMessage,
-          ignoreCooldowns,
-          `Je t'ai ajouté ${Number(args[1])} en bonus !`,
-        );
       } else if (STATS_ARG.test(args[0].toString())) {
         if (args.length > 1) {
           const givenUser = args[1].toString().replaceAll(AT, EMPTY);

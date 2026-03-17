@@ -152,18 +152,27 @@ export default class TwitchClient extends ATwitchClient {
 
     // Watch streak listener through IRC
     ATwitchClient.chatClient.irc.onAnyMessage(async (msg) => {
-      const matchResult = msg.rawLine.match(
-        /msg-param-category=watch-streak;.*;msg-param-value=(\d+)/gi,
-      );
+      if (
+        msg.rawLine.startsWith(":tmi.twitch.tv PONG tmi.twitch.tv") ||
+        msg.rawLine.startsWith("PING :tmi.twitch.tv")
+      )
+        return;
 
-      if (matchResult && matchResult !== null) {
-        // remove the #
-        const username = msg.rawParamValues[0].slice(1);
-        const user = await this.getUsersApi().getUserByName(username);
-        const watchStreak = Number(matchResult[1]);
-        log(`Watch streak: ${username} = ${matchResult[1]}`);
-        if (!isNaN(watchStreak) && user !== null) {
-          rollCommand.addModifier(Number(user.id), watchStreak * 10);
+      const watchStreakMatch =
+        /msg-param-category=watch-streak;.*;msg-param-value=(\d+)/gi.exec(
+          msg.rawLine,
+        );
+
+      if (watchStreakMatch && watchStreakMatch !== null) {
+        const userIdMatch = /;user-id=(\d+);/gi.exec(msg.rawLine);
+        const userId =
+          !userIdMatch || userIdMatch === null
+            ? undefined
+            : Number(userIdMatch[1]);
+        const watchStreak = Number(watchStreakMatch[1]);
+        log(`Watch streak: ${userIdMatch} = ${watchStreak}`);
+        if (!isNaN(watchStreak) && userIdMatch && !isNaN(userId)) {
+          rollCommand.addModifier(userId, watchStreak * 10);
         }
       }
     });
@@ -233,8 +242,9 @@ export default class TwitchClient extends ATwitchClient {
       await MainApp.obsManager.connect();
     }
     // In fact, no need to reaffect CommandManager => ERROR here
-    this.setCommandsManager(CommandsManager.getInstance());
-    await this.getCommandsManager().init();
+    super.setCommandsManager(CommandsManager.getInstance());
+    // Doesn't know this ???
+    await super.getCommandsManager().init();
     TwitchClient.raidersIdWaiting = [];
     TwitchClient.shoutedOutIds.clear();
 
