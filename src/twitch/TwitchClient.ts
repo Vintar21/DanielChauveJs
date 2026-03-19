@@ -27,6 +27,7 @@ import { User } from "../utils/user/User";
 import ATwitchClient from "./ATwitchClient";
 import { filterMessage, onChatMessage } from "./TwitchEventHandlers";
 import { getGreaterRole } from "../utils/RoleUtils";
+import { EMPTY, SPACE } from "../utils/StringConstants";
 
 export default class TwitchClient extends ATwitchClient {
   private static INSTANCE: TwitchClient;
@@ -157,9 +158,9 @@ export default class TwitchClient extends ATwitchClient {
         msg.rawLine.startsWith("PING :tmi.twitch.tv")
       )
         return;
-
+      log(msg.rawLine);
       const watchStreakMatch =
-        /msg-param-category=watch-streak;.*;msg-param-value=(\d+)/gi.exec(
+        /^.*?msg-param-category=watch-streak;.*?;msg-param-value=(\d+).*?tmi.twitch.tv/gi.exec(
           msg.rawLine,
         );
 
@@ -172,7 +173,17 @@ export default class TwitchClient extends ATwitchClient {
         const watchStreak = Number(watchStreakMatch[1]);
         log(`Watch streak: ${userIdMatch} = ${watchStreak}`);
         if (!isNaN(watchStreak) && userIdMatch && !isNaN(userId)) {
-          rollCommand.addModifier(userId, watchStreak * 10);
+          const streakBonus = watchStreak * 10;
+          const modifier = rollCommand.addModifier(userId, streakBonus);
+          const user = await this.getUsersApi().getUserById(userId);
+          if (user === null) return;
+
+          var message = `${user.name} vient de s'octroyer ${streakBonus} pour ses prochains !roll grâce à sa streak de visionnage !`;
+          if (streakBonus !== modifier) {
+            message +=
+              SPACE + `Ce qui lui fait un bonus total de ${modifier} !`;
+          }
+          ATwitchClient.send(message);
         }
       }
     });

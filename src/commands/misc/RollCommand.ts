@@ -353,7 +353,8 @@ export default class RollCommand extends AArgumentsCommand {
     return this.userModifiers.get(userId) !== undefined;
   }
 
-  public addModifier(userId: UserId, modifier: number): void {
+  // Return the current modifier
+  public addModifier(userId: UserId, modifier: number): number {
     // TODO: if user has already rolled, update the values
     log(`Adding modifier for ${userId}: ${modifier}`);
     if (this.userHasModifier(userId)) {
@@ -362,6 +363,7 @@ export default class RollCommand extends AArgumentsCommand {
       log(`Modifier updated: ${currentModifier} => ${modifier}`);
     }
     this.userModifiers.set(userId, modifier);
+    return modifier;
   }
 
   public clearModifier(userId: UserId): void {
