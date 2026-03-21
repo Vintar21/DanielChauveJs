@@ -1,9 +1,8 @@
 import { ChatMessage } from "@twurple/chat";
-import { MainApp } from "../../app";
 import Counter from "../../counters/Counter";
 import CounterBuilder from "../../counters/CounterBuilder";
 import SqlManager from "../../database/SqlManager";
-import { Placeholders, formatCounterMessage } from "../../utils/CommandsUtils";
+import { formatCounterMessage, Placeholders } from "../../utils/CommandsUtils";
 import { log } from "../../utils/CommonUtils";
 import { getUserWithRole, Role } from "../../utils/RoleUtils";
 import { MINUS, PLUS } from "../../utils/StringConstants";
@@ -22,8 +21,10 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
 
   protected countersMap: Map<string, Counter> = new Map();
 
-  protected abstract getCounterMessage: string;
-  protected abstract modifyCounterMessage: string;
+  protected specialValuesMessages: Map<number, string> = new Map();
+
+  protected abstract defaultGetCounterMessage: string;
+  protected abstract defaultModifyCounterMessage: string;
   protected resetCounterMessage: string = `Le compteur a été reset à la valeur ${Placeholders.COUNTER}`;
   protected reachStopMessage: string = `Le compteur a atteint sa limite de ${Placeholders.COUNTER} :stop_sign:`;
   protected freezeMessage: string = `Le compteur a été freeze à la valeur ${Placeholders.COUNTER} :ice_cube:`;
@@ -76,7 +77,7 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
       user,
       chatMessage,
       ignoreCooldowns,
-      this.modifyCounterMessage,
+      this.getModifyingMessage(),
     );
   }
 
@@ -91,7 +92,7 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
       user,
       chatMessage,
       ignoreCooldowns,
-      this.modifyCounterMessage,
+      this.getModifyingMessage(),
     );
   }
 
@@ -106,7 +107,7 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
       user,
       chatMessage,
       ignoreCooldowns,
-      this.modifyCounterMessage,
+      this.getModifyingMessage(),
     );
   }
 
@@ -142,6 +143,20 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
     this.replyOrSend(user, chatMessage, ignoreCooldowns, this.unfreezeMessage);
   }
 
+  protected getModifyingMessage(): string {
+    const currentValueMessage: string = this.specialValuesMessages.get(
+      this.counter.getValue(),
+    );
+    return currentValueMessage ?? this.defaultModifyCounterMessage;
+  }
+
+  protected getCounterMessage(): string {
+    const currentValueMessage: string = this.specialValuesMessages.get(
+      this.counter.getValue(),
+    );
+    return currentValueMessage ?? this.defaultGetCounterMessage;
+  }
+
   protected executeWithArgs(
     user: User,
     chatMessage: ChatMessage,
@@ -157,14 +172,14 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
             user,
             chatMessage,
             ignoreCooldowns,
-            this.modifyCounterMessage,
+            this.getModifyingMessage(),
           );
         } else {
           this.replyOrSend(
             user,
             chatMessage,
             ignoreCooldowns,
-            this.getCounterMessage,
+            this.getCounterMessage(),
           );
         }
       }
@@ -236,6 +251,9 @@ export default abstract class ACounterCommand extends AArgumentsCommand {
     return super.match(input, game, formatMessage);
   }
 
+  public addSpecialValueMessage(value: number, message: string): void {
+    this.specialValuesMessages.set(value, message);
+  }
   public matchAliases(
     input: string,
     game: string,

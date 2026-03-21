@@ -32,11 +32,15 @@ const options: CounterCommandOptions = new CounterCommandOptions([
   .setGlobalCooldown(minutes(2, true)) as CounterCommandOptions;
 
 export default class BluePrinceDayCounterCommand extends ACounterCommand {
-  protected getCounterMessage: string = `On est au jour ${Placeholders.COUNTER} dans ${Placeholders.CATEGORY}, je considère être très avancé alors attention aux spoils vintarLoveC`;
-  protected modifyCounterMessage: string = `Encore une bonne journée qui se termine dans ${Placeholders.CATEGORY} ! Direction le jour ${Placeholders.COUNTER} !`;
+  protected defaultGetCounterMessage: string = `On est au jour ${Placeholders.COUNTER} dans ${Placeholders.CATEGORY}, je considère être très avancé alors attention aux spoils vintarLoveC`;
+  protected defaultModifyCounterMessage: string = `Encore une bonne journée qui se termine dans ${Placeholders.CATEGORY} ! Direction le jour ${Placeholders.COUNTER} !`;
 
   constructor(counter: Counter, enabled: boolean = true) {
     super(mainTrigger, counter, options, enabled);
+    this.addSpecialValueMessage(
+      100,
+      `OMG la centaine de jours sur le ${Placeholders.CATEGORY} et il a toujours pas tout fini ???`,
+    );
   }
 
   protected plusArg(
