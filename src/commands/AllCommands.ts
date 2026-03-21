@@ -9,8 +9,6 @@ import MarkerCommand from "./misc/MarkerCommand";
 import MultiCommand from "./misc/MultiCommand";
 import PollCommand from "./misc/PollCommand";
 import PredictionCommand from "./misc/PredictionCommand";
-import ResetMvpCommand from "./misc/ResetMvpCommand";
-import RollCommand from "./misc/RollCommand";
 import SetCategoryCommand from "./misc/SetCategoryCommand";
 import SetTitleCommand from "./misc/SetTitleCommand";
 import ItsATenButCommand from "./multiple-answers/ItsATenButCommand";
@@ -18,6 +16,7 @@ import SmashOrPassCommand from "./multiple-answers/SmashOrPassCommand";
 import ACounterCommand from "./templates/ACounterCommand";
 import ICommand from "./templates/ICommand";
 import FakeBanCommand from "./trolls/FakeBanCommand";
+import GenerateStreakCommand from "./misc/GenerateStreakEvent";
 
 // No prefix commands
 export const allNoPrefixSimpleCommands: Array<ICommand> = [];
@@ -33,9 +32,6 @@ export const allMultipleAnswersCommands: Array<ICommand> = [
 ];
 
 // ----- Misc Commands -----
-export const rollCommand: RollCommand = new RollCommand();
-export const resetMvpCommand: ResetMvpCommand = new ResetMvpCommand();
-
 export const multiCommand: MultiCommand = new MultiCommand();
 export const markerCommand: MarkerCommand = new MarkerCommand();
 export const predictionCommand: PredictionCommand = new PredictionCommand();
@@ -47,13 +43,14 @@ export const setCategoryCommand: SetCategoryCommand = new SetCategoryCommand();
 export const setTitleCommand: SetTitleCommand = new SetTitleCommand();
 export const countCommand: CountCommand = new CountCommand();
 export const addCommandCommand: AddCommandCommand = new AddCommandCommand();
+export const generateStreakCommand: GenerateStreakCommand =
+  new GenerateStreakCommand();
 
 // In a separate array because it should be added in last !
 export const answerRandomMessage: AnswerRandomMessage =
   new AnswerRandomMessage();
 
 export const allMiscCommands: Array<ICommand> = [
-  rollCommand,
   markerCommand,
   multiCommand,
   pollCommand,
@@ -64,6 +61,7 @@ export const allMiscCommands: Array<ICommand> = [
   setTitleCommand,
   fakeBanCommand,
   chooseFromGsheetCommand,
+  generateStreakCommand,
 ];
 export const lastAddedCommands: Array<ICommand> = [answerRandomMessage];
 

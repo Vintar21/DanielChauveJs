@@ -1,4 +1,4 @@
-import { MessageEvent } from "@twurple/easy-bot";
+import { ChatMessage } from "@twurple/chat";
 import { MainApp } from "../../app";
 import { COMMAND_PREFIX } from "../../utils/CommandsUtils";
 import { Permissions } from "../../utils/permissions/Permissions";
@@ -8,7 +8,6 @@ import { User } from "../../utils/user/User";
 import CommandOptions from "../options/CommandOptions";
 import AArgumentsCommand from "../templates/AArgumentsCommand";
 import MultipleAnswersCommand from "../templates/MultipleAnswersCommand";
-import { ChatMessage } from "@twurple/chat";
 
 const mainTrigger: string = "addCommand";
 

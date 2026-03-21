@@ -27,8 +27,10 @@ import { channel } from "../config/ConfigLoader";
 import CountersManager from "../counters/CountersManager";
 import TimerManager from "../timers/TimerManager";
 import { Category } from "../utils/CategoriesConstants";
-import { warn } from "../utils/CommonUtils";
+import { log, warn } from "../utils/CommonUtils";
 import { EMPTY, SPACE } from "../utils/StringConstants";
+import WatchStreakEvent from "./events/WatchStreakEvent";
+import EventEmitter from "events";
 
 export default abstract class ATwitchClient {
   protected static botApp: Bot;
@@ -43,6 +45,8 @@ export default abstract class ATwitchClient {
   static channelPointsListener: ChannelPointsListener;
   static timerManager: TimerManager = TimerManager.getInstanceAndInit();
   static countersManager: CountersManager;
+
+  eventEmitter: EventEmitter = new EventEmitter();
 
   public abstract init(assignHandlers: boolean): Promise<void>;
 
@@ -107,6 +111,47 @@ export default abstract class ATwitchClient {
   public reply(message: String, chatMessage: ChatMessage): void {
     ATwitchClient.botApp.reply(channel, message.toString(), chatMessage);
   }
+
+  public abstract onWatchStreakEvent(event: WatchStreakEvent): void;
+
+  public initChatClient() {
+    this.eventEmitter.on(WatchStreakEvent.TYPE, this.onWatchStreakEvent);
+
+    ATwitchClient.chatClient.irc.onAnyMessage((msg) => {
+      if (
+        msg.rawLine.startsWith(":tmi.twitch.tv PONG tmi.twitch.tv") ||
+        msg.rawLine.startsWith("PING :tmi.twitch.tv")
+      )
+        return;
+      //log(`IRC raw line: ${msg.rawLine}`);
+      const watchStreakMatch =
+        /^.*?msg-param-category=watch-streak;.*?;msg-param-value=(\d+).*?tmi.twitch.tv(?:.*?#\S+\s:(.*))?/gi.exec(
+          msg.rawLine,
+        );
+
+      if (watchStreakMatch && watchStreakMatch !== null) {
+        const userIdMatch = /;user-id=(\d+);/gi.exec(msg.rawLine);
+        const userId =
+          !userIdMatch || userIdMatch === null
+            ? undefined
+            : Number(userIdMatch[1]);
+        const watchStreak = Number(watchStreakMatch[1]);
+        const watchStreakMessage =
+          watchStreakMatch.length >= 3 ? watchStreakMatch[2] : undefined;
+        log(`Watch streak: ${userIdMatch} = ${watchStreak}`);
+        if (!isNaN(watchStreak) && userIdMatch && !isNaN(userId)) {
+          const event = new WatchStreakEvent(
+            userId,
+            watchStreak,
+            watchStreakMessage,
+          );
+          this.eventEmitter.emit(WatchStreakEvent.TYPE, event);
+        }
+      }
+    });
+  }
+
+  //public onWatchStreakEvent()
 
   /*----- API calls -----*/
 
