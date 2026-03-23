@@ -24,8 +24,8 @@ const options: CounterCommandOptions = new CounterCommandOptions([
   .setCategoriesPermissions(categoriesPermissions) as CounterCommandOptions;
 
 export default class DeathCounterCommand extends ACounterCommand {
-  protected getCounterMessage: string = `${Placeholders.RANDOM_PART_1} ${Placeholders.BROADCASTER} est mort de manière ${Placeholders.RANDOM_PART_2} ${Placeholders.COUNTER} fois dans ${Placeholders.CATEGORY}`;
-  protected modifyCounterMessage: string = this.getCounterMessage;
+  protected defaultGetCounterMessage: string = `${Placeholders.RANDOM_PART_1} ${Placeholders.BROADCASTER} est mort de manière ${Placeholders.RANDOM_PART_2} ${Placeholders.COUNTER} fois dans ${Placeholders.CATEGORY}`;
+  protected defaultModifyCounterMessage: string = this.defaultGetCounterMessage;
 
   constructor(counter: Counter, enabled: boolean = true) {
     super(mainTrigger, counter, options, enabled);

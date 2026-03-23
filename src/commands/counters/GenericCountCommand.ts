@@ -13,11 +13,10 @@ const options: CounterCommandOptions = new CounterCommandOptions([])
   .setGlobalCooldown(seconds(20)) as CounterCommandOptions;
 
 export default class GenericCounterCommand extends ACounterCommand {
-  protected getCounterMessage: string = `On en est à ${Placeholders.COUNTER} !`;
-  protected modifyCounterMessage: string;
+  protected defaultGetCounterMessage: string = `On en est à ${Placeholders.COUNTER} !`;
+  protected defaultModifyCounterMessage: string = this.defaultGetCounterMessage;
 
   constructor(counter: Counter, enabled: boolean = true) {
     super(counter.getName(), counter, options, enabled);
-    this.modifyCounterMessage = this.getCounterMessage;
   }
 }

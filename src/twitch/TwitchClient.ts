@@ -3,7 +3,7 @@ import {
   refreshUserToken,
   StaticAuthProvider,
 } from "@twurple/auth";
-import { ChatClient, ChatUser } from "@twurple/chat";
+import { ChatClient } from "@twurple/chat";
 import { Bot, RaidEvent } from "@twurple/easy-bot";
 import { EventSubAutoModMessageHoldV2Event } from "@twurple/eventsub-base";
 import { EventSubStreamOnlineEvent } from "@twurple/eventsub-base/lib/events/EventSubStreamOnlineEvent";
@@ -23,11 +23,12 @@ import {
 import CountersManager from "../counters/CountersManager";
 import TimerManager from "../timers/TimerManager";
 import { log, minutes, seconds, warn } from "../utils/CommonUtils";
+import { getGreaterRole } from "../utils/RoleUtils";
+import { SPACE } from "../utils/StringConstants";
 import { User } from "../utils/user/User";
 import ATwitchClient from "./ATwitchClient";
 import { filterMessage, onChatMessage } from "./TwitchEventHandlers";
-import { getGreaterRole } from "../utils/RoleUtils";
-import { EMPTY, SPACE } from "../utils/StringConstants";
+import WatchStreakEvent from "./events/WatchStreakEvent";
 
 export default class TwitchClient extends ATwitchClient {
   private static INSTANCE: TwitchClient;
@@ -92,6 +93,7 @@ export default class TwitchClient extends ATwitchClient {
         channels: [channel],
       });
       ATwitchClient.chatClient.connect();
+      this.initChatClient();
     }
 
     const _broadcaster = await this.getApi().users.getUserByName(channel);
@@ -151,43 +153,18 @@ export default class TwitchClient extends ATwitchClient {
       );
     }
 
-    // Watch streak listener through IRC
-    ATwitchClient.chatClient.irc.onAnyMessage(async (msg) => {
-      if (
-        msg.rawLine.startsWith(":tmi.twitch.tv PONG tmi.twitch.tv") ||
-        msg.rawLine.startsWith("PING :tmi.twitch.tv")
-      )
-        return;
-      log(msg.rawLine);
-      const watchStreakMatch =
-        /^.*?msg-param-category=watch-streak;.*?;msg-param-value=(\d+).*?tmi.twitch.tv/gi.exec(
-          msg.rawLine,
-        );
-
-      if (watchStreakMatch && watchStreakMatch !== null) {
-        const userIdMatch = /;user-id=(\d+);/gi.exec(msg.rawLine);
-        const userId =
-          !userIdMatch || userIdMatch === null
-            ? undefined
-            : Number(userIdMatch[1]);
-        const watchStreak = Number(watchStreakMatch[1]);
-        log(`Watch streak: ${userIdMatch} = ${watchStreak}`);
-        if (!isNaN(watchStreak) && userIdMatch && !isNaN(userId)) {
-          const streakBonus = watchStreak * 10;
-          const modifier = rollCommand.addModifier(userId, streakBonus);
-          const user = await this.getUsersApi().getUserById(userId);
-          if (user === null) return;
-
-          var message = `${user.name} vient de s'octroyer ${streakBonus} pour ses prochains !roll grâce à sa streak de visionnage !`;
-          if (streakBonus !== modifier) {
-            message +=
-              SPACE + `Ce qui lui fait un bonus total de ${modifier} !`;
-          }
-          ATwitchClient.send(message);
-        }
-      }
-    });
     log("Twitch Client ready !");
+  }
+
+  public async onWatchStreakEvent(event: WatchStreakEvent): Promise<void> {
+    const user = await this.getUsersApi().getUserById(event.userId);
+    const streakBonus = event.streak * 10;
+    const totalBonus = rollCommand.addModifier(event.userId, streakBonus);
+    if (user === null) return;
+
+    ATwitchClient.send(
+      `${user.name} s'est octroyé un bonus de ${streakBonus} avec sa streak de visionnage ! Iel a maintenant un bonus total de ${totalBonus} pour ses prochains !roll`,
+    );
   }
 
   private async futureShoutout() {

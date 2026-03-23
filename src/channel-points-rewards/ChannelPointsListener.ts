@@ -1,7 +1,6 @@
 import { EventSubChannelRedemptionAddEvent } from "@twurple/eventsub-base/lib/events/EventSubChannelRedemptionAddEvent";
 import { EventSubWsListener } from "@twurple/eventsub-ws";
 import { MainApp } from "../app";
-import { rollCommand } from "../commands/AllCommands";
 import { allObsCameraEffects } from "../obs/camera-effects/AllObsCameraEffects";
 import AObsCameraEffect from "../obs/camera-effects/AObsCameraEffect";
 import { COOLDOWN_CAMERA_EFFECT } from "../obs/ObsCameraFilterEffect";
@@ -10,8 +9,7 @@ import ObsManager from "../obs/ObsManager";
 import TwitchClient from "../twitch/TwitchClient";
 import { choose, log } from "../utils/CommonUtils";
 import { CHILD_LAUGH_SOUND, playSound } from "../utils/MediaUtils";
-import { getGreaterRole, getUserWithRole, Role } from "../utils/RoleUtils";
-import { User } from "../utils/user/User";
+import { getGreaterRole, Role } from "../utils/RoleUtils";
 import {
   CAMERA_EFFECT_REWARD_ID,
   CHILD_LAUGH_REWARD_ID,
@@ -23,6 +21,8 @@ import {
   TIKTOK_REWARD_ID,
   TOCTOC_REWARD_ID,
 } from "./ChannelPointsConstants";
+import { rollCommand } from "../commands/AllCommands";
+import { User } from "../utils/user/User";
 
 // TODO Rename in ChannelPointsManager + no need to have listener in attribute
 export default class ChannelPointsListener {
