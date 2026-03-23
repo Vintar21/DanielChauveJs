@@ -5,7 +5,10 @@ import {
 } from "@twurple/auth";
 import { ChatClient } from "@twurple/chat";
 import { Bot, RaidEvent } from "@twurple/easy-bot";
-import { EventSubAutoModMessageHoldV2Event } from "@twurple/eventsub-base";
+import {
+  EventSubAutoModMessageHoldV2Event,
+  EventSubChannelSuspiciousUserMessageEvent,
+} from "@twurple/eventsub-base";
 import { EventSubStreamOnlineEvent } from "@twurple/eventsub-base/lib/events/EventSubStreamOnlineEvent";
 import { EventSubWsListener } from "@twurple/eventsub-ws";
 import { MainApp } from "../app";
@@ -29,6 +32,7 @@ import { User } from "../utils/user/User";
 import ATwitchClient from "./ATwitchClient";
 import { filterMessage, onChatMessage } from "./TwitchEventHandlers";
 import WatchStreakEvent from "./events/WatchStreakEvent";
+import { EventSubChannelSuspiciousUserMessageCheermoteData } from "@twurple/eventsub-base/lib/events/EventSubChannelSuspiciousUserMessageEvent.external";
 
 export default class TwitchClient extends ATwitchClient {
   private static INSTANCE: TwitchClient;
@@ -146,10 +150,10 @@ export default class TwitchClient extends ATwitchClient {
       );
 
       // TODO: use Daniel account as second param (no token found ? => intents ?)
-      this.listener.onAutoModMessageHoldV2(
+      this.listener.onChannelSuspiciousUserMessage(
         this.getBroadcasterId(),
         this.getBroadcasterId(),
-        this.onMessageHeld,
+        this.onSuspiciousMessage,
       );
     }
 
@@ -252,8 +256,8 @@ export default class TwitchClient extends ATwitchClient {
   }
 
   // Not working
-  private async onMessageHeld(
-    event: EventSubAutoModMessageHoldV2Event,
+  private async onSuspiciousMessage(
+    event: EventSubChannelSuspiciousUserMessageEvent,
   ): Promise<void> {
     const user = new User(
       event.userName,
