@@ -110,7 +110,6 @@ export default class ChannelPointsListener {
         rollCommand.executeNoMessage(new User(username, userId, role), true);
         break;
       case TEST_REWARD_ID:
-        rollCommand.executeNoMessage(new User(username, userId, role), true);
         break;
       case CAMERA_EFFECT_REWARD_ID:
         // Can't be a method, need to be a function
