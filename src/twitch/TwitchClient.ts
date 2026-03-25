@@ -161,7 +161,7 @@ export default class TwitchClient extends ATwitchClient {
   }
 
   public async onWatchStreakEvent(event: WatchStreakEvent): Promise<void> {
-    const user = await this.getUsersApi().getUserById(event.userId);
+    const user = await super.getUsersApi().getUserById(event.userId);
     const streakBonus = event.streak * 10;
     const totalBonus = rollCommand.addModifier(event.userId, streakBonus);
     if (user === null) return;
