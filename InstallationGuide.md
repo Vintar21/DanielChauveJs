@@ -116,7 +116,7 @@ It's done your bot will now be connected to your OBS!
 
 ## Step 4: Copying the Google Sheet template
 
-You will found a Google Sheet template [here](https://docs.google.com/spreadsheets/d/1SQdq-KMPg3Cb1yKxD0Shh8IsA7g23qsHpZlW9Epy6RQ/edit?usp=sharing), import and copy it in your own Google Sheet environment so you can edit it.
+You will found a Google Sheet template [here](https://docs.google.com/spreadsheets/d/1SQdq-KMPg3Cb1yKxD0Shh8IsA7g23qsHpZlW9Epy6RQ/edit?usp=sharing), import and copy it in your own Google Sheet environment so you can edit it. It's also recommended that you share your GSheet with your moderators and/or the person you want to edit some things on your bot.
 
 As the bot is in Alpha, this template can evolve so make sure to be up to date with the last version of this templates.
 
