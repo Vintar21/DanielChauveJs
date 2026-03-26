@@ -37,7 +37,7 @@ Please found below a quick overview of the features you will find in this bot.
 
 - **Discord announces:** Connect the bot to a Discord Client to send announce messages (with embed) when live is on
 
-## References & documentations
+## References & documentation
 
 Based mainly on [Twurple](https://twurple.js.org/), [Discord.js](https://discord.js.org/).
 
