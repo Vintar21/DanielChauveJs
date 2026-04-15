@@ -52,6 +52,7 @@ export const onChatMessage = async (
 type BanWord = string | RegExp;
 const bestViewersBotMessages: BanWord[] = [
   "streamboo",
+  "nezhna",
   /(t[o0]p|best)\s*vieweu?rs?\s+[a-z0-9]\.ru/gi,
 ];
 
