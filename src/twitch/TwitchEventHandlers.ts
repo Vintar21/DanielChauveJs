@@ -27,7 +27,7 @@ export const onChatMessage = async (
   const user: User = await getUserWithRole(chatMessage.userInfo);
 
   if (chatMessage.isFirst) {
-    const moderated = filterMessage(message, user);
+    const moderated = await filterMessage(message, user);
     if (moderated) return;
   }
 
@@ -54,6 +54,9 @@ const bestViewersBotMessages: BanWord[] = [
   "streamboo",
   "nezhna",
   /(t[o0]p|best)\s*vieweu?rs?\s+[a-z0-9]\.ru/gi,
+  /viewers?\d*\s*\.\s*ru/gi,
+  /[a-zA-Z0-9-/]\.ru/gi,
+  /[a-zA-Z0-9-/]\.online/gi,
 ];
 
 // Return true if message was filtered = message was moderated
@@ -74,10 +77,22 @@ export async function filterMessage(
 
     if (isBestViewerScam) {
       const twitchClient = MainApp.getTwitchClient();
-      twitchClient.getModerationApi().banUser(twitchClient.getBroadcaster(), {
-        reason: "Best viewer scam",
-        user: user.userId,
-      });
+      try {
+        twitchClient
+          .getModerationApi()
+          .banUser(twitchClient.getBroadcaster(), {
+            reason: "Best viewer scam",
+            user: user.userId,
+          })
+          .catch((e) =>
+            log(
+              `Failed to ban user ${user.username} for best viewer scam: ${e}`,
+            ),
+          );
+      } catch (e) {
+        log(`Failed to ban user ${user.username} for best viewer scam: ${e}`);
+        return false;
+      }
       log(`User ${user.username} banned for best viewer scam`);
       return true;
     }

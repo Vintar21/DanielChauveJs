@@ -49,7 +49,7 @@ export default class DiscordClient extends Client {
       ],
     });
     allDiscordCommands.forEach((command) =>
-      this.commands.set(command.getName(), command),
+      this.commands.set(command.getName().toLocaleLowerCase(), command),
     );
   }
 
@@ -101,7 +101,7 @@ export default class DiscordClient extends Client {
 
         if (parts.length > 0) {
           const parsedCommand = parts[0].toLowerCase().normalize();
-
+          log(`Parsed command: ${parsedCommand}`);
           const foundCommand = this.commands.get(parsedCommand);
 
           // TODO: handle RegExp aliases

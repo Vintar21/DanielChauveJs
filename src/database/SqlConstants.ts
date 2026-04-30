@@ -39,3 +39,4 @@ export const CATEGORY_NAME_COLUMN = "category_name";
 
 // Misc
 export const AVG_COLUMN_NAME = "average";
+export const COUNT_COLUMN_NAME = "count";

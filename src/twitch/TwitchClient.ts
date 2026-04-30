@@ -5,10 +5,7 @@ import {
 } from "@twurple/auth";
 import { ChatClient } from "@twurple/chat";
 import { Bot, RaidEvent } from "@twurple/easy-bot";
-import {
-  EventSubAutoModMessageHoldV2Event,
-  EventSubChannelSuspiciousUserMessageEvent,
-} from "@twurple/eventsub-base";
+import { EventSubChannelSuspiciousUserMessageEvent } from "@twurple/eventsub-base";
 import { EventSubStreamOnlineEvent } from "@twurple/eventsub-base/lib/events/EventSubStreamOnlineEvent";
 import { EventSubWsListener } from "@twurple/eventsub-ws";
 import { MainApp } from "../app";
@@ -27,12 +24,10 @@ import CountersManager from "../counters/CountersManager";
 import TimerManager from "../timers/TimerManager";
 import { log, minutes, seconds, warn } from "../utils/CommonUtils";
 import { getGreaterRole } from "../utils/RoleUtils";
-import { SPACE } from "../utils/StringConstants";
 import { User } from "../utils/user/User";
 import ATwitchClient from "./ATwitchClient";
 import { filterMessage, onChatMessage } from "./TwitchEventHandlers";
 import WatchStreakEvent from "./events/WatchStreakEvent";
-import { EventSubChannelSuspiciousUserMessageCheermoteData } from "@twurple/eventsub-base/lib/events/EventSubChannelSuspiciousUserMessageEvent.external";
 
 export default class TwitchClient extends ATwitchClient {
   private static INSTANCE: TwitchClient;
@@ -160,7 +155,11 @@ export default class TwitchClient extends ATwitchClient {
     log("Twitch Client ready !");
   }
 
-  public onWatchStreakEvent(event: WatchStreakEvent): void {
+  public async onWatchStreakEvent(event: WatchStreakEvent): Promise<void> {
+    const user = await this.getUsersApi().getUserById(event.userId);
+    const streakBonus = event.streak * 10;
+    if (user === null) return;
+
     ATwitchClient.send(
       `Watch streak of ${event.streak} from ${event.userId} !`,
     );

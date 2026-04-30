@@ -2,11 +2,14 @@ import sql from "msnodesqlv8";
 import { QueryAggregatorResults } from "msnodesqlv8/types";
 import { canUseSqlBase } from "../app";
 import { sqlConnectionString } from "../config/ConfigLoader";
+import { log } from "../utils/CommonUtils";
+import { EMPTY } from "../utils/StringConstants";
 import { UserId } from "../utils/user/User";
 import {
   ANNOUNCE_COLUMN,
   AVG_COLUMN_NAME,
   CATEGORY_NAME_COLUMN,
+  COUNT_COLUMN_NAME,
   COUNTER_NAME_COLUMN,
   COUNTER_VALUE_COLUMN,
   COUNTERS_TABLE,
@@ -29,8 +32,6 @@ import {
 } from "./SqlConstants";
 import Connection = MsNodeSqlV8.Connection;
 import ConnectionPromises = MsNodeSqlV8.ConnectionPromises;
-import { EMPTY } from "../utils/StringConstants";
-import { log } from "../utils/CommonUtils";
 
 export default class SqlManager {
   private static connection: Promise<Connection> =
@@ -223,6 +224,20 @@ export default class SqlManager {
     if (averageValueResult?.length > 0) {
       const averageValue = Number(averageValueResult[0]?.average);
       return isNaN(averageValue) ? undefined : averageValue;
+    }
+    return undefined;
+  }
+
+  public static async numberRollsForUserId(userId: number) {
+    const query = `SELECT COUNT(${SCORE_COLUMN}) AS ${COUNT_COLUMN_NAME} FROM 
+    ${ROLLS_TABLE} WHERE ${USER_ID_COLUMN}=${userId}`;
+    const queryAgregator = await SqlManager.executeQuery(query);
+    const numberValueResult = SqlManager.isValideQueryAgregator(queryAgregator)
+      ? queryAgregator[FIRST]
+      : undefined;
+    if (numberValueResult?.length > 0) {
+      const numberValue = Number(numberValueResult[0]?.count);
+      return isNaN(numberValue) ? undefined : numberValue;
     }
     return undefined;
   }
