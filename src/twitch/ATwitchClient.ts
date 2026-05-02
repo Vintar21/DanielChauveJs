@@ -82,8 +82,9 @@ export default abstract class ATwitchClient {
 
   public async getTitle(): Promise<string> {
     return (
-      await this.getChannelsApi().getChannelInfoById(this.getBroadcasterId())
-    ).title;
+      (await this.getChannelsApi().getChannelInfoById(this.getBroadcasterId()))
+        ?.title ?? EMPTY
+    );
   }
 
   public async setTitle(title: string): Promise<boolean> {
@@ -119,6 +120,7 @@ export default abstract class ATwitchClient {
 
     ATwitchClient.chatClient.irc.onAnyMessage((msg) => {
       if (
+        !msg.rawLine ||
         msg.rawLine.startsWith(":tmi.twitch.tv PONG tmi.twitch.tv") ||
         msg.rawLine.startsWith("PING :tmi.twitch.tv")
       )
@@ -139,7 +141,7 @@ export default abstract class ATwitchClient {
         const watchStreakMessage =
           watchStreakMatch.length >= 3 ? watchStreakMatch[2] : undefined;
         log(`Watch streak: ${userIdMatch} = ${watchStreak}`);
-        if (!isNaN(watchStreak) && userIdMatch && !isNaN(userId)) {
+        if (!isNaN(watchStreak) && userIdMatch && userId && !isNaN(userId)) {
           const event = new WatchStreakEvent(
             userId,
             watchStreak,
@@ -273,7 +275,9 @@ export default abstract class ATwitchClient {
   }
 
   public async setCurrentGame(game: Category): Promise<boolean> {
-    const category: HelixGame = await this.getGamesApi().getGameByName(game);
+    const category = game
+      ? await this.getGamesApi().getGameByName(game)
+      : undefined;
     if (!category || category === null) {
       warn(`No category named ${game}`);
       return false;
@@ -285,7 +289,7 @@ export default abstract class ATwitchClient {
     return true;
   }
 
-  public async getCurrentStream(): Promise<HelixStream> {
+  public async getCurrentStream(): Promise<HelixStream | null> {
     return this.getBroadcaster().getStream();
   }
 }

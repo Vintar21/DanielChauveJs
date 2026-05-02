@@ -1,6 +1,6 @@
 import { Permissions } from "./permissions/Permissions";
 
-export type Category = string;
+export type Category = string | undefined;
 
 // Allow all categories by default
 export function getDefaultCategoriesPermissions(): Permissions<Category> {

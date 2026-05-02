@@ -132,10 +132,12 @@ export default abstract class ADiscordCommand {
     }
 
     // Server permissions
-    if (this.options.serverPermissions.isUnallowed(message.guildId)) {
-      return false;
-    } else if (this.options.serverPermissions.canBypass(message.guildId)) {
-      return true;
+    if (message.guildId && message.guildId !== null) {
+      if (this.options.serverPermissions.isUnallowed(message.guildId)) {
+        return false;
+      } else if (this.options.serverPermissions.canBypass(message.guildId)) {
+        return true;
+      }
     }
 
     // Channel permissions
@@ -196,7 +198,7 @@ export default abstract class ADiscordCommand {
   }
 
   public getName(): string {
-    return this.name;
+    return this.name.toLowerCase().normalize();
   }
 
   public getTriggers(): Trigger[] {
@@ -219,5 +221,9 @@ export default abstract class ADiscordCommand {
 
   public getPrefix(): string {
     return this.options.prefix;
+  }
+
+  public hasPrefix(): boolean {
+    return this.options.usePrefix;
   }
 }

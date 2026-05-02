@@ -1,5 +1,5 @@
-import { HelixStream, HelixUser } from "@twurple/api/lib";
-import { EventSubChannelPollChoice } from "@twurple/eventsub-base/lib/events/common/EventSubChannelPollChoice";
+import { HelixStream, HelixUser } from "@twurple/api";
+import { EventSubChannelPollChoice } from "@twurple/eventsub-base";
 import {
   Client,
   Events,
@@ -15,7 +15,7 @@ import {
 } from "../config/ConfigLoader";
 import SqlManager from "../database/SqlManager";
 import { choose, hours, log, minutes, pluralize } from "../utils/CommonUtils";
-import { NEW_LINE, SPACE } from "../utils/StringConstants";
+import { EMPTY, NEW_LINE, SPACE } from "../utils/StringConstants";
 import { User } from "../utils/user/User";
 import { allDiscordCommands } from "./AllDiscordCommands";
 import ADiscordCommand from "./commands/templates/ADiscordCommand";
@@ -27,11 +27,13 @@ import {
   twitchEmbedTemplate,
 } from "./DiscordConstants";
 
-export default class DiscordClient extends Client {
-  private twitchAnnouncesChannel: GuildBasedChannel;
-  private twitchPollResultsChannel: GuildBasedChannel;
+export type DiscordChannel = GuildBasedChannel | undefined;
 
-  private currentStreamStart: number;
+export default class DiscordClient extends Client {
+  private twitchAnnouncesChannel: DiscordChannel;
+  private twitchPollResultsChannel: DiscordChannel;
+
+  private currentStreamStart: number = 0;
   private cooldownBetweenLiveAnnounces: number = hours(8);
   private lastLiveAnnounce: number = 0;
 
@@ -58,11 +60,13 @@ export default class DiscordClient extends Client {
     return twitchClient
       .getChannelsApi()
       .getChannelInfoById(twitchClient.getBroadcasterId())
-      .then((channel) => channel.gameName);
+      .then((channel) => channel?.gameName ?? EMPTY);
   }
 
-  public getChannel(channelId: string): GuildBasedChannel {
-    return this.guilds.cache.get(discordServerId).channels.cache.get(channelId);
+  public getChannel(channelId: string): DiscordChannel {
+    return this.guilds.cache
+      .get(discordServerId)
+      ?.channels.cache.get(channelId);
   }
 
   public async start() {
@@ -73,15 +77,16 @@ export default class DiscordClient extends Client {
       this.twitchAnnouncesChannel = this.getChannel(discordAnnounceChannelId);
       this.twitchPollResultsChannel = this.getChannel(discordPollsChannelId);
 
-      if (this.twitchAnnouncesChannel.isTextBased()) {
+      if (this.twitchAnnouncesChannel?.isTextBased()) {
         // fetch like 5 messages, filter the ones of the bot and then take the last (or first depending the order)
         this.twitchAnnouncesChannel.messages
           .fetch({ limit: 1 })
           .then((messages) => {
             log(
-              `lastMessageDate: ${messages.last().createdAt.valueOf()} | ${Date.now()}`,
+              `lastMessageDate: ${messages.last()?.createdAt.valueOf()} | ${Date.now()}`,
             );
-            this.lastLiveAnnounce = messages.last().createdAt.valueOf();
+            this.lastLiveAnnounce =
+              messages.last()?.createdAt.valueOf() ?? Date.now();
             log("last live announce updated");
           });
       }
@@ -108,6 +113,9 @@ export default class DiscordClient extends Client {
           /*const foundCommand = this.commands.find((command) =>
             command.match(parsedCommand),
           );*/
+          log(parsedCommand);
+          log(Array.from(this.commands.keys()));
+          log(foundCommand);
           if (foundCommand && (await foundCommand.canExecute(user, message))) {
             foundCommand.execute(message, user, false);
           }
@@ -166,7 +174,7 @@ export default class DiscordClient extends Client {
     title: string,
     choices: EventSubChannelPollChoice[],
   ) {
-    if (this.twitchPollResultsChannel.isSendable()) {
+    if (this.twitchPollResultsChannel?.isSendable()) {
       var message = `# ${title}${NEW_LINE}`;
       var winners: EventSubChannelPollChoice[] = [];
       choices.forEach((choice) => {
@@ -198,7 +206,7 @@ export default class DiscordClient extends Client {
     stream: HelixStream,
     broadcaster: HelixUser,
   ): Promise<void> {
-    if (this.twitchAnnouncesChannel.isSendable()) {
+    if (this.twitchAnnouncesChannel?.isSendable()) {
       const embed = twitchEmbedTemplate;
       const content = TAG_EVERYONE + NEW_LINE + message;
       embed.setTitle(`🔴 ${stream.title}`);

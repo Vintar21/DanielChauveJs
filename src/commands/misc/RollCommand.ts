@@ -28,9 +28,9 @@ const STATS_ARG: RegExp = /(stat(istique)?s?|moyennes?|means?|av(era)?ge?s?)/i;
 
 class Mvp {
   public user: User = undefinedUser;
-  public score: number = 0;
+  public score: number | undefined = undefined;
 
-  constructor(user: User, score: number) {
+  constructor(user: User, score?: number) {
     this.user = user;
     this.score = score;
   }
@@ -43,7 +43,7 @@ export default class RollCommand extends AArgumentsCommand {
   private static RANGE_MAX: number = 1000;
   private static ROLL_MAX_USE_PER_USER: number = 1;
 
-  private currentMVP: Mvp = new Mvp(undefinedUser, undefined);
+  private currentMVP: Mvp = new Mvp(undefinedUser);
 
   private userModifiers: Map<UserId, number> = new Map();
 
@@ -163,11 +163,11 @@ export default class RollCommand extends AArgumentsCommand {
 
     if (this.userHasModifier(user.userId)) {
       const rawValue = value;
-      const modifier = this.userModifiers.get(user.userId);
+      const modifier = this.userModifiers.get(user.userId) ?? 0;
       value += modifier;
       response = `${user.username} lance son dé et fait... ${value} (${rawValue} ${modifier < 0 ? modifier : `+ ${modifier}`}) !`;
     }
-    this.insertValue(user.userId, user.username, value);
+
     if (!this.currentMVP.score || value > this.currentMVP.score) {
       if (isNotAUser(this.currentMVP.user)) {
         // No current MVP
@@ -194,6 +194,7 @@ export default class RollCommand extends AArgumentsCommand {
     }
 
     var customMessage = await this.getCustomMessage(value, user);
+    this.insertValue(user.userId, user.username, value);
 
     switch (value) {
       case 1:
@@ -274,7 +275,7 @@ export default class RollCommand extends AArgumentsCommand {
           const modifier =
             args[0] === BONUS_ARG ? Number(args[2]) : Number("-" + args[2]);
           log(modifier);
-          if (!isNaN(modifier) && !isNaN(userId)) {
+          if (!isNaN(modifier) && userId && !isNaN(userId)) {
             this.addModifier(userId, modifier);
             this.replyOrSend(
               user,
@@ -358,7 +359,7 @@ export default class RollCommand extends AArgumentsCommand {
     // TODO: if user has already rolled, update the values
     log(`Adding modifier for ${userId}: ${modifier}`);
     if (this.userHasModifier(userId)) {
-      const currentModifier = this.userModifiers.get(userId);
+      const currentModifier = this.userModifiers.get(userId) ?? 0;
       modifier += currentModifier;
       log(`Modifier updated: ${currentModifier} => ${modifier}`);
     }

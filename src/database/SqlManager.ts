@@ -33,8 +33,9 @@ import { EMPTY } from "../utils/StringConstants";
 import { log } from "../utils/CommonUtils";
 
 export default class SqlManager {
-  private static connection: Promise<Connection> =
-    sql.promises.open(sqlConnectionString);
+  private static connection: Promise<Connection> = sql.promises.open(
+    sqlConnectionString ?? EMPTY,
+  );
 
   // Return true if a new user was inserted
   public static async insertNewUserQuery(
@@ -171,7 +172,7 @@ export default class SqlManager {
     const counterValueResult = SqlManager.isValideQueryAgregator(queryAgregator)
       ? queryAgregator[FIRST]
       : undefined;
-    if (counterValueResult?.length > 0) {
+    if (counterValueResult && counterValueResult.length > 0) {
       const counterValue = Number(counterValueResult[0]?.counter_value);
       return isNaN(counterValue) ? undefined : counterValue;
     }
@@ -188,7 +189,7 @@ export default class SqlManager {
       ? queryAgregator[FIRST]
       : undefined;
     // [{category_name: string, counter_value: number}, {category_name: string, counter_value: number},...]
-    if (rows?.length > 0) {
+    if (rows && rows.length > 0) {
       const categoriesValuesMap: Map<string, number> = new Map();
       rows.forEach((row) =>
         categoriesValuesMap.set(row.category_name, row.counter_value),
@@ -206,21 +207,21 @@ export default class SqlManager {
     const averageValueResult = SqlManager.isValideQueryAgregator(queryAgregator)
       ? queryAgregator[FIRST]
       : undefined;
-    if (averageValueResult?.length > 0) {
+    if (averageValueResult && averageValueResult.length > 0) {
       const averageValue = Number(averageValueResult[0]?.average);
       return isNaN(averageValue) ? undefined : averageValue;
     }
     return undefined;
   }
 
-  public static async averageRollForUserId(userId: number) {
+  public static async averageRollForUserId(userId: UserId) {
     const query = `SELECT AVG(${SCORE_COLUMN}) AS ${AVG_COLUMN_NAME} FROM 
     ${ROLLS_TABLE} WHERE ${USER_ID_COLUMN}=${userId}`;
     const queryAgregator = await SqlManager.executeQuery(query);
     const averageValueResult = SqlManager.isValideQueryAgregator(queryAgregator)
       ? queryAgregator[FIRST]
       : undefined;
-    if (averageValueResult?.length > 0) {
+    if (averageValueResult && averageValueResult.length > 0) {
       const averageValue = Number(averageValueResult[0]?.average);
       return isNaN(averageValue) ? undefined : averageValue;
     }
@@ -247,10 +248,11 @@ export default class SqlManager {
         const connection: Connection = await SqlManager.connection;
         const promises: ConnectionPromises = connection.promises;
         return await promises.query(query);
-      } catch (err) {
+      } catch (err: any) {
         // TODO: handle error properly
         log("SQL ERROR: " + err.message);
       }
     }
+    return Promise.reject("Cannot use SQL base");
   }
 }

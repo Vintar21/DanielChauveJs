@@ -9,7 +9,7 @@ import {
   EventSubAutoModMessageHoldV2Event,
   EventSubChannelSuspiciousUserMessageEvent,
 } from "@twurple/eventsub-base";
-import { EventSubStreamOnlineEvent } from "@twurple/eventsub-base/lib/events/EventSubStreamOnlineEvent";
+import { EventSubStreamOnlineEvent } from "@twurple/eventsub-base";
 import { EventSubWsListener } from "@twurple/eventsub-ws";
 import { MainApp } from "../app";
 import ChannelPointsListener from "../channel-points-rewards/ChannelPointsListener";
@@ -27,12 +27,10 @@ import CountersManager from "../counters/CountersManager";
 import TimerManager from "../timers/TimerManager";
 import { log, minutes, seconds, warn } from "../utils/CommonUtils";
 import { getGreaterRole } from "../utils/RoleUtils";
-import { SPACE } from "../utils/StringConstants";
 import { User } from "../utils/user/User";
 import ATwitchClient from "./ATwitchClient";
 import { filterMessage, onChatMessage } from "./TwitchEventHandlers";
 import WatchStreakEvent from "./events/WatchStreakEvent";
-import { EventSubChannelSuspiciousUserMessageCheermoteData } from "@twurple/eventsub-base/lib/events/EventSubChannelSuspiciousUserMessageEvent.external";
 
 export default class TwitchClient extends ATwitchClient {
   private static INSTANCE: TwitchClient;

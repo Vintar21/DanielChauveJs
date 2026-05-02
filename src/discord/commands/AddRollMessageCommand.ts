@@ -40,7 +40,7 @@ class AddRollMessageCommand extends ADiscordCommand {
         );
         return;
       }
-      const rollMessage = args.slice(1).join(SPACE);
+      const rollMessage = args.slice(1).join(SPACE).replaceAll("'", "''");
       SqlManager.addRollsMessage(value, rollMessage);
       // TODO check with SqlManager return
       this.replyOrSend(message, "Message added", user, ignoreCooldowns);

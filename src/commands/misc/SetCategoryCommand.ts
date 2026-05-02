@@ -1,6 +1,7 @@
 import { ChatMessage } from "@twurple/chat";
 import { MainApp } from "../../app";
 import {
+  Category,
   JUST_CHATTING,
   MARIO_KART_8_DELUXE,
   MARIO_KART_WORLD,
@@ -60,7 +61,7 @@ export default class SetCategory extends AArgumentsCommand {
       .join(SPACE)
       .replaceAll(/[^a-z0-9]/gi, SPACE)
       .trim();
-    var detectedCategory = givenCategory;
+    var detectedCategory: Category = givenCategory;
 
     // TODO: create a class TwitchCategory which has aliases and equivalent categories (ie MK8 and MK8 deluxe)
 

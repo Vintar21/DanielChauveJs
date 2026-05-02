@@ -1,4 +1,4 @@
-import { ChatMessage } from "@twurple/chat/lib";
+import { ChatMessage } from "@twurple/chat";
 import { MainApp } from "../../app";
 import TwitchClient from "../../twitch/TwitchClient";
 import {
@@ -76,7 +76,7 @@ export default abstract class ACommand implements ICommand {
     this.globalUseCount = 0;
     this.usersUseCount.clear();
     this.userCooldowns.clear();
-    this.lastUsed = undefined;
+    this.lastUsed = 0;
   }
 
   // By default we split and format the message, override this method to change this behavior
@@ -135,11 +135,14 @@ export default abstract class ACommand implements ICommand {
     // Categories permissions
     const category = (
       await MainApp.getTwitchClient().getCurrentGame()
-    ).toLowerCase();
+    )?.toLowerCase();
 
-    if (this.options.categoriesPermissions.isUnallowed(category)) {
+    if (category && this.options.categoriesPermissions.isUnallowed(category)) {
       return false;
-    } else if (this.options.categoriesPermissions.canBypass(category)) {
+    } else if (
+      category &&
+      this.options.categoriesPermissions.canBypass(category)
+    ) {
       return true;
     }
 
